@@ -3,6 +3,7 @@ package cf_health_checks_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/pivotal-cf-experimental/cf-health-checks/config"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/runner"
 	"github.com/vito/cmdtest"
 
@@ -14,19 +15,14 @@ func TestCfHealthChecks(t *testing.T) {
 	RunSpecs(t, "Cf-Health-Checks Suite")
 }
 
-// var IntegrationConfig = config.Load()
+var IntegrationConfig = config.Load()
 
 var AppName = ""
 
-var rubyAppPath = "./apps/ruby/simple"
-var javaAppPath = "./apps/java/JavaTinyApp-1.1.war"
-
-var AppPath = rubyAppPath
+var AppPath = "./apps/ruby/simple"
 
 func AppUri(endpoint string) string {
-	// TODO: Pull in IntegrationConfig from cf-acceptance-tests
-	var AppsDomain = "10.244.0.34.xip.io"
-	return "http://" + AppName + "." + AppsDomain + endpoint
+	return "http://" + AppName + "." + IntegrationConfig.AppsDomain + endpoint
 }
 
 func Curling(endpoint string) func() *cmdtest.Session {
