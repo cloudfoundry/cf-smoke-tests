@@ -5,38 +5,14 @@ import (
 	. "github.com/onsi/gomega"
 	. "github.com/pivotal-cf-experimental/cf-test-helpers/cf"
 	. "github.com/pivotal-cf-experimental/cf-test-helpers/generator"
+	"github.com/vito/cmdtest"
 	. "github.com/vito/cmdtest/matchers"
+	"os"
 )
 
 var _ = Describe("Application", func() {
-	// Behavior of original NYETs:
-
-	// Clean up app from previous run
-	// Create an app as a regular user
-	// Clean up route from a previous run
-	// Create a route as a regular user
-	// Deploy an app
-	// Start app (what's the difference from gcf push?)
-	// Check if the app is routable
-
-	// Scale the app
-	// Check running instances
-	// Check if the first and second instances are reachable
-
-	// Delete the route
-	// Delete the app
-	// Check that the app's api is unavailable (?)
-	// Check that the app's uri is unavailable
-
-	// Monitoring around all of these things?
-
-	// In this case, simplified to:
-
-	// Push an app
-	// Scale the app
-	// Delete the app
-
 	BeforeEach(func() {
+		os.Setenv("CF_COLOR", "false")
 		AppName = RandomName()
 
 		Expect(Cf("push", AppName, "-p", AppPath)).To(Say("App started"))
@@ -49,6 +25,23 @@ var _ = Describe("Application", func() {
 	Describe("pushing", func() {
 		It("makes the app reachable via its bound route", func() {
 			Eventually(Curling("/")).Should(Say("It just needed to be restarted!"))
+		})
+	})
+
+	Describe("scaling", func() {
+		BeforeEach(func() {
+			Expect(Cf("scale", AppName, "-i", "2")).To(Say("OK"))
+		})
+
+		It("reports 2 instances", func() {
+			Eventually(func() *cmdtest.Session {
+				return Cf("app", AppName)
+			}, 10).Should(Say("instances: 2/2"))
+		})
+
+		It("actually starts a second instance", func() {
+			Eventually(Curling("/")).Should(Say("\"instance_index\":0"))
+			Eventually(Curling("/")).Should(Say("\"instance_index\":1"))
 		})
 	})
 
