@@ -25,9 +25,9 @@ var _ = Describe("Logs", func() {
 
 		// Curling multiple times because loggregator makes no garauntees about delivery of logs.
 		Eventually(Curling("/")).Should(Say("Healthy"))
-		Eventually(Curling("/")).Should(Say("Healthy"))
-
 		Eventually(Cf("logs", "--recent", AppName)).Should(Say("[RTR]"))
+
+		Eventually(Curling("/")).Should(Say("Healthy"))
 		Eventually(Cf("logs", "--recent", AppName)).Should(Say("[App/0]"))
 	})
 })
