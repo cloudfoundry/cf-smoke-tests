@@ -18,4 +18,6 @@ gocart -r install
 
 go install github.com/onsi/ginkgo/ginkgo
 
+echo "In: $PWD"
+echo "Running: ginkgo -r -v -slowSpecThreshold=300 $*"
 ginkgo -r -v -slowSpecThreshold=300 "$@"
