@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-var _ = Describe("Application Flow", func() {
+var _ = Describe("Runtime:", func() {
 	BeforeEach(func() {
 		os.Setenv("CF_COLOR", "false")
 		AppName = RandomName()

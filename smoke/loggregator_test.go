@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var _ = Describe("Loggregator", func() {
+var _ = Describe("Loggregator:", func() {
 	BeforeEach(func() {
 		os.Setenv("CF_COLOR", "false")
 		AppName = RandomName()
