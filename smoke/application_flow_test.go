@@ -1,4 +1,4 @@
-package cf_health_checks_test
+package smoke
 
 import (
 	. "github.com/onsi/ginkgo"

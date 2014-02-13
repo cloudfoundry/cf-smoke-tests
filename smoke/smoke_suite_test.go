@@ -1,9 +1,9 @@
-package cf_health_checks_test
+package smoke
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf-experimental/cf-health-checks/config"
+	"github.com/pivotal-cf-experimental/cf-smoke-tests/config"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/runner"
 	"github.com/vito/cmdtest"
 
@@ -19,7 +19,7 @@ var IntegrationConfig = config.Load()
 
 var AppName = ""
 
-var AppPath = "./apps/ruby/simple"
+var AppPath = "../assets/ruby_simple"
 
 func AppUri(endpoint string) string {
 	return "http://" + AppName + "." + IntegrationConfig.AppsDomain + endpoint

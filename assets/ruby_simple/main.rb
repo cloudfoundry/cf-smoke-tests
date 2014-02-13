@@ -2,6 +2,7 @@ require 'sinatra'
 
 get '/' do
 <<-RESPONSE
+Healthy
 It just needed to be restarted!
 My application metadata: #{ENV['VCAP_APPLICATION']}
 My port: #{ENV['PORT']}
