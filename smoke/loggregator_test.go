@@ -12,18 +12,27 @@ import (
 var _ = Describe("Loggregator:", func() {
 	BeforeEach(func() {
 		os.Setenv("CF_COLOR", "false")
-		AppName = RandomName()
+		if os.Getenv("CLEANUP_ENVIRONMENT") == "true" {
+			AppName = RandomName()
+		}  else {
+			AppName = "smoke-test-app"
+		}
 	})
 
 	AfterEach(func() {
-		Expect(Cf("delete", AppName, "-f")).To(Say("OK"))
+		if os.Getenv("CLEANUP_ENVIRONMENT") == "true" {
+			Expect(Cf("delete", AppName, "-f")).To(Say("OK"))
+		}
 	})
 
 	It("can see router requests in the logs", func() {
-		Expect(Cf("push", AppName, "-p", AppPath)).To(Say("App started"))
+		if os.Getenv("CLEANUP_ENVIRONMENT") == "true" {
+			Expect(Cf("push", AppName, "-p", AppPath)).To(Say("App started"))
+		}
+
 		Eventually(Curling("/")).Should(Say("It just needed to be restarted!"))
 
-		// Curling multiple times because loggregator makes no garauntees about delivery of logs.
+		// Curling multiple times because loggregator makes no guarantees about delivery of logs.
 		Eventually(Curling("/")).Should(Say("Healthy"))
 		Eventually(Cf("logs", "--recent", AppName)).Should(Say("[RTR]"))
 
