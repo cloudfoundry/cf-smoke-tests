@@ -12,21 +12,21 @@ import (
 var _ = Describe("Loggregator:", func() {
 	BeforeEach(func() {
 		os.Setenv("CF_COLOR", "false")
-		if os.Getenv("CLEANUP_ENVIRONMENT") == "true" {
-			AppName = RandomName()
-		}  else {
+		if os.Getenv("CLEANUP_ENVIRONMENT") == "false" {
 			AppName = "smoke-test-app"
+		}  else {
+			AppName = RandomName()
 		}
 	})
 
 	AfterEach(func() {
-		if os.Getenv("CLEANUP_ENVIRONMENT") == "true" {
+		if os.Getenv("CLEANUP_ENVIRONMENT") != "false" {
 			Expect(Cf("delete", AppName, "-f")).To(Say("OK"))
 		}
 	})
 
 	It("can see router requests in the logs", func() {
-		if os.Getenv("CLEANUP_ENVIRONMENT") == "true" {
+		if os.Getenv("CLEANUP_ENVIRONMENT") != "false" {
 			Expect(Cf("push", AppName, "-p", AppPath)).To(Say("App started"))
 		}
 
