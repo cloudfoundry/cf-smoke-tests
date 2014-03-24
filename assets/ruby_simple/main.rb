@@ -1,4 +1,6 @@
 require 'sinatra'
+STDOUT.sync = true
+STDERR.sync = true
 
 get '/' do
 <<-RESPONSE
@@ -8,4 +10,11 @@ My application metadata: #{ENV['VCAP_APPLICATION']}
 My port: #{ENV['PORT']}
 My custom env variable: #{ENV['CUSTOM_VAR']}
 RESPONSE
+end
+
+Thread.new do
+  while true do
+    STDOUT.puts "Tick: #{Time.now.to_i}"
+    sleep 1
+  end
 end
