@@ -2,3 +2,4 @@ github.com/onsi/ginkgo	7083fb7612a8bc8ef9a48c35b8364fd06fadf9ad
 github.com/onsi/gomega	ff48b6baeb8028ce0ad570efbe36b1534b7efd0c
 github.com/vito/cmdtest	4b86f8c2259c55e86e4b971cd7dc5dfb03e41b80
 github.com/pivotal-cf-experimental/cf-test-helpers	169ca3798e5f41197b7b0f60b3b1df4944e86740
+github.com/cloudfoundry/loggregator_consumer	ab88508049097afc61898b7f81efd23512b993e1
