@@ -1,13 +1,13 @@
 package smoke
 
 import (
+	"os"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/pivotal-cf-experimental/cf-test-helpers/cf"
 	. "github.com/pivotal-cf-experimental/cf-test-helpers/generator"
 	"github.com/vito/cmdtest"
 	. "github.com/vito/cmdtest/matchers"
-	"os"
 )
 
 var _ = Describe("Runtime:", func() {
@@ -28,8 +28,10 @@ var _ = Describe("Runtime:", func() {
 		Eventually(func() *cmdtest.Session {
 			return Cf("app", AppName)
 		}, 10).Should(Say("instances: 2/2"))
-		Eventually(Curling("/")).Should(Say("\"instance_index\":0"))
-		Eventually(Curling("/")).Should(Say("\"instance_index\":1"))
+
+		timeout_for_balanced_routing := 2.0
+		Eventually(Curling("/"), timeout_for_balanced_routing).Should(Say("\"instance_index\":0"))
+		Eventually(Curling("/"), timeout_for_balanced_routing).Should(Say("\"instance_index\":1"))
 
 		Expect(Cf("delete", AppName, "-f")).To(Say("OK"))
 		Expect(Cf("app", AppName)).To(Say("not found"))
