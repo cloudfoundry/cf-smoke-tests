@@ -1,0 +1,37 @@
+{
+	"ImportPath": "github.com/pivotal-cf-experimental/cf-smoke-tests",
+	"GoVersion": "go1.2.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/nu7hatch/gouuid",
+			"Rev": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
+		},
+		{
+			"ImportPath": "github.com/onsi/ginkgo",
+			"Rev": "6d349e912f98605cd6b032a6e0a24c90c2d3bf47"
+		},
+		{
+			"ImportPath": "github.com/onsi/gomega",
+			"Rev": "af40dc423678b84288e18d0b993770cf9d599a68"
+		},
+		{
+			"ImportPath": "github.com/pivotal-cf-experimental/cf-test-helpers/cf",
+			"Rev": "bf6731e5c9be59be50ab7303606e80dbd379dbfe"
+		},
+		{
+			"ImportPath": "github.com/pivotal-cf-experimental/cf-test-helpers/generator",
+			"Rev": "bf6731e5c9be59be50ab7303606e80dbd379dbfe"
+		},
+		{
+			"ImportPath": "github.com/pivotal-cf-experimental/cf-test-helpers/runner",
+			"Rev": "bf6731e5c9be59be50ab7303606e80dbd379dbfe"
+		},
+		{
+			"ImportPath": "github.com/vito/cmdtest",
+			"Rev": "7949d8f2b06890d93ca31d3056de240b9d7c3bd5"
+		}
+	]
+}
