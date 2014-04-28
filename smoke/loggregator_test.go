@@ -3,33 +3,35 @@ package smoke
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/pivotal-cf-experimental/cf-test-helpers/cf"
+	. "github.com/onsi/gomega/gexec"
+	. "github.com/onsi/gomega/gbytes"
+	"github.com/pivotal-cf-experimental/cf-test-helpers/cf"
 	. "github.com/pivotal-cf-experimental/cf-test-helpers/generator"
-	. "github.com/vito/cmdtest/matchers"
-	"os"
 )
 
 var _ = Describe("Loggregator:", func() {
+	var testConfig = GetConfig()
+	var createTestApp = (testConfig.LoggingApp == "")
+	var appName string
+
 	BeforeEach(func() {
-		os.Setenv("CF_COLOR", "false")
-		if os.Getenv("CLEANUP_ENVIRONMENT") == "false" {
-			AppName = "smoke-test-app"
+		if createTestApp {
+			appName = RandomName()
+			Eventually(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH), CF_PUSH_TIMEOUT_IN_SECONDS).Should(Exit(0))
 		}  else {
-			AppName = RandomName()
+			appName = testConfig.LoggingApp
 		}
 	})
 
 	AfterEach(func() {
-		if os.Getenv("CLEANUP_ENVIRONMENT") != "false" {
-			Expect(Cf("delete", AppName, "-f")).To(Say("OK"))
+		if createTestApp {
+			Eventually(cf.Cf("delete", appName, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
 		}
 	})
 
 	It("can see app messages in the logs", func() {
-		if os.Getenv("CLEANUP_ENVIRONMENT") != "false" {
-			Expect(Cf("push", AppName, "-p", AppPath)).To(Say("App started"))
-		}
-
-		Eventually(Cf("logs", "--recent", AppName)).Should(Say("[App/0]"))
+		appLogsSession := cf.Cf("logs", "--recent", appName)
+		Eventually(appLogsSession, CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(appLogsSession).To(Say(`\[App/0\]`))
 	})
 })

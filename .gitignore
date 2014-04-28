@@ -1,6 +1,3 @@
 integration_config.json
 .idea
-cf-smoke-tests.iml
-bin/
-pkg/
-src/
+smoke.test
