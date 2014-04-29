@@ -61,23 +61,41 @@ func ExpectAppToScale(appName string, instances int) {
 func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int) {
 	var found bool
 	expectedOutput := fmt.Sprintf("instances: %d/%d", instances, instances)
+
+	outputMatchers := make([]*regexp.Regexp, instances)
+	for i := 0; i < instances; i++ {
+		outputMatchers[i] = regexp.MustCompile(fmt.Sprintf(`#%d\s+running`, i))
+	}
+
 	for i := 0; i < maxAttempts; i++ {
 		session := cf.Cf("app", appName)
 		Eventually(session, CF_APP_STATUS_TIMEOUT_IN_SECONDS).Should(Exit(0))
 
-		found = strings.Contains(string(session.Out.Contents()), expectedOutput)
+		output := string(session.Out.Contents())
+		found = strings.Contains(output, expectedOutput)
+
+		if found {
+			for _, matcher := range outputMatchers {
+				matches := matcher.FindStringSubmatch(output)
+				if matches == nil {
+					found = false
+					break
+				}
+			}
+		}
+
  		if found {
 			break
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
 
-	Expect(found).To(BeTrue(), fmt.Sprintf("Wanted to see \"%s\" in %d attempts, but didn't", expectedOutput, maxAttempts))
+	Expect(found).To(BeTrue(), fmt.Sprintf("Wanted to see all instances running in %d attempts, but didn't", expectedOutput, maxAttempts))
 }
 
 // Curls the appUrl (up to maxAttempts) until all instances have been seen
 func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempts int) {
-	var matcher = regexp.MustCompile(`"instance_index":(\d+)`)
+	matcher := regexp.MustCompile(`"instance_index":(\d+)`)
 
 	branchesSeen := make([]bool, instances)
 	var sawAll bool
