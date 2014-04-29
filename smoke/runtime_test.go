@@ -35,7 +35,7 @@ var _ = Describe("Runtime:", func() {
 		Expect(runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
 
 		instances := 2
-		maxAttempts := 10
+		maxAttempts := 15
 
 		ExpectAppToScale(appName, instances)
 
