@@ -8,9 +8,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	ginkgoconfig "github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gexec"
-	"github.com/onsi/ginkgo/reporters"
 
 	"github.com/pivotal-cf-experimental/cf-test-helpers/cf"
 )
@@ -34,9 +34,6 @@ const (
 func TestSmokeTests(t *testing.T) {
 	testConfig := GetConfig()
 
-	// if an existing logging app is specified, then assume the space exists too
-	createTestSpace := (testConfig.LoggingApp == "")
-
 	testUserContext := cf.NewUserContext(
 		testConfig.ApiEndpoint,
 		testConfig.User,
@@ -53,16 +50,26 @@ func TestSmokeTests(t *testing.T) {
 	BeforeEach(func() {
 		originalCfHomeDir, currentCfHomeDir = cf.InitiateUserContext(testUserContext)
 
-		if createTestSpace {
+		if !testConfig.UseExistingOrg {
+			Eventually(cf.Cf("create-org", testConfig.Org), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		}
+
+		Eventually(cf.Cf("target", "-o", testConfig.Org), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+
+		if !testConfig.UseExistingSpace {
 			Eventually(cf.Cf("create-space", "-o", testConfig.Org, testConfig.Space), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
 		}
 
-		cf.TargetSpace(testUserContext)
+		Eventually(cf.Cf("target", "-s", testConfig.Space), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
 	})
 
 	AfterEach(func() {
-		if createTestSpace {
+		if !testConfig.UseExistingSpace {
 			Eventually(cf.Cf("delete-space", testConfig.Space, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		}
+
+		if !testConfig.UseExistingOrg {
+			Eventually(cf.Cf("delete-org", testConfig.Org, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
 		}
 
 		cf.RestoreUserContext(testUserContext, originalCfHomeDir, currentCfHomeDir)

@@ -3,28 +3,27 @@ package smoke
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gexec"
 	. "github.com/onsi/gomega/gbytes"
+	. "github.com/onsi/gomega/gexec"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/cf"
-	. "github.com/pivotal-cf-experimental/cf-test-helpers/generator"
+	"github.com/pivotal-cf-experimental/cf-test-helpers/generator"
 )
 
 var _ = Describe("Loggregator:", func() {
 	var testConfig = GetConfig()
-	var createTestApp = (testConfig.LoggingApp == "")
+	var useExistingApp = (testConfig.LoggingApp != "")
 	var appName string
 
 	BeforeEach(func() {
-		if createTestApp {
-			appName = RandomName()
+		appName = testConfig.LoggingApp
+		if !useExistingApp {
+			appName = generator.RandomName()
 			Eventually(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH), CF_PUSH_TIMEOUT_IN_SECONDS).Should(Exit(0))
-		}  else {
-			appName = testConfig.LoggingApp
 		}
 	})
 
 	AfterEach(func() {
-		if createTestApp {
+		if !useExistingApp {
 			Eventually(cf.Cf("delete", appName, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
 		}
 	})

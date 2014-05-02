@@ -14,20 +14,25 @@ type Config struct {
 
 	SkipSSLValidation bool `json:"skip_ssl_validation"`
 
-	User string `json:"user"`
+	User     string `json:"user"`
 	Password string `json:"password"`
 
-	Org string `json:"org"`
+	Org   string `json:"org"`
 	Space string `json:"space"`
 
-	// existing app name - if empty the space will be managed and a random app name will be used
+	UseExistingOrg   bool `json:"use_existing_org"`
+	UseExistingSpace bool `json:"use_existing_space"`
+
+	// existing app names - if empty the space will be managed and a random app name will be used
 	LoggingApp string `json:"logging_app"`
+	RuntimeApp string `json:"runtime_app"`
 
 	ArtifactsDirectory string `json:"artifacts_directory"`
 }
 
 // singleton cache
 var cachedConfig *Config
+
 func GetConfig() *Config {
 	if cachedConfig == nil {
 		cachedConfig = loadConfig()
@@ -45,6 +50,8 @@ func loadConfig() *Config {
 func newDefaultConfig() *Config {
 	return &Config{
 		ArtifactsDirectory: filepath.Join("..", "results"),
+		UseExistingOrg: false,
+		UseExistingSpace: false,
 	}
 }
 

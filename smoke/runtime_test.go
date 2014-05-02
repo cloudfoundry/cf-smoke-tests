@@ -2,17 +2,17 @@ package smoke
 
 import (
 	"fmt"
-	"strconv"
-	"time"
-	"regexp"
-	"strings"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gexec"
 	. "github.com/onsi/gomega/gbytes"
+	. "github.com/onsi/gomega/gexec"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/cf"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/generator"
 	"github.com/pivotal-cf-experimental/cf-test-helpers/runner"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var _ = Describe("Runtime:", func() {
@@ -21,7 +21,11 @@ var _ = Describe("Runtime:", func() {
 	var appUrl string
 
 	BeforeEach(func() {
-		appName = generator.RandomName()
+		appName = testConfig.RuntimeApp
+		if appName == "" {
+			appName = generator.RandomName()
+		}
+
 		appUrl = "http://" + appName + "." + testConfig.AppsDomain
 	})
 
@@ -84,7 +88,7 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 			}
 		}
 
- 		if found {
+		if found {
 			break
 		}
 		time.Sleep(50 * time.Millisecond)
