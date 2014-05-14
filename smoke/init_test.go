@@ -51,25 +51,25 @@ func TestSmokeTests(t *testing.T) {
 		originalCfHomeDir, currentCfHomeDir = cf.InitiateUserContext(testUserContext)
 
 		if !testConfig.UseExistingOrg {
-			Eventually(cf.Cf("create-org", testConfig.Org), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+			Expect(cf.Cf("create-org", testConfig.Org).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
-		Eventually(cf.Cf("target", "-o", testConfig.Org), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(cf.Cf("target", "-o", testConfig.Org).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		if !testConfig.UseExistingSpace {
-			Eventually(cf.Cf("create-space", "-o", testConfig.Org, testConfig.Space), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+			Expect(cf.Cf("create-space", "-o", testConfig.Org, testConfig.Space).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
-		Eventually(cf.Cf("target", "-s", testConfig.Space), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(cf.Cf("target", "-s", testConfig.Space).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 	})
 
 	AfterEach(func() {
 		if !testConfig.UseExistingSpace {
-			Eventually(cf.Cf("delete-space", testConfig.Space, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+			Expect(cf.Cf("delete-space", testConfig.Space, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
 		if !testConfig.UseExistingOrg {
-			Eventually(cf.Cf("delete-org", testConfig.Org, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+			Expect(cf.Cf("delete-org", testConfig.Org, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
 		cf.RestoreUserContext(testUserContext, originalCfHomeDir, currentCfHomeDir)

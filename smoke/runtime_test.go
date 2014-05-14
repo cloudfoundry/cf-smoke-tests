@@ -30,11 +30,11 @@ var _ = Describe("Runtime:", func() {
 	})
 
 	AfterEach(func() {
-		Eventually(cf.Cf("delete", appName, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 	})
 
 	It("can be pushed, scaled and deleted", func() {
-		Eventually(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH), CF_PUSH_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		Expect(runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
 
@@ -47,10 +47,10 @@ var _ = Describe("Runtime:", func() {
 
 		ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
 
-		Eventually(cf.Cf("delete", appName, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		appStatusSession := cf.Cf("app", appName)
-		Eventually(appStatusSession, CF_TIMEOUT_IN_SECONDS).Should(Exit(1))
+		Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
 		Expect(appStatusSession).To(Say("not found"))
 
 		Expect(runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("404"))
@@ -58,7 +58,7 @@ var _ = Describe("Runtime:", func() {
 })
 
 func ExpectAppToScale(appName string, instances int) {
-	Eventually(cf.Cf("scale", appName, "-i", strconv.Itoa(instances)), CF_SCALE_TIMEOUT_IN_SECONDS).Should(Exit(0))
+	Expect(cf.Cf("scale", appName, "-i", strconv.Itoa(instances)).Wait(CF_SCALE_TIMEOUT_IN_SECONDS)).To(Exit(0))
 }
 
 // Gets app status (up to maxAttempts) until all instances are up
@@ -73,7 +73,7 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 
 	for i := 0; i < maxAttempts; i++ {
 		session := cf.Cf("app", appName)
-		Eventually(session, CF_APP_STATUS_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(session.Wait(CF_APP_STATUS_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		output := string(session.Out.Contents())
 		found = strings.Contains(output, expectedOutput)
@@ -105,7 +105,7 @@ func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempt
 	var sawAll bool
 	for i := 0; i < maxAttempts; i++ {
 		session := runner.Curl(appUrl)
-		Eventually(session, CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(session.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		output := string(session.Out.Contents())
 

@@ -18,19 +18,19 @@ var _ = Describe("Loggregator:", func() {
 		appName = testConfig.LoggingApp
 		if !useExistingApp {
 			appName = generator.RandomName()
-			Eventually(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH), CF_PUSH_TIMEOUT_IN_SECONDS).Should(Exit(0))
+			Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 	})
 
 	AfterEach(func() {
 		if !useExistingApp {
-			Eventually(cf.Cf("delete", appName, "-f"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+			Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 	})
 
 	It("can see app messages in the logs", func() {
 		appLogsSession := cf.Cf("logs", "--recent", appName)
-		Eventually(appLogsSession, CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		Expect(appLogsSession).To(Say(`\[App/0\]`))
 	})
 })
