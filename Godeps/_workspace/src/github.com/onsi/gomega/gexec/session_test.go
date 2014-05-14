@@ -1,11 +1,11 @@
 package gexec_test
 
 import (
-	"bytes"
+	"os/exec"
+	"syscall"
+	"time"
 	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
-	"os/exec"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -15,7 +15,7 @@ var _ = Describe("Session", func() {
 	var command *exec.Cmd
 	var session *Session
 
-	var outWriter, errWriter *bytes.Buffer
+	var outWriter, errWriter *Buffer
 
 	BeforeEach(func() {
 		outWriter = nil
@@ -75,6 +75,50 @@ var _ = Describe("Session", func() {
 		})
 	})
 
+	Describe("kill", func() {
+		It("should kill the command and wait for it to exit", func() {
+			session, err := Start(exec.Command("sleep", "10000000"), GinkgoWriter, GinkgoWriter)
+			Ω(err).ShouldNot(HaveOccurred())
+
+			session.Kill()
+			Ω(session).ShouldNot(Exit(), "Should not exit immediately...")
+			Eventually(session).Should(Exit(INVALID_EXIT_CODE), "Go handles processes the exit with signals in a weird way.  It doesn't return a valid status code!")
+		})
+	})
+
+	Describe("interrupt", func() {
+		It("should interrupt the command", func() {
+			session, err := Start(exec.Command("sleep", "10000000"), GinkgoWriter, GinkgoWriter)
+			Ω(err).ShouldNot(HaveOccurred())
+
+			session.Interrupt()
+			Ω(session).ShouldNot(Exit(), "Should not exit immediately...")
+			Eventually(session).Should(Exit(INVALID_EXIT_CODE), "Go handles processes the exit with signals in a weird way.  It doesn't return a valid status code!")
+		})
+	})
+
+	Describe("terminate", func() {
+		It("should terminate the command", func() {
+			session, err := Start(exec.Command("sleep", "10000000"), GinkgoWriter, GinkgoWriter)
+			Ω(err).ShouldNot(HaveOccurred())
+
+			session.Terminate()
+			Ω(session).ShouldNot(Exit(), "Should not exit immediately...")
+			Eventually(session).Should(Exit(INVALID_EXIT_CODE), "Go handles processes the exit with signals in a weird way.  It doesn't return a valid status code!")
+		})
+	})
+
+	Describe("singal", func() {
+		It("should send the signal to the command", func() {
+			session, err := Start(exec.Command("sleep", "10000000"), GinkgoWriter, GinkgoWriter)
+			Ω(err).ShouldNot(HaveOccurred())
+
+			session.Signal(syscall.SIGABRT)
+			Ω(session).ShouldNot(Exit(), "Should not exit immediately...")
+			Eventually(session).Should(Exit(INVALID_EXIT_CODE), "Go handles processes the exit with signals in a weird way.  It doesn't return a valid status code!")
+		})
+	})
+
 	Context("when the command exits", func() {
 		It("should close the buffers", func() {
 			Eventually(session).Should(Exit())
@@ -99,21 +143,21 @@ var _ = Describe("Session", func() {
 
 	Context("when wrapping out and err", func() {
 		BeforeEach(func() {
-			outWriter = &bytes.Buffer{}
-			errWriter = &bytes.Buffer{}
+			outWriter = NewBuffer()
+			errWriter = NewBuffer()
 		})
 
 		It("should route to both the provided writers and the gbytes buffers", func() {
 			Eventually(session.Out).Should(Say("We've done the impossible, and that makes us mighty"))
 			Eventually(session.Err).Should(Say("Ah, curse your sudden but inevitable betrayal!"))
 
-			Ω(outWriter.String()).Should(ContainSubstring("We've done the impossible, and that makes us mighty"))
-			Ω(errWriter.String()).Should(ContainSubstring("Ah, curse your sudden but inevitable betrayal!"))
+			Ω(outWriter.Contents()).Should(ContainSubstring("We've done the impossible, and that makes us mighty"))
+			Ω(errWriter.Contents()).Should(ContainSubstring("Ah, curse your sudden but inevitable betrayal!"))
 
 			Eventually(session).Should(Exit())
 
-			Ω(outWriter.Bytes()).Should(Equal(session.Out.Contents()))
-			Ω(errWriter.Bytes()).Should(Equal(session.Err.Contents()))
+			Ω(outWriter.Contents()).Should(Equal(session.Out.Contents()))
+			Ω(errWriter.Contents()).Should(Equal(session.Err.Contents()))
 		})
 	})
 
