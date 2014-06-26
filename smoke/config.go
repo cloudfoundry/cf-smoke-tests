@@ -63,6 +63,10 @@ func validateRequiredFields(config *Config) {
 	if config.ApiEndpoint == "" {
 		panic("missing configuration 'api'")
 	}
+	
+	if config.AppsDomain == "" {
+		panic("missing configuration 'apps_domain'")
+	}
 
 	if config.User == "" {
 		panic("missing configuration 'user'")
