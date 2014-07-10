@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	ginkgoconfig "github.com/onsi/ginkgo/config"
@@ -17,6 +18,8 @@ import (
 
 const (
 	SIMPLE_RUBY_APP_BITS_PATH = "../assets/ruby_simple"
+
+	CF_API_TIMEOUT_OVERRIDE = 1 * time.Minute
 
 	// timeout for most cf cli calls
 	CF_TIMEOUT_IN_SECONDS = 30
@@ -44,6 +47,8 @@ func TestSmokeTests(t *testing.T) {
 	)
 
 	RegisterFailHandler(Fail)
+
+	cf.CF_API_TIMEOUT = CF_API_TIMEOUT_OVERRIDE
 
 	var originalCfHomeDir, currentCfHomeDir string
 
