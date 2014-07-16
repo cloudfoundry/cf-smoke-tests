@@ -1,21 +1,21 @@
 {
 	"ImportPath": "github.com/cloudfoundry-incubator/cf-smoke-tests",
-	"GoVersion": "go1.2.1",
+	"GoVersion": "go1.3",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/cf",
-			"Rev": "ff8b474c6831ac4b4509deae7d81fb215b6264bc"
+			"Rev": "eaf5edb6ce3c155cb9f3993089933a97177b4810"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/generator",
-			"Rev": "ff8b474c6831ac4b4509deae7d81fb215b6264bc"
+			"Rev": "eaf5edb6ce3c155cb9f3993089933a97177b4810"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/runner",
-			"Rev": "ff8b474c6831ac4b4509deae7d81fb215b6264bc"
+			"Rev": "eaf5edb6ce3c155cb9f3993089933a97177b4810"
 		},
 		{
 			"ImportPath": "github.com/nu7hatch/gouuid",
@@ -23,11 +23,12 @@
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",
-			"Rev": "51ddbbc2ace9f9ad4cf06ba63442ea2ef2019837"
+			"Comment": "v1.0.0-23-g939c01c",
+			"Rev": "939c01cdcec896f69e7e0e5787934e32972419be"
 		},
 		{
 			"ImportPath": "github.com/onsi/gomega",
-			"Rev": "f5533d435ebfcf4fa0463202dc0e966b983618b8"
+			"Rev": "efd113280743f90026f1dc18b93ca5355d8df0bf"
 		}
 	]
 }
