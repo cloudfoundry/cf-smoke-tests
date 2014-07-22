@@ -56,7 +56,9 @@ func TestSmokeTests(t *testing.T) {
 		originalCfHomeDir, currentCfHomeDir = cf.InitiateUserContext(testUserContext)
 
 		if !testConfig.UseExistingOrg {
+			Expect(cf.Cf("create-quota", quotaName(testConfig.Org), "-m", "10G", "-r", "10", "-s", "2").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 			Expect(cf.Cf("create-org", testConfig.Org).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			Expect(cf.Cf("set-quota", testConfig.Org, quotaName(testConfig.Org)).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
 		Expect(cf.Cf("target", "-o", testConfig.Org).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
@@ -75,6 +77,7 @@ func TestSmokeTests(t *testing.T) {
 
 		if !testConfig.UseExistingOrg {
 			Expect(cf.Cf("delete-org", testConfig.Org, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			Expect(cf.Cf("delete-quota", quotaName(testConfig.Org), "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
 		cf.RestoreUserContext(testUserContext, originalCfHomeDir, currentCfHomeDir)
@@ -100,4 +103,8 @@ func jUnitReportFilePath(testConfig *Config) string {
 
 func ginkgoNode() int {
 	return ginkgoconfig.GinkgoConfig.ParallelNode
+}
+
+func quotaName(prefix string) string {
+	return prefix + "_QUOTA"
 }

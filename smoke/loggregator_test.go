@@ -29,8 +29,10 @@ var _ = Describe("Loggregator:", func() {
 	})
 
 	It("can see app messages in the logs", func() {
-		appLogsSession := cf.Cf("logs", "--recent", appName)
-		Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		Expect(appLogsSession).To(Say(`\[App/0\]`))
+		Eventually(func() *Session {
+			appLogsSession := cf.Cf("logs", "--recent", appName)
+			Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			return appLogsSession
+		}, 5).Should(Say(`\[App/0\]`))
 	})
 })
