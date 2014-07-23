@@ -2,6 +2,11 @@ package smoke
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/runner"
@@ -9,10 +14,6 @@ import (
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var _ = Describe("Runtime:", func() {
@@ -49,11 +50,15 @@ var _ = Describe("Runtime:", func() {
 
 		Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
-		appStatusSession := cf.Cf("app", appName)
-		Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
-		Expect(appStatusSession).To(Say("not found"))
+		Eventually(func() *Session {
+			appStatusSession := cf.Cf("app", appName)
+			Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
+			return appStatusSession
+		}, 5).Should(Say("not found"))
 
-		Expect(runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("404"))
+		Eventually(func() *Session {
+			return runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+		}, 5).Should(Say("404"))
 	})
 })
 
