@@ -20,26 +20,28 @@ var _ = Describe("Loggregator:", func() {
 	var useExistingApp = (testConfig.LoggingApp != "")
 	var appName string
 
-	BeforeEach(func() {
-		appName = testConfig.LoggingApp
-		if !useExistingApp {
-			appName = generator.RandomName()
-			Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		}
-	})
+	Describe("cf logs", func() {
+		BeforeEach(func() {
+			appName = testConfig.LoggingApp
+			if !useExistingApp {
+				appName = generator.RandomName()
+				Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			}
+		})
 
-	AfterEach(func() {
-		if !useExistingApp {
-			Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		}
-	})
+		AfterEach(func() {
+			if !useExistingApp {
+				Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			}
+		})
 
-	It("can see app messages in the logs", func() {
-		Eventually(func() *Session {
-			appLogsSession := cf.Cf("logs", "--recent", appName)
-			Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			return appLogsSession
-		}, 5).Should(Say(`\[App/0\]`))
+		It("can see app messages in the logs", func() {
+			Eventually(func() *Session {
+				appLogsSession := cf.Cf("logs", "--recent", appName)
+				Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+				return appLogsSession
+			}, 5).Should(Say(`\[App/0\]`))
+		})
 	})
 
 	Describe("Syslog drains", func() {
@@ -48,6 +50,9 @@ var _ = Describe("Loggregator:", func() {
 		var appUrl string
 
 		BeforeEach(func() {
+			appName = generator.RandomName()
+			Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+
 			appUrl = appName + "." + testConfig.AppsDomain
 
 			syslogDrainAddress := fmt.Sprintf("%s:%d", testConfig.SyslogIpAddress, testConfig.SyslogDrainPort)
@@ -77,18 +82,15 @@ var _ = Describe("Loggregator:", func() {
 			serviceName = "service-" + generator.RandomName()
 
 			Expect(cf.Cf("cups", serviceName, "-l", syslogDrainUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
 			Expect(cf.Cf("bind-service", appName, serviceName).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
 			Expect(cf.Cf("restage", appName).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		})
 
 		AfterEach(func() {
+			Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			Expect(cf.Cf("delete-service", serviceName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+
 			drainListener.Stop()
-
-			Expect(cf.Cf("unbind-service", appName, serviceName).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
-			Expect(cf.Cf("delete-service", serviceName).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		})
 
 		It("forwards app messages to registered syslog drains", func() {
