@@ -28,6 +28,9 @@ type Config struct {
 	RuntimeApp string `json:"runtime_app"`
 
 	ArtifactsDirectory string `json:"artifacts_directory"`
+
+	SyslogDrainPort int    `json:"syslog_drain_port"`
+	SyslogIpAddress string `json:"syslog_ip_address"`
 }
 
 // singleton cache
@@ -50,8 +53,8 @@ func loadConfig() *Config {
 func newDefaultConfig() *Config {
 	return &Config{
 		ArtifactsDirectory: filepath.Join("..", "results"),
-		UseExistingOrg: false,
-		UseExistingSpace: false,
+		UseExistingOrg:     false,
+		UseExistingSpace:   false,
 	}
 }
 
@@ -63,7 +66,7 @@ func validateRequiredFields(config *Config) {
 	if config.ApiEndpoint == "" {
 		panic("missing configuration 'api'")
 	}
-	
+
 	if config.AppsDomain == "" {
 		panic("missing configuration 'apps_domain'")
 	}
