@@ -82,7 +82,7 @@ var _ = Describe("Loggregator:", func() {
 
 			Expect(cf.Cf("cups", serviceName, "-l", syslogDrainUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 			Expect(cf.Cf("bind-service", appName, serviceName).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			Expect(cf.Cf("restage", appName).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			Expect(cf.Cf("restage", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		})
 
 		AfterEach(func() {
