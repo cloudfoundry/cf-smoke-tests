@@ -50,33 +50,32 @@ var _ = Describe("Loggregator:", func() {
 		var appUrl string
 
 		BeforeEach(func() {
-			appName = generator.RandomName()
-			Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
-			appUrl = appName + "." + testConfig.AppsDomain
-
 			syslogDrainAddress := fmt.Sprintf("%s:%d", testConfig.SyslogIpAddress, testConfig.SyslogDrainPort)
 
 			drainListener = &syslogDrainListener{port: testConfig.SyslogDrainPort}
-			go drainListener.Start()
+			drainListener.StartListener()
+			go drainListener.AcceptConnections()
 
 			// verify listener is reachable via configured public IP
 			var conn net.Conn
 
-			Eventually(func() error {
-				var err error
-				conn, err = net.Dial("tcp", syslogDrainAddress)
-				return err
-			}).ShouldNot(HaveOccurred())
+			var err error
+			conn, err = net.Dial("tcp", syslogDrainAddress)
+			Expect(err).ToNot(HaveOccurred())
 
 			defer conn.Close()
+
 			randomMessage := "random-message-" + generator.RandomName()
-			_, err := conn.Write([]byte(randomMessage))
+			_, err = conn.Write([]byte(randomMessage))
 			Expect(err).ToNot(HaveOccurred())
 
 			Eventually(func() bool {
 				return drainListener.DidReceive(randomMessage)
 			}).Should(BeTrue())
+
+			appName = generator.RandomName()
+			appUrl = appName + "." + testConfig.AppsDomain
+			Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 			syslogDrainUrl := "syslog://" + syslogDrainAddress
 			serviceName = "service-" + generator.RandomName()
@@ -111,12 +110,15 @@ type syslogDrainListener struct {
 	receivedMessages string
 }
 
-func (s *syslogDrainListener) Start() {
-	defer GinkgoRecover()
+func (s *syslogDrainListener) StartListener() {
 	listenAddress := fmt.Sprintf(":%d", s.port)
 	var err error
 	s.listener, err = net.Listen("tcp", listenAddress)
 	Expect(err).ToNot(HaveOccurred())
+}
+
+func (s *syslogDrainListener) AcceptConnections() {
+	defer GinkgoRecover()
 
 	for {
 		conn, err := s.listener.Accept()
@@ -143,6 +145,7 @@ func (s *syslogDrainListener) handleConnection(conn net.Conn) {
 	buffer := make([]byte, 65536)
 	for {
 		n, err := conn.Read(buffer)
+
 		if err == io.EOF {
 			return
 		}
