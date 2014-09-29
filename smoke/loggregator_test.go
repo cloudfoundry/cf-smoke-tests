@@ -2,17 +2,18 @@ package smoke
 
 import (
 	"fmt"
+	"io"
+	"net"
+	"net/http"
+	"strings"
+	"sync"
+
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
-	"io"
-	"net"
-	"net/http"
-	"strings"
-	"sync"
 )
 
 var _ = Describe("Loggregator:", func() {
@@ -87,7 +88,9 @@ var _ = Describe("Loggregator:", func() {
 
 		AfterEach(func() {
 			Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			Expect(cf.Cf("delete-service", serviceName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			if serviceName != "" {
+				Expect(cf.Cf("delete-service", serviceName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			}
 			Expect(cf.Cf("delete-orphaned-routes", "-f").Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 			drainListener.Stop()
