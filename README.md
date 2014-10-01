@@ -1,4 +1,127 @@
-cf-smoke-tests
+CF Smoke Tests
 ==============
 
-Smoke tests for CloudFoundry that are safe to run in a production environment
+Smoke tests are a suite of tests for CloudFoundry that are safe to run in a
+production environment. They test the core functionality of CloudFoundry.
+
+## Running the tests
+
+### Set up your `go` environment
+
+Set up your golang development environment, [per
+golang.org](http://golang.org/doc/install).
+
+You will probably also need the following SCM programs in order to `go get`
+source code:
+* [git](http://git-scm.com/)
+* [mercurial](http://mercurial.selenic.com/)
+* [bazaar](http://bazaar.canonical.com/)
+
+See [Go CLI](https://github.com/cloudfoundry/cli) for instructions on
+installing the go version of `cf`.
+
+Make sure that [curl](http://curl.haxx.se/) is installed on your system.
+
+Make sure that the go version of `cf` is accessible in your `$PATH`.
+
+Check out a copy of `cf-smoke-tests` and make sure that it is added to your
+`$GOPATH`.  The recommended way to do this is to run `go get -d
+github.com/cloudfoundry/cf-acceptance-tests`. You will receive a warning "no
+buildable Go source files"; this can be ignored as there is no compilable go
+code in the package.
+
+All `go` dependencies required by the smoke tests are vendored in
+`cf-smoke-tests/Godeps`. The test script itself, `bin/test`, ensures that the
+vendored dependencies are available when executing the tests by prepending this
+directory to `$GOPATH`.
+
+### Test Setup
+
+To run the CF Smoke tests, you will need:
+- a running CF instance
+- an environment variable `$CONFIG` which points to a `.json` file that
+contains the application domain
+
+Below is an example `integration_config.json`:
+```json
+{
+  "suite_name"         : "CF_SMOKE_TESTS",
+  "api"                : "api.10.244.0.34.xip.io",
+  "apps_domain"        : "10.244.0.34.xip.io",
+  "user"               : "admin",
+  "password"           : "admin",
+  "org"                : "CF-SMOKE-ORG",
+  "space"              : "CF-SMOKE-SPACE",
+  "use_existing_org"   : false,
+  "use_existing_space" : false,
+  "logging_app"        : "",
+  "runtime_app"        : "",
+  "syslog_drain_port"  : <PORT for SYSLOG service>,
+  "syslog_ip_address"  : <Local IP Address>
+}
+```
+
+If you are running the tests with version newer than 6.0.2-0bba99f of the Go CLI against bosh-lite or any other environment
+using self-signed certificates, add
+
+```
+  "skip_ssl_validation": true
+```
+
+to your `integration_config.json` as well.
+
+### Test Execution
+
+To execute the tests, run:
+
+```bash
+./bin/test
+```
+
+Internally the `bin/test` script runs tests using [ginkgo](https://github.com/onsi/ginkgo).
+
+Arguments, such as `-focus=`, `-nodes=`, etc., that are passed to the script are sent to `ginkgo`
+
+For example, to execute tests in parallel across four processes one would run:
+
+```bash
+./bin/test -nodes=2
+```
+
+#### Seeing command-line output
+
+To see verbose output from `cf`, use [ginkgo](https://github.com/onsi/ginkgo)'s `-v` flag.
+
+```bash
+./bin/test -v
+```
+
+#### Capturing CF CLI output
+
+Set '`artifacts_directory`' in your `integration_config.json` (as shown below)
+to store cf cli trace output. The output files will be saved inside the given
+directory.
+
+```
+  "artifacts_directory": "/tmp/smoke-artifacts"
+```
+
+The following files may be created:
+
+```bash
+CF-TRACE-Smoke-1.txt
+CF-TRACE-Smoke-2.txt
+junit-Applications-1.xml
+...
+```
+
+## Changing Smoke Tests
+
+### Dependency Management
+
+Smoke Tests use [godep](https://github.com/tools/godep) to manage `go` dependencies.
+
+All `go` packages required to run smoke tests are vendored into the `cf-smoke-tests/Godeps` directory.
+
+When making changes to the test suite that bring in additional `go` packages, you should use the workflow described in the
+[Add or Update a Dependency](https://github.com/tools/godep#add-or-update-a-dependency) section of the godep documentation.
