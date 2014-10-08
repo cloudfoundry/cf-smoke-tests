@@ -8,8 +8,7 @@ production environment. They test the core functionality of CloudFoundry.
 
 ### Set up your `go` environment
 
-Set up your golang development environment, [per
-golang.org](http://golang.org/doc/install).
+Set up your golang development environment, [per golang.org](http://golang.org/doc/install).
 
 You will probably also need the following SCM programs in order to `go get`
 source code:
@@ -61,8 +60,9 @@ Below is an example `integration_config.json`:
 }
 ```
 
-If you are running the tests with version newer than 6.0.2-0bba99f of the Go CLI against bosh-lite or any other environment
-using self-signed certificates, add
+If you are running the tests with version newer than 6.0.2-0bba99f of the Go
+CLI against bosh-lite or any other environment using self-signed certificates,
+add
 
 ```
   "skip_ssl_validation": true
@@ -82,7 +82,7 @@ Internally the `bin/test` script runs tests using [ginkgo](https://github.com/on
 
 Arguments, such as `-focus=`, `-nodes=`, etc., that are passed to the script are sent to `ginkgo`
 
-For example, to execute tests in parallel across four processes one would run:
+For example, to execute tests in parallel across two processes one would run:
 
 ```bash
 ./bin/test -nodes=2
