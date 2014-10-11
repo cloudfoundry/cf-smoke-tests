@@ -1,8 +1,20 @@
 CF Smoke Tests
 ==============
 
-Smoke tests are a suite of tests for CloudFoundry that are safe to run in a
-production environment. They test the core functionality of CloudFoundry.
+Smoke tests are a suite of basic core functionality tests for Cloud Foundry.
+They are suitable as an initial test against a new or updated deployment to
+reveal fundamental problems with the system. They are also safe to run
+periodically against a production environment as they place minimal load on a
+system and can be configured to require access only by a regular user. In
+particular, Cloud Foundry operators can use these tests as a monitoring tool
+against their running deployment.
+
+They are not intended to test more sophisticated functionality of Cloud Foundry
+or to test administrator operations. The [CF Acceptance
+Tests](https://github.com/cloudfoundry/cf-acceptance-tests) do perform this
+more extensive testing, although they are designed to be run as part of a
+development pipeline and not against production environments.
+
 
 ## Running the tests
 
