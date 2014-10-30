@@ -15,16 +15,5 @@ export GOPATH=$local_gopath:$GOPATH
 export PATH=$local_gopath/bin:$PATH
 
 go install -v github.com/onsi/ginkgo/ginkgo
-EXITSTATUS=0
-ginkgo --noColor -r --succinct -slowSpecThreshold=300 "$@" > >(tee out) || EXITSTATUS=$?
+ginkgo --noColor -r --succinct -slowSpecThreshold=300
 
-# return special code 2 for less sensitive alarming when setup for the test fails (indicating we cannot run our test)
-if grep -F '[Fail] Loggregator: Syslog drains [BeforeEach] forwards app messages to registered syslog drains' out; then
-  exit 2
-fi
-
-if [ $EXITSTATUS -eq 0 ]; then
- exit 0
-else
- exit 1
-fi
