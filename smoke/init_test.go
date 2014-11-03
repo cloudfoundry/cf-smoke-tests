@@ -1,4 +1,4 @@
-package runtime
+package smoke
 
 import (
 	"fmt"
@@ -14,11 +14,10 @@ import (
 	. "github.com/onsi/gomega/gexec"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
-	"github.com/cloudfoundry-incubator/cf-smoke-tests/smoke"
 )
 
 const (
-	SIMPLE_RUBY_APP_BITS_PATH = "../../assets/ruby_simple"
+	SIMPLE_RUBY_APP_BITS_PATH = "../assets/ruby_simple"
 
 	CF_API_TIMEOUT_OVERRIDE = 1 * time.Minute
 
@@ -36,7 +35,7 @@ const (
 )
 
 func TestSmokeTests(t *testing.T) {
-	testConfig := smoke.GetConfig()
+	testConfig := GetConfig()
 
 	testUserContext := cf.NewUserContext(
 		testConfig.ApiEndpoint,
@@ -91,14 +90,14 @@ func TestSmokeTests(t *testing.T) {
 		rs = append(rs, reporters.NewJUnitReporter(jUnitReportFilePath(testConfig)))
 	}
 
-	RunSpecsWithDefaultAndCustomReporters(t, "CF-Runtime-Smoke-Tests", rs)
+	RunSpecsWithDefaultAndCustomReporters(t, "CF-Smoke-Tests", rs)
 }
 
-func traceLogFilePath(testConfig *smoke.Config) string {
+func traceLogFilePath(testConfig *Config) string {
 	return filepath.Join(testConfig.ArtifactsDirectory, fmt.Sprintf("CF-TRACE-%s-%d.txt", testConfig.SuiteName, ginkgoNode()))
 }
 
-func jUnitReportFilePath(testConfig *smoke.Config) string {
+func jUnitReportFilePath(testConfig *Config) string {
 	return filepath.Join(testConfig.ArtifactsDirectory, fmt.Sprintf("junit-%s-%d.xml", testConfig.SuiteName, ginkgoNode()))
 }
 

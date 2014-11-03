@@ -1,10 +1,8 @@
-package logging
+package smoke
 
 import (
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
-	"github.com/cloudfoundry-incubator/cf-smoke-tests/smoke"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
@@ -12,7 +10,7 @@ import (
 )
 
 var _ = Describe("Loggregator:", func() {
-	var testConfig = smoke.GetConfig()
+	var testConfig = GetConfig()
 	var useExistingApp = (testConfig.LoggingApp != "")
 	var appName string
 

@@ -1,4 +1,4 @@
-package runtime
+package smoke
 
 import (
 	"fmt"
@@ -10,8 +10,6 @@ import (
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/runner"
-	"github.com/cloudfoundry-incubator/cf-smoke-tests/smoke"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
@@ -19,7 +17,7 @@ import (
 )
 
 var _ = Describe("Runtime:", func() {
-	var testConfig = smoke.GetConfig()
+	var testConfig = GetConfig()
 	var appName string
 	var appUrl string
 
