@@ -3,7 +3,7 @@ package logging
 import (
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
-	"github.com/cloudfoundry-incubator/cf-smoke-tests/smoke"
+	smoke ".."
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
