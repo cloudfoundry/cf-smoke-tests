@@ -1,9 +1,9 @@
 package logging
 
 import (
+	smoke ".."
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
-	smoke ".."
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,8 +36,7 @@ var _ = Describe("Loggregator:", func() {
 				appLogsSession := cf.Cf("logs", "--recent", appName)
 				Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 				return appLogsSession
-			}, CF_TIMEOUT_IN_SECONDS * 5).Should(Say(`\[App/0\]`))
+			}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[App/0\]`))
 		})
 	})
 })
-

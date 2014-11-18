@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
+	smoke ".."
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/runner"
-	smoke ".."
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
