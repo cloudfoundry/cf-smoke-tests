@@ -33,7 +33,7 @@ var _ = Describe("Runtime:", func() {
 	})
 
 	AfterEach(func() {
-		Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 	})
 
 	It("can be pushed, scaled and deleted", func() {
