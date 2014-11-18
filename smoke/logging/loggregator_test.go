@@ -27,7 +27,7 @@ var _ = Describe("Loggregator:", func() {
 
 		AfterEach(func() {
 			if !useExistingApp {
-				Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+				Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 			}
 		})
 
