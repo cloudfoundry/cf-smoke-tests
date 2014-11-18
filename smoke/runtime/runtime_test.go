@@ -50,7 +50,7 @@ var _ = Describe("Runtime:", func() {
 
 		ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
 
-		Expect(cf.Cf("delete", appName, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		Eventually(func() *Session {
 			appStatusSession := cf.Cf("app", appName)
