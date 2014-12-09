@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/ginkgo/testrunner"
 	"github.com/onsi/ginkgo/ginkgo/testsuite"
 	"github.com/onsi/ginkgo/ginkgo/watch"
 )
@@ -13,11 +14,12 @@ import (
 func BuildWatchCommand() *Command {
 	commandFlags := NewWatchCommandFlags(flag.NewFlagSet("watch", flag.ExitOnError))
 	interruptHandler := NewInterruptHandler()
+	notifier := NewNotifier(commandFlags)
 	watcher := &SpecWatcher{
 		commandFlags:     commandFlags,
-		notifier:         NewNotifier(commandFlags),
+		notifier:         notifier,
 		interruptHandler: interruptHandler,
-		suiteRunner:      NewSuiteRunner(NewNotifier(commandFlags), commandFlags, interruptHandler),
+		suiteRunner:      NewSuiteRunner(notifier, interruptHandler),
 	}
 
 	return &Command{
@@ -37,7 +39,7 @@ func BuildWatchCommand() *Command {
 }
 
 type SpecWatcher struct {
-	commandFlags     *RunAndWatchCommandFlags
+	commandFlags     *RunWatchAndBuildCommandFlags
 	notifier         *Notifier
 	interruptHandler *InterruptHandler
 	suiteRunner      *SuiteRunner
@@ -50,11 +52,19 @@ func (w *SpecWatcher) WatchSpecs(args []string, additionalArgs []string) {
 	w.WatchSuites(args, additionalArgs)
 }
 
-func (w *SpecWatcher) WatchSuites(args []string, additionalArgs []string) {
-	suites, _ := findSuites(args, w.commandFlags.Recurse, w.commandFlags.SkipPackage)
-	if len(suites) == 1 {
-		w.suiteRunner.RunSuites(suites, additionalArgs, true, nil)
+func (w *SpecWatcher) runnersForSuites(suites []testsuite.TestSuite, additionalArgs []string) []*testrunner.TestRunner {
+	runners := []*testrunner.TestRunner{}
+
+	for _, suite := range suites {
+		runners = append(runners, testrunner.New(suite, w.commandFlags.NumCPU, w.commandFlags.ParallelStream, w.commandFlags.Race, w.commandFlags.Cover, w.commandFlags.Tags, additionalArgs))
 	}
+
+	return runners
+}
+
+func (w *SpecWatcher) WatchSuites(args []string, additionalArgs []string) {
+	suites, _ := findSuites(args, w.commandFlags.Recurse, w.commandFlags.SkipPackage, false)
+
 	if len(suites) == 0 {
 		complainAndQuit("Found no test suites")
 	}
@@ -72,12 +82,18 @@ func (w *SpecWatcher) WatchSuites(args []string, additionalArgs []string) {
 		fmt.Printf("Failed to watch %s: %s\n"+suite.PackageName, err)
 	}
 
+	if len(suites) == 1 {
+		runners := w.runnersForSuites(suites, additionalArgs)
+		w.suiteRunner.RunSuites(runners, w.commandFlags.NumCompilers, true, nil)
+		runners[0].CleanUp()
+	}
+
 	ticker := time.NewTicker(time.Second)
 
 	for {
 		select {
 		case <-ticker.C:
-			suites, _ := findSuites(args, w.commandFlags.Recurse, w.commandFlags.SkipPackage)
+			suites, _ := findSuites(args, w.commandFlags.Recurse, w.commandFlags.SkipPackage, false)
 			delta, _ := deltaTracker.Delta(suites)
 
 			suitesToRun := []testsuite.TestSuite{}
@@ -107,9 +123,13 @@ func (w *SpecWatcher) WatchSuites(args []string, additionalArgs []string) {
 			if len(suitesToRun) > 0 {
 				w.UpdateSeed()
 				w.ComputeSuccinctMode(len(suitesToRun))
-				result, _ := w.suiteRunner.RunSuites(suitesToRun, additionalArgs, true, func(suite testsuite.TestSuite) {
+				runners := w.runnersForSuites(suitesToRun, additionalArgs)
+				result, _ := w.suiteRunner.RunSuites(runners, w.commandFlags.NumCompilers, true, func(suite testsuite.TestSuite) {
 					deltaTracker.WillRun(suite)
 				})
+				for _, runner := range runners {
+					runner.CleanUp()
+				}
 				if !w.interruptHandler.WasInterrupted() {
 					color := redColor
 					if result.Passed {

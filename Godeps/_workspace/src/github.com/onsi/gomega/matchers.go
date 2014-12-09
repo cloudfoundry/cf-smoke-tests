@@ -49,6 +49,21 @@ func HaveOccurred() types.GomegaMatcher {
 	return &matchers.HaveOccurredMatcher{}
 }
 
+//Succeed passes if actual is a nil error
+//Succeed is intended to be used with functions that return a single error value. Instead of
+//    err := SomethingThatMightFail()
+//    Ω(err).ShouldNot(HaveOccurred())
+//
+//You can write:
+//    Ω(SomethingThatMightFail()).Should(Succeed())
+//
+//It is a mistake to use Succeed with a function that has multiple return values.  Gomega's Ω and Expect
+//functions automatically trigger failure if any return values after the first return value are non-zero/non-nil.
+//This means that Ω(MultiReturnFunc()).ShouldNot(Succeed()) can never pass.
+func Succeed() types.GomegaMatcher {
+	return &matchers.SucceedMatcher{}
+}
+
 //MatchError succeeds if actual is a non-nil error that matches the passed in string/error.
 //
 //These are valid use-cases:
@@ -77,14 +92,14 @@ func BeClosed() types.GomegaMatcher {
 	return &matchers.BeClosedMatcher{}
 }
 
-//Receive succeeds if there is a message to be received on actual.
+//Receive succeeds if there is a value to be received on actual.
 //Actual must be a channel (and cannot be a send-only channel) -- anything else is an error.
 //
 //Receive returns immediately and never blocks:
 //
 //- If there is nothing on the channel `c` then Ω(c).Should(Receive()) will fail and Ω(c).ShouldNot(Receive()) will pass.
 //
-//- If the channel `c` is closed then *both* Ω(c).Should(Receive()) and Ω(c).ShouldNot(Receive()) will error.
+//- If the channel `c` is closed then Ω(c).Should(Receive()) will fail and Ω(c).ShouldNot(Receive()) will pass.
 //
 //- If there is something on the channel `c` ready to be read, then Ω(c).Should(Receive()) will pass and Ω(c).ShouldNot(Receive()) will fail.
 //
@@ -123,6 +138,24 @@ func Receive(args ...interface{}) types.GomegaMatcher {
 	}
 }
 
+//BeSent succeeds if a value can be sent to actual.
+//Actual must be a channel (and cannot be a receive-only channel) that can sent the type of the value passed into BeSent -- anything else is an error.
+//In addition, actual must not be closed.
+//
+//BeSent never blocks:
+//
+//- If the channel `c` is not ready to receive then Ω(c).Should(BeSent("foo")) will fail immediately
+//- If the channel `c` is eventually ready to receive then Eventually(c).Should(BeSent("foo")) will succeed.. presuming the channel becomes ready to receive  before Eventually's timeout
+//- If the channel `c` is closed then Ω(c).Should(BeSent("foo")) and Ω(c).ShouldNot(BeSent("foo")) will both fail immediately
+//
+//Of course, the value is actually sent to the channel.  The point of `BeSent` is less to make an assertion about the availability of the channel (which is typically an implementation detail that your test should not be concerned with).
+//Rather, the point of `BeSent` is to make it possible to easily and expressively write tests that can timeout on blocked channel sends.
+func BeSent(arg interface{}) types.GomegaMatcher {
+	return &matchers.BeSentMatcher{
+		Arg: arg,
+	}
+}
+
 //MatchRegexp succeeds if actual is a string or stringer that matches the
 //passed-in regexp.  Optional arguments can be provided to construct a regexp
 //via fmt.Sprintf().
@@ -139,6 +172,26 @@ func MatchRegexp(regexp string, args ...interface{}) types.GomegaMatcher {
 func ContainSubstring(substr string, args ...interface{}) types.GomegaMatcher {
 	return &matchers.ContainSubstringMatcher{
 		Substr: substr,
+		Args:   args,
+	}
+}
+
+//HavePrefix succeeds if actual is a string or stringer that contains the
+//passed-in string as a prefix.  Optional arguments can be provided to construct
+//via fmt.Sprintf().
+func HavePrefix(prefix string, args ...interface{}) types.GomegaMatcher {
+	return &matchers.HavePrefixMatcher{
+		Prefix: prefix,
+		Args:   args,
+	}
+}
+
+//HaveSuffix succeeds if actual is a string or stringer that contains the
+//passed-in string as a suffix.  Optional arguments can be provided to construct
+//via fmt.Sprintf().
+func HaveSuffix(suffix string, args ...interface{}) types.GomegaMatcher {
+	return &matchers.HaveSuffixMatcher{
+		Suffix: suffix,
 		Args:   args,
 	}
 }
@@ -197,15 +250,6 @@ func ContainElement(element interface{}) types.GomegaMatcher {
 //    Ω([]string{"Foo", "FooBar"}).Should(ConsistOf([]string{"FooBar", "Foo"}))
 //
 //Note that Go's type system does not allow you to write this as ConsistOf([]string{"FooBar", "Foo"}...) as []string and []interface{} are different types - hence the need for this special rule.
-//When using `ConsistOf` with custom matchers you should be wary of cases where a matcher is under-specified and may match *more* than the element it is intended to match.  Consider this example:
-//
-//     Ω([]string{"Foo", "FooBar"}).ShouldConsistOf(ContainSubstring("Foo"), ContainSubstring("Bar"))
-//
-// will pass, but:
-//
-//     Ω([]string{"FooBar", "Foo"}).ShouldConsistOf(ContainSubstring("Foo"), ContainSubstring("Bar"))
-//
-// will fail as the first `ContainSubstring` matcher will greedily match the `"FooBar"` leaving nothing for the second `ContainSubstring` matcher to match against.
 
 func ConsistOf(elements ...interface{}) types.GomegaMatcher {
 	return &matchers.ConsistOfMatcher{
