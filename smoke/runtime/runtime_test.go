@@ -98,7 +98,7 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 		if found {
 			break
 		}
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 	}
 
 	Expect(found).To(BeTrue(), fmt.Sprintf("Wanted to see all instances running in %d attempts, but didn't", expectedOutput, maxAttempts))
