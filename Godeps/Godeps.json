@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/cloudfoundry-incubator/cf-smoke-tests",
+	"ImportPath": "github.com/cloudfoundry/cf-smoke-tests",
 	"GoVersion": "go1.3",
 	"Packages": [
 		"./..."
