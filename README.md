@@ -63,6 +63,7 @@ Below is an example `integration_config.json`:
   "password"           : "admin",
   "org"                : "CF-SMOKE-ORG",
   "space"              : "CF-SMOKE-SPACE",
+  "cleanup"            : true,
   "use_existing_org"   : false,
   "use_existing_space" : false,
   "logging_app"        : "",
@@ -79,6 +80,15 @@ add
 ```
 
 to your `integration_config.json` as well.
+
+If you would like to preserve the organization, space, and app created during the
+tests for debugging, add
+
+```
+  "cleanup": false
+```
+
+to your `integration_config.json`
 
 ### Test Execution
 

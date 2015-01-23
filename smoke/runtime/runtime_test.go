@@ -33,7 +33,9 @@ var _ = Describe("Runtime:", func() {
 	})
 
 	AfterEach(func() {
-		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		if testConfig.Cleanup {
+			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		}
 	})
 
 	It("can be pushed, scaled and deleted", func() {
@@ -54,21 +56,23 @@ var _ = Describe("Runtime:", func() {
 
 		ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
 
-		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		if testConfig.Cleanup {
+			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
-		Eventually(func() *Session {
-			appStatusSession := cf.Cf("app", appName)
-			Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
-			return appStatusSession
-		}, 5).Should(Say("not found"))
+			Eventually(func() *Session {
+				appStatusSession := cf.Cf("app", appName)
+				Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
+				return appStatusSession
+			}, 5).Should(Say("not found"))
 
-		Eventually(func() *Session {
-			if testConfig.SkipSSLValidation {
-				return runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-			} else {
-				return runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-			}
-		}, 5).Should(Say("404"))
+			Eventually(func() *Session {
+				if testConfig.SkipSSLValidation {
+					return runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+				} else {
+					return runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+				}
+			}, 5).Should(Say("404"))
+		}
 	})
 })
 

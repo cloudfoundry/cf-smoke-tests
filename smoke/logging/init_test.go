@@ -72,11 +72,11 @@ func TestSmokeTests(t *testing.T) {
 	})
 
 	AfterEach(func() {
-		if !testConfig.UseExistingSpace {
+		if testConfig.Cleanup && !testConfig.UseExistingSpace {
 			Expect(cf.Cf("delete-space", testConfig.Space, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
-		if !testConfig.UseExistingOrg {
+		if testConfig.Cleanup && !testConfig.UseExistingOrg {
 			Expect(cf.Cf("delete-org", testConfig.Org, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 			Expect(cf.Cf("delete-quota", quotaName(testConfig.Org), "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}

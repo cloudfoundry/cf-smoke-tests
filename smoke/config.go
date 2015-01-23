@@ -31,6 +31,8 @@ type Config struct {
 
 	SyslogDrainPort int    `json:"syslog_drain_port"`
 	SyslogIpAddress string `json:"syslog_ip_address"`
+
+	Cleanup bool `json:"cleanup"`
 }
 
 // singleton cache
@@ -55,6 +57,7 @@ func newDefaultConfig() *Config {
 		ArtifactsDirectory: filepath.Join("..", "results"),
 		UseExistingOrg:     false,
 		UseExistingSpace:   false,
+		Cleanup:			true,
 	}
 }
 
