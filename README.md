@@ -144,4 +144,4 @@ Smoke Tests use [godep](https://github.com/tools/godep) to manage `go` dependenc
 All `go` packages required to run smoke tests are vendored into the `cf-smoke-tests/Godeps` directory.
 
 When making changes to the test suite that bring in additional `go` packages, you should use the workflow described in the
-[Add or Update a Dependency](https://github.com/tools/godep#add-or-update-a-dependency) section of the godep documentation.
+[Add or Update a Dependency](https://github.com/tools/godep#add-a-dependency) section of the godep documentation.
