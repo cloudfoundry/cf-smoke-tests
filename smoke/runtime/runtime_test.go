@@ -113,7 +113,7 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	Expect(found).To(BeTrue(), fmt.Sprintf("Wanted to see all instances running in %d attempts, but didn't", expectedOutput, maxAttempts))
+	Expect(found).To(BeTrue(), fmt.Sprintf("Wanted to see '%s' (all instances running) in %d attempts, but didn't", expectedOutput, maxAttempts))
 }
 
 // Curls the appUrl (up to maxAttempts) until all instances have been seen
