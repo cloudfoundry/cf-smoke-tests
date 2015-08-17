@@ -21,7 +21,7 @@ var _ = Describe("Loggregator:", func() {
 			appName = testConfig.LoggingApp
 			if !useExistingApp {
 				appName = generator.RandomName()
-				Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+				Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 			}
 		})
 

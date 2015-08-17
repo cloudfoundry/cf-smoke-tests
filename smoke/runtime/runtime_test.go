@@ -39,7 +39,7 @@ var _ = Describe("Runtime:", func() {
 	})
 
 	It("can be pushed, scaled and deleted", func() {
-		Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		if testConfig.SkipSSLValidation {
 			Expect(runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
