@@ -57,8 +57,8 @@ Below is an example `integration_config.json`:
 ```json
 {
   "suite_name"         : "CF_SMOKE_TESTS",
-  "api"                : "api.10.244.0.34.xip.io",
-  "apps_domain"        : "10.244.0.34.xip.io",
+  "api"                : "api.bosh-lite.com",
+  "apps_domain"        : "bosh-lite.com",
   "user"               : "admin",
   "password"           : "admin",
   "org"                : "CF-SMOKE-ORG",
