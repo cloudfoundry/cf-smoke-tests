@@ -20,6 +20,8 @@ import (
 const (
 	SIMPLE_RUBY_APP_BITS_PATH = "../../assets/ruby_simple"
 
+	SIMPLE_DOTNET_APP_BITS_PATH = "../../assets/dotnet_simple/Published"
+
 	CF_API_TIMEOUT_OVERRIDE = 1 * time.Minute
 
 	// timeout for most cf cli calls

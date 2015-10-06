@@ -33,6 +33,8 @@ type Config struct {
 	SyslogIpAddress string `json:"syslog_ip_address"`
 
 	Cleanup bool `json:"cleanup"`
+
+	EnableWindowsTests bool `json:"enable_windows_tests"`
 }
 
 // singleton cache
@@ -57,7 +59,8 @@ func newDefaultConfig() *Config {
 		ArtifactsDirectory: filepath.Join("..", "results"),
 		UseExistingOrg:     false,
 		UseExistingSpace:   false,
-		Cleanup:			true,
+		Cleanup:            true,
+		EnableWindowsTests: false,
 	}
 }
 

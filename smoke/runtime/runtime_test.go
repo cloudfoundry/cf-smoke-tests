@@ -38,43 +38,61 @@ var _ = Describe("Runtime:", func() {
 		}
 	})
 
-	It("can be pushed, scaled and deleted", func() {
-		Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+	Context("linux apps", func() {
+		It("can be pushed, scaled and deleted", func() {
+			Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
-		if testConfig.SkipSSLValidation {
-			Expect(runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
-		} else {
-			Expect(runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
-		}
+			runPushTests(appName, appUrl, testConfig)
+		})
+	})
 
-		instances := 2
-		maxAttempts := 30
+	Context("windows apps", func() {
+		It("can be pushed, scaled and deleted", func() {
+			smoke.SkipIfWindows(testConfig)
 
-		ExpectAppToScale(appName, instances)
+			Expect(cf.Cf("push", appName, "-p", SIMPLE_DOTNET_APP_BITS_PATH, "-d", testConfig.AppsDomain, "-s", "windows2012R2", "-b", "binary_buildpack", "--no-start").Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			smoke.EnableDiego(appName)
+			Expect(cf.Cf("start", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
-		ExpectAllAppInstancesToStart(appName, instances, maxAttempts)
-
-		ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
-
-		if testConfig.Cleanup {
-			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
-			Eventually(func() *Session {
-				appStatusSession := cf.Cf("app", appName)
-				Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
-				return appStatusSession
-			}, 5).Should(Say("not found"))
-
-			Eventually(func() *Session {
-				if testConfig.SkipSSLValidation {
-					return runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-				} else {
-					return runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-				}
-			}, 5).Should(Say("404"))
-		}
+			runPushTests(appName, appUrl, testConfig)
+		})
 	})
 })
+
+func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
+	if testConfig.SkipSSLValidation {
+		Expect(runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
+	} else {
+		Expect(runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
+	}
+
+	instances := 2
+	maxAttempts := 30
+
+	ExpectAppToScale(appName, instances)
+
+	ExpectAllAppInstancesToStart(appName, instances, maxAttempts)
+
+	ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
+
+	if testConfig.Cleanup {
+		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+
+		Eventually(func() *Session {
+			appStatusSession := cf.Cf("app", appName)
+			Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
+			return appStatusSession
+		}, 5).Should(Say("not found"))
+
+		Eventually(func() *Session {
+			if testConfig.SkipSSLValidation {
+				return runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+			} else {
+				return runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+			}
+		}, 5).Should(Say("404"))
+	}
+}
 
 func ExpectAppToScale(appName string, instances int) {
 	Expect(cf.Cf("scale", appName, "-i", strconv.Itoa(instances)).Wait(CF_SCALE_TIMEOUT_IN_SECONDS)).To(Exit(0))
@@ -118,7 +136,7 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 
 // Curls the appUrl (up to maxAttempts) until all instances have been seen
 func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempts int) {
-	matcher := regexp.MustCompile(`"instance_index":(\d+)`)
+	matcher := regexp.MustCompile(`instance[ _]index["]{0,1}:[ ]{0,1}(\d+)`)
 
 	branchesSeen := make([]bool, instances)
 	var sawAll bool
