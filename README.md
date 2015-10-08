@@ -90,7 +90,7 @@ tests for debugging, add
 If you have deployed Windows cells, add
 
 ```
-  "enable_windows_tests" : false
+  "enable_windows_tests" : true
 ```
 
 
