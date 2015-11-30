@@ -7,15 +7,15 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/cf",
-			"Rev": "28838aae6e8158e3695cf90e2f0ed2498b68ee1d"
+			"Rev": "fef024da8c06fb63045693ca7a1376a118854ad8"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/generator",
-			"Rev": "28838aae6e8158e3695cf90e2f0ed2498b68ee1d"
+			"Rev": "fef024da8c06fb63045693ca7a1376a118854ad8"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/runner",
-			"Rev": "28838aae6e8158e3695cf90e2f0ed2498b68ee1d"
+			"Rev": "fef024da8c06fb63045693ca7a1376a118854ad8"
 		},
 		{
 			"ImportPath": "github.com/nu7hatch/gouuid",
@@ -23,13 +23,13 @@
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",
-			"Comment": "v1.2.0-14-g1b59c57",
-			"Rev": "1b59c57df76ede42c08590546916e6a18685857d"
+			"Comment": "v1.2.0-25-ga06d064",
+			"Rev": "a06d064ed0aadd8eb066e2752b22eaafa76fdbef"
 		},
 		{
 			"ImportPath": "github.com/onsi/gomega",
-			"Comment": "v1.0-23-g2cd6d99",
-			"Rev": "2cd6d99ccf3ac7ae8398d8296429161bf7061ae2"
+			"Comment": "v1.0-71-g2152b45",
+			"Rev": "2152b45fa28a361beba9aab0885972323a444e28"
 		}
 	]
 }
