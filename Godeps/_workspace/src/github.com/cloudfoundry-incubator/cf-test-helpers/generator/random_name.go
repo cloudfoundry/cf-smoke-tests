@@ -12,7 +12,3 @@ func RandomName() string {
 
 	return guid.String()
 }
-
-func PrefixedRandomName(namePrefix string) string {
-	return namePrefix + RandomName()
-}
