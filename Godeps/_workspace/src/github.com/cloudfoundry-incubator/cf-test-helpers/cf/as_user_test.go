@@ -3,6 +3,7 @@ package cf_test
 import (
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	. "github.com/onsi/ginkgo"
@@ -11,40 +12,60 @@ import (
 )
 
 var _ = Describe("AsUser", func() {
-	var FakeThingsToRunAsUser = func() {}
-	var FakeCfCalls = [][]string{}
+	var (
+		timeout               = 1 * time.Second
+		FakeThingsToRunAsUser = func() {}
+		FakeCfCalls           = [][]string{}
+		FakeCfAuthCalls       = [][]string{}
+	)
 
 	var FakeCf = func(args ...string) *gexec.Session {
 		FakeCfCalls = append(FakeCfCalls, args)
 		var session, _ = gexec.Start(exec.Command("echo", "nothing"), nil, nil)
 		return session
 	}
+
+	var FakeCfAuth = func(user, password string) *gexec.Session {
+		FakeCfAuthCalls = append(FakeCfAuthCalls, []string{user, password})
+		var session, _ = gexec.Start(exec.Command("echo", "nothing"), nil, nil)
+		return session
+	}
+	var oldCfAuth func(string, string) *gexec.Session
 	var user cf.UserContext
 
 	BeforeEach(func() {
 		FakeCfCalls = [][]string{}
+		FakeCfAuthCalls = [][]string{}
 		cf.Cf = FakeCf
+
+		oldCfAuth = cf.CfAuth
+		cf.CfAuth = FakeCfAuth
+
 		user = cf.NewUserContext("http://FAKE_API.example.com", "FAKE_USERNAME", "FAKE_PASSWORD", "FAKE_ORG", "FAKE_SPACE", true)
 	})
 
+	AfterEach(func() {
+		cf.CfAuth = oldCfAuth
+	})
+
 	It("calls cf api", func() {
-		cf.AsUser(user, FakeThingsToRunAsUser)
+		cf.AsUser(user, timeout, FakeThingsToRunAsUser)
 
 		Expect(FakeCfCalls[0]).To(Equal([]string{"api", "http://FAKE_API.example.com", "--skip-ssl-validation"}))
 	})
 
 	It("calls cf auth", func() {
-		cf.AsUser(user, FakeThingsToRunAsUser)
+		cf.AsUser(user, timeout, FakeThingsToRunAsUser)
 
-		Expect(FakeCfCalls[1]).To(Equal([]string{"auth", "FAKE_USERNAME", "FAKE_PASSWORD"}))
+		Expect(FakeCfAuthCalls[0]).To(Equal([]string{"FAKE_USERNAME", "FAKE_PASSWORD"}))
 	})
 
 	Describe("calling cf target", func() {
 		Context("when org is set and space is set", func() {
 			It("includes flags to set org and space", func() {
-				cf.AsUser(user, FakeThingsToRunAsUser)
+				cf.AsUser(user, timeout, FakeThingsToRunAsUser)
 
-				Expect(FakeCfCalls[2]).To(Equal([]string{"target", "-o", "FAKE_ORG", "-s", "FAKE_SPACE"}))
+				Expect(FakeCfCalls[1]).To(Equal([]string{"target", "-o", "FAKE_ORG", "-s", "FAKE_SPACE"}))
 			})
 		})
 
@@ -54,9 +75,9 @@ var _ = Describe("AsUser", func() {
 			})
 
 			It("includes a flag to set org but NOT for space", func() {
-				cf.AsUser(user, FakeThingsToRunAsUser)
+				cf.AsUser(user, timeout, FakeThingsToRunAsUser)
 
-				Expect(FakeCfCalls[2]).To(Equal([]string{"target", "-o", "FAKE_ORG"}))
+				Expect(FakeCfCalls[1]).To(Equal([]string{"target", "-o", "FAKE_ORG"}))
 			})
 		})
 
@@ -67,7 +88,7 @@ var _ = Describe("AsUser", func() {
 			})
 
 			It("does not call cf target", func() {
-				cf.AsUser(user, FakeThingsToRunAsUser)
+				cf.AsUser(user, timeout, FakeThingsToRunAsUser)
 
 				for _, call := range FakeCfCalls {
 					Expect(call).ToNot(ContainElement("target"))
@@ -81,7 +102,7 @@ var _ = Describe("AsUser", func() {
 			})
 
 			It("does not call cf target", func() {
-				cf.AsUser(user, FakeThingsToRunAsUser)
+				cf.AsUser(user, timeout, FakeThingsToRunAsUser)
 
 				for _, call := range FakeCfCalls {
 					Expect(call).ToNot(ContainElement("target"))
@@ -91,14 +112,14 @@ var _ = Describe("AsUser", func() {
 	})
 
 	It("calls cf logout", func() {
-		cf.AsUser(user, FakeThingsToRunAsUser)
+		cf.AsUser(user, timeout, FakeThingsToRunAsUser)
 
 		Expect(FakeCfCalls[len(FakeCfCalls)-1]).To(Equal([]string{"logout"}))
 	})
 
 	It("logs out even if actions contain a failing expectation", func() {
 		RegisterFailHandler(func(message string, callerSkip ...int) {})
-		cf.AsUser(user, func() { Expect(1).To(Equal(2)) })
+		cf.AsUser(user, timeout, func() { Expect(1).To(Equal(2)) })
 		RegisterFailHandler(Fail)
 
 		Expect(FakeCfCalls[len(FakeCfCalls)-1]).To(Equal([]string{"logout"}))
@@ -106,7 +127,7 @@ var _ = Describe("AsUser", func() {
 
 	It("calls the passed function", func() {
 		called := false
-		cf.AsUser(user, func() { called = true })
+		cf.AsUser(user, timeout, func() { called = true })
 
 		Expect(called).To(BeTrue())
 	})
@@ -117,11 +138,11 @@ var _ = Describe("AsUser", func() {
 			secondHome string
 		)
 
-		cf.AsUser(user, func() {
+		cf.AsUser(user, timeout, func() {
 			firstHome = os.Getenv("CF_HOME")
 		})
 
-		cf.AsUser(user, func() {
+		cf.AsUser(user, timeout, func() {
 			secondHome = os.Getenv("CF_HOME")
 		})
 
@@ -130,7 +151,7 @@ var _ = Describe("AsUser", func() {
 
 	It("returns CF_HOME to its original value", func() {
 		os.Setenv("CF_HOME", "some-crazy-value")
-		cf.AsUser(user, func() {})
+		cf.AsUser(user, timeout, func() {})
 
 		Expect(os.Getenv("CF_HOME")).To(Equal("some-crazy-value"))
 	})

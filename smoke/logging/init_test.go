@@ -22,7 +22,7 @@ const (
 
 	SIMPLE_DOTNET_APP_BITS_PATH = "../../assets/dotnet_simple/Published"
 
-	CF_API_TIMEOUT_OVERRIDE = 1 * time.Minute
+	CF_API_TIMEOUT = 1 * time.Minute
 
 	// timeout for most cf cli calls
 	CF_TIMEOUT_IN_SECONDS = 30
@@ -51,12 +51,10 @@ func TestSmokeTests(t *testing.T) {
 
 	RegisterFailHandler(Fail)
 
-	cf.CF_API_TIMEOUT = CF_API_TIMEOUT_OVERRIDE
-
 	var originalCfHomeDir, currentCfHomeDir string
 
 	BeforeEach(func() {
-		originalCfHomeDir, currentCfHomeDir = cf.InitiateUserContext(testUserContext)
+		originalCfHomeDir, currentCfHomeDir = cf.InitiateUserContext(testUserContext, CF_API_TIMEOUT)
 
 		if !testConfig.UseExistingOrg {
 			Expect(cf.Cf("create-quota", quotaName(testConfig.Org), "-m", "10G", "-r", "10", "-s", "2").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
@@ -83,7 +81,7 @@ func TestSmokeTests(t *testing.T) {
 			Expect(cf.Cf("delete-quota", quotaName(testConfig.Org), "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
 
-		cf.RestoreUserContext(testUserContext, originalCfHomeDir, currentCfHomeDir)
+		cf.RestoreUserContext(testUserContext, CF_API_TIMEOUT, originalCfHomeDir, currentCfHomeDir)
 	})
 
 	rs := []Reporter{}
