@@ -35,6 +35,8 @@ type Config struct {
 	Cleanup bool `json:"cleanup"`
 
 	EnableWindowsTests bool `json:"enable_windows_tests"`
+
+	RunOnDiego bool `json:"run_on_diego"`
 }
 
 // singleton cache
@@ -61,6 +63,7 @@ func newDefaultConfig() *Config {
 		UseExistingSpace:   false,
 		Cleanup:            true,
 		EnableWindowsTests: false,
+		RunOnDiego:         false,
 	}
 }
 

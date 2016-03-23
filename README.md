@@ -68,7 +68,8 @@ Below is an example `integration_config.json`:
   "use_existing_space"   : false,
   "logging_app"          : "",
   "runtime_app"          : "",
-  "enable_windows_tests" : false
+  "enable_windows_tests" : false,
+  "run_on_diego"         : false
 }
 ```
 
@@ -91,6 +92,12 @@ If you have deployed Windows cells, add
 
 ```
   "enable_windows_tests" : true
+```
+
+If you like to force use of diego, add
+
+```
+  "run_on_diego" : true
 ```
 
 

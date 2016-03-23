@@ -27,7 +27,13 @@ var _ = Describe("Loggregator:", func() {
 			BeforeEach(func() {
 				if !useExistingApp {
 					appName = generator.RandomName()
-					Expect(cf.Cf("push", appName, "-b", "ruby_buildpack", "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+					if !testConfig.RunOnDiego {
+						Expect(cf.Cf("push", appName, "-b", "ruby_buildpack", "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+					} else {
+						Expect(cf.Cf("push", appName, "-b", "ruby_buildpack", "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain, "--no-start").Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+						Expect(cf.Cf("enable-diego", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).Should(Exit(0))
+						Expect(cf.Cf("start", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+					}
 				}
 			})
 
