@@ -36,7 +36,7 @@ type Config struct {
 
 	EnableWindowsTests bool `json:"enable_windows_tests"`
 
-	RunOnDiego bool `json:"run_on_diego"`
+	Backend string `json:"backend"`
 }
 
 // singleton cache
@@ -63,7 +63,6 @@ func newDefaultConfig() *Config {
 		UseExistingSpace:   false,
 		Cleanup:            true,
 		EnableWindowsTests: false,
-		RunOnDiego:         false,
 	}
 }
 

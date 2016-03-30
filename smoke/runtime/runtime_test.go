@@ -40,13 +40,9 @@ var _ = Describe("Runtime:", func() {
 
 	Context("linux apps", func() {
 		It("can be pushed, scaled and deleted", func() {
-			if !testConfig.RunOnDiego {
-				Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			} else {
-				Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain, "--no-start").Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
-				Expect(cf.Cf("enable-diego", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).Should(Exit(0))
-				Expect(cf.Cf("start", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			}
+			Expect(cf.Cf("push", appName, "-p", SIMPLE_RUBY_APP_BITS_PATH, "-d", testConfig.AppsDomain, "--no-start").Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			smoke.SetBackend(appName)
+			Expect(cf.Cf("start", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 			runPushTests(appName, appUrl, testConfig)
 		})

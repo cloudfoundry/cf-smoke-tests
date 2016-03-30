@@ -69,7 +69,7 @@ Below is an example `integration_config.json`:
   "logging_app"          : "",
   "runtime_app"          : "",
   "enable_windows_tests" : false,
-  "run_on_diego"         : false
+  "backend"              : "diego"
 }
 ```
 
@@ -94,10 +94,10 @@ If you have deployed Windows cells, add
   "enable_windows_tests" : true
 ```
 
-If you like to force use of diego, add
+If you like to a specific backend, add (allowed diego, dea or empty (default))
 
 ```
-  "run_on_diego" : true
+  "backend" : "diego"
 ```
 
 
