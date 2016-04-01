@@ -35,6 +35,8 @@ type Config struct {
 	Cleanup bool `json:"cleanup"`
 
 	EnableWindowsTests bool `json:"enable_windows_tests"`
+
+	Backend string `json:"backend"`
 }
 
 // singleton cache

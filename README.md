@@ -68,7 +68,8 @@ Below is an example `integration_config.json`:
   "use_existing_space"   : false,
   "logging_app"          : "",
   "runtime_app"          : "",
-  "enable_windows_tests" : false
+  "enable_windows_tests" : false,
+  "backend"              : "diego"
 }
 ```
 
@@ -91,6 +92,12 @@ If you have deployed Windows cells, add
 
 ```
   "enable_windows_tests" : true
+```
+
+If you like to a specific backend, add (allowed diego, dea or empty (default))
+
+```
+  "backend" : "diego"
 ```
 
 
