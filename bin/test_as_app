@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+set -e
+
+check_param() {
+  local name=$1
+  local value=$(eval echo '$'$name)
+  if [ "$value" == '' ]; then
+    echo "environment variable $name must be set"
+    exit 1
+  fi
+}
+
+check_param CF_API
+check_param CF_USER
+check_param CF_PASS
+check_param CF_ORG
+check_param CF_SPACE
+check_param CF_APPS_DOMAIN
+check_param DATADOG_API_KEY
+check_param DEPLOYMENT
+SLEEPY_TIME=${SLEEPY_TIME:-300}
+
+cf_space_uniq=$(echo "${cf_space}_"$(date +%Y%m%dT%H%M%S%Z))
+
+DIR=$(dirname $0)
+
+export BUILDPATH=$(pwd)
+export GOPATH=${BUILDPATH}/go-path
+export GOROOT=${BUILDPATH}/go-lang
+export CFPATH=${BUILDPATH}/cf-cli
+
+mkdir -p $CFPATH
+cd $CFPATH
+wget  http://go-cli.s3-website-us-east-1.amazonaws.com/releases/v6.12.3/cf-linux-amd64.tgz
+tar xzf cf-linux-amd64.tgz
+cd ${BUILDPATH}
+
+wget https://storage.googleapis.com/golang/go1.4.linux-amd64.tar.gz
+tar xzf go1.4.linux-amd64.tar.gz
+mv go $GOROOT
+
+export PATH=$PATH:$CFPATH:$GOROOT/bin
+mkdir $GOPATH
+
+export CONFIG=$(pwd)/runtime-smoke-config.json
+
+tee $CONFIG <<EOF
+{
+  "suite_name": "RUNTIME-SMOKE",
+  "api": "${CF_API}",
+  "apps_domain": "${CF_APPS_DOMAIN}",
+  "skip_ssl_validation": true,
+  "user": "${CF_USER}",
+  "password": "${CF_PASS}",
+  "org": "${CF_ORG}",
+  "space": "${CF_SPACE}",
+  "use_existing_org": true,
+  "use_existing_space": false,
+  "syslog_drain_port": 12345,
+  "syslog_ip_address": "${syslog_ip_address}"
+}
+EOF
+
+cat $CONFIG
+
+loggregator_enabled=${loggregator_enabled:-0}
+if [[ "${loggregator_enabled}" == 0 ]]
+then
+  loggregator=""
+else
+  loggregator="--focus=Loggregator:"
+fi
+
+##
+# Largely copy-pasta from cloudfoundry/cf-release/src/smoke-test/bin/test<<#EOF
+local_gopath=$PWD/Godeps/_workspace
+
+mkdir -p $local_gopath/bin
+
+export GOPATH=$local_gopath:$GOPATH
+export PATH=$local_gopath/bin:$PATH
+
+go get github.com/onsi/ginkgo/ginkgo
+go get github.com/onsi/gomega
+
+$DIR/listen &
+
+while true; do
+  $DIR/test_and_datadog
+  sleep $SLEEPY_TIME
+done

@@ -2,3 +2,4 @@ integration_config.json
 .idea
 smoke.test
 results
+manifest.yml
