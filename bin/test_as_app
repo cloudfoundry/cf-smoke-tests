@@ -21,7 +21,7 @@ check_param DATADOG_API_KEY
 check_param DEPLOYMENT
 SLEEPY_TIME=${SLEEPY_TIME:-300}
 
-cf_space_uniq=$(echo "${cf_space}_"$(date +%Y%m%dT%H%M%S%Z))
+CF_SPACE_UNIQ=$(echo "${CF_SPACE}_"$(date +%Y%m%dT%H%M%S%Z))
 
 DIR=$(dirname $0)
 
@@ -54,7 +54,7 @@ tee $CONFIG <<EOF
   "user": "${CF_USER}",
   "password": "${CF_PASS}",
   "org": "${CF_ORG}",
-  "space": "${CF_SPACE}",
+  "space": "${CF_SPACE_UNIQ}",
   "use_existing_org": true,
   "use_existing_space": false,
   "syslog_drain_port": 12345,
