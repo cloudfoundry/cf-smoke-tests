@@ -156,3 +156,5 @@ All `go` packages required to run smoke tests are vendored into the `cf-smoke-te
 
 When making changes to the test suite that bring in additional `go` packages, you should use the workflow described in the
 [Add or Update a Dependency](https://github.com/tools/godep#add-a-dependency) section of the godep documentation.
+
+test
