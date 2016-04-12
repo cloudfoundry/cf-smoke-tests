@@ -12,14 +12,14 @@ import (
 )
 
 var _ = Describe("CfAuth", func() {
-	var callerOutuput *bytes.Buffer
+	var callerOutput *bytes.Buffer
 	var password string
 
 	BeforeEach(func() {
-		callerOutuput = bytes.NewBuffer([]byte{})
+		callerOutput = bytes.NewBuffer([]byte{})
 		password = "superSecretPassword"
 
-		GinkgoWriter = callerOutuput
+		GinkgoWriter = callerOutput
 	})
 
 	It("runs the cf auth command", func() {
@@ -50,7 +50,9 @@ var _ = Describe("CfAuth", func() {
 		}
 
 		cf.CfAuth(user, password).Wait()
-		Expect(callerOutuput.String()).NotTo(ContainSubstring(password))
-		Expect(callerOutuput.String()).To(ContainSubstring("REDACTED"))
+		Expect(callerOutput.String()).NotTo(ContainSubstring(password))
+		Expect(callerOutput.String()).NotTo(ContainSubstring("bash"))
+		Expect(callerOutput.String()).NotTo(ContainSubstring("echo"))
+		Expect(callerOutput.String()).To(ContainSubstring("REDACTED"))
 	})
 })

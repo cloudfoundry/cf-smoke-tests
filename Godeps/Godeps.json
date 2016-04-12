@@ -1,21 +1,22 @@
 {
 	"ImportPath": "github.com/cloudfoundry/cf-smoke-tests",
 	"GoVersion": "go1.3",
+	"GodepVersion": "v60",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/cf",
-			"Rev": "467b905ee8b01f5e4bb13a4e624146ee4904745a"
+			"Rev": "4efa2a7e4b4f4eda3f32d6b56b11d560b270a1a7"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/generator",
-			"Rev": "467b905ee8b01f5e4bb13a4e624146ee4904745a"
+			"Rev": "4efa2a7e4b4f4eda3f32d6b56b11d560b270a1a7"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/runner",
-			"Rev": "467b905ee8b01f5e4bb13a4e624146ee4904745a"
+			"Rev": "4efa2a7e4b4f4eda3f32d6b56b11d560b270a1a7"
 		},
 		{
 			"ImportPath": "github.com/nu7hatch/gouuid",

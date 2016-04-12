@@ -6,6 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gexec"
 
 	. "github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/runner"
@@ -20,6 +21,6 @@ var _ = Describe("Cf", func() {
 			return exec.Command("bash", "-c", `exit 42`)
 		}
 
-		runner.NewCmdWaiter(Cf("apps"), 1*time.Second).WithExitCode(42).Wait()
+		Eventually(Cf("apps"), 1*time.Second).Should(Exit(42))
 	})
 })
