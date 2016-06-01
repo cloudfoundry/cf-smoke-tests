@@ -53,7 +53,7 @@ func TestSmokeTests(t *testing.T) {
 
 	var originalCfHomeDir, currentCfHomeDir string
 
-	BeforeEach(func() {
+	SynchronizedBeforeSuite(func() []byte {
 		originalCfHomeDir, currentCfHomeDir = cf.InitiateUserContext(testUserContext, CF_API_TIMEOUT)
 
 		if !testConfig.UseExistingOrg {
@@ -69,9 +69,11 @@ func TestSmokeTests(t *testing.T) {
 		}
 
 		Expect(cf.Cf("target", "-s", testConfig.Space).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-	})
+		return []byte("")
+	}, func(data []byte) {})
 
-	AfterEach(func() {
+	SynchronizedAfterSuite(func() {
+	}, func() {
 		if testConfig.Cleanup && !testConfig.UseExistingSpace {
 			Expect(cf.Cf("delete-space", testConfig.Space, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
