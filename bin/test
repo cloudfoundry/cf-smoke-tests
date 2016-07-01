@@ -15,5 +15,5 @@ export GOPATH=$local_gopath:$GOPATH
 export PATH=$local_gopath/bin:$PATH
 
 go install -v github.com/onsi/ginkgo/ginkgo
-ginkgo --noColor -r --succinct -slowSpecThreshold=300 "$@"
+ginkgo -r --succinct -slowSpecThreshold=300 "$@"
 
