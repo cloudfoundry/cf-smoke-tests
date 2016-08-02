@@ -33,6 +33,7 @@ var _ = Describe("Runtime:", func() {
 	})
 
 	AfterEach(func() {
+		smoke.AppReport(appName, CF_TIMEOUT_IN_SECONDS)
 		if testConfig.Cleanup {
 			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}

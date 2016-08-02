@@ -18,6 +18,7 @@ var _ = Describe("Loggregator:", func() {
 
 	Describe("cf logs", func() {
 		AfterEach(func() {
+			smoke.AppReport(appName, CF_TIMEOUT_IN_SECONDS)
 			if testConfig.Cleanup && !useExistingApp {
 				Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 			}

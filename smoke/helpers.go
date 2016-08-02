@@ -45,3 +45,8 @@ func SkipIfWindows(testConfig *Config) {
 		Skip("Windows tests are disabled")
 	}
 }
+
+func AppReport(appName string, timeout time.Duration) {
+	Eventually(cf.Cf("app", appName, "--guid"), timeout*time.Second).Should(Exit())
+	Eventually(cf.Cf("logs", appName, "--recent"), timeout*time.Second).Should(Exit())
+}
