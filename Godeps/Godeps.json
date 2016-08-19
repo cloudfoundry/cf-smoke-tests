@@ -19,6 +19,10 @@
 			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
 		},
 		{
+			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers",
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+		},
+		{
 			"ImportPath": "github.com/nu7hatch/gouuid",
 			"Rev": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
 		},
@@ -43,6 +47,18 @@
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
 			"Rev": "49c95bdc21843256fb6c4e0d370a05f24a0bf213"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/helpers",
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal",
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/helpers/internal",
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
 		}
 	]
 }
