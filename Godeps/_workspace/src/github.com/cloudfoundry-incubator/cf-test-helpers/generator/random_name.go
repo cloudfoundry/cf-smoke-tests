@@ -1,10 +1,13 @@
 package generator
 
 import (
+	"strconv"
+
 	uuid "github.com/nu7hatch/gouuid"
+	"github.com/onsi/ginkgo/config"
 )
 
-func RandomName() string {
+func randomName() string {
 	guid, err := uuid.NewV4()
 	if err != nil {
 		panic(err)
@@ -13,6 +16,6 @@ func RandomName() string {
 	return guid.String()
 }
 
-func PrefixedRandomName(namePrefix string) string {
-	return namePrefix + RandomName()
+func PrefixedRandomName(prefixName, resourceName string) string {
+	return prefixName + "-" + strconv.Itoa(config.GinkgoConfig.ParallelNode) + "-" + resourceName + "-" + randomName()
 }

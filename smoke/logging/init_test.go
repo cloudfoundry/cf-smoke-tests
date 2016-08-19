@@ -15,6 +15,7 @@ import (
 
 	smoke ".."
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
+	"github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers"
 )
 
 const (
@@ -40,7 +41,7 @@ const (
 func TestSmokeTests(t *testing.T) {
 	testConfig := smoke.GetConfig()
 
-	testUserContext := cf.NewUserContext(
+	testUserContext := workflowhelpers.NewUserContext(
 		testConfig.ApiEndpoint,
 		testConfig.User,
 		testConfig.Password,
@@ -54,7 +55,7 @@ func TestSmokeTests(t *testing.T) {
 	var originalCfHomeDir, currentCfHomeDir string
 
 	SynchronizedBeforeSuite(func() []byte {
-		originalCfHomeDir, currentCfHomeDir = cf.InitiateUserContext(testUserContext, CF_API_TIMEOUT)
+		originalCfHomeDir, currentCfHomeDir = workflowhelpers.InitiateUserContext(testUserContext, CF_API_TIMEOUT)
 
 		if !testConfig.UseExistingOrg {
 			Expect(cf.Cf("create-quota", quotaName(testConfig.Org), "-m", "10G", "-r", "10", "-s", "2").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
@@ -83,7 +84,7 @@ func TestSmokeTests(t *testing.T) {
 				Expect(cf.Cf("delete-quota", quotaName(testConfig.Org), "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 			}
 
-			cf.RestoreUserContext(testUserContext, CF_API_TIMEOUT, originalCfHomeDir, currentCfHomeDir)
+			workflowhelpers.RestoreUserContext(testUserContext, CF_API_TIMEOUT, originalCfHomeDir, currentCfHomeDir)
 		})
 
 	rs := []Reporter{}

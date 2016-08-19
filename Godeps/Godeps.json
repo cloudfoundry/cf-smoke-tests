@@ -1,22 +1,22 @@
 {
 	"ImportPath": "github.com/cloudfoundry/cf-smoke-tests",
 	"GoVersion": "go1.3",
-	"GodepVersion": "v60",
+	"GodepVersion": "v66",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/cf",
-			"Rev": "4efa2a7e4b4f4eda3f32d6b56b11d560b270a1a7"
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/generator",
-			"Rev": "4efa2a7e4b4f4eda3f32d6b56b11d560b270a1a7"
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
 		},
 		{
-			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/runner",
-			"Rev": "4efa2a7e4b4f4eda3f32d6b56b11d560b270a1a7"
+			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/commandstarter",
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
 		},
 		{
 			"ImportPath": "github.com/nu7hatch/gouuid",
@@ -31,6 +31,18 @@
 			"ImportPath": "github.com/onsi/gomega",
 			"Comment": "v1.0-71-g2152b45",
 			"Rev": "2152b45fa28a361beba9aab0885972323a444e28"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/cf/internal",
+			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "a646d33e2ee3172a661fc09bca23bb4889a41bc8"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "49c95bdc21843256fb6c4e0d370a05f24a0bf213"
 		}
 	]
 }

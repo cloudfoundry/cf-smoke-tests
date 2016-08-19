@@ -10,7 +10,7 @@ import (
 	smoke ".."
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/runner"
+	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -26,7 +26,7 @@ var _ = Describe("Runtime:", func() {
 	BeforeEach(func() {
 		appName = testConfig.RuntimeApp
 		if appName == "" {
-			appName = generator.RandomName()
+			appName = generator.PrefixedRandomName("SMOKES", "APP")
 		}
 
 		appUrl = "https://" + appName + "." + testConfig.AppsDomain
@@ -64,9 +64,9 @@ var _ = Describe("Runtime:", func() {
 
 func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
 	if testConfig.SkipSSLValidation {
-		Expect(runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
+		Expect(helpers.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
 	} else {
-		Expect(runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
+		Expect(helpers.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
 	}
 
 	instances := 2
@@ -89,9 +89,9 @@ func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
 
 		Eventually(func() *Session {
 			if testConfig.SkipSSLValidation {
-				return runner.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+				return helpers.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
 			} else {
-				return runner.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+				return helpers.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
 			}
 		}, 5).Should(Say("404"))
 	}
@@ -147,9 +147,9 @@ func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempt
 	var session *Session
 	for i := 0; i < maxAttempts; i++ {
 		if testConfig.SkipSSLValidation {
-			session = runner.Curl("-k", appUrl)
+			session = helpers.Curl("-k", appUrl)
 		} else {
-			session = runner.Curl(appUrl)
+			session = helpers.Curl(appUrl)
 		}
 		Expect(session.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
