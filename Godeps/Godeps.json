@@ -8,19 +8,19 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/cf",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/generator",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/commandstarter",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		},
 		{
 			"ImportPath": "github.com/nu7hatch/gouuid",
@@ -38,7 +38,7 @@
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/cf/internal",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		},
 		{
 			"ImportPath": "golang.org/x/sys/unix",
@@ -50,15 +50,19 @@
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/helpers",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/helpers/internal",
-			"Rev": "1920aa06f92075292aa99effebe72804cbfc6baf"
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry-incubator/cf-test-helpers/config",
+			"Rev": "339dcc394d741dadce3e0763067b12f13ce10259"
 		}
 	]
 }

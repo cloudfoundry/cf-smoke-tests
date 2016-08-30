@@ -10,14 +10,14 @@ import (
 	. "github.com/onsi/gomega/gexec"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
+	"github.com/cloudfoundry-incubator/cf-test-helpers/config"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
 )
 
 const RUNAWAY_QUOTA_MEM_LIMIT = "99999G"
 
 type ConfiguredContext struct {
-	config helpers.Config
+	config config.Config
 
 	shortTimeout time.Duration
 	longTimeout  time.Duration
@@ -43,7 +43,7 @@ type quotaDefinition struct {
 	NonBasicServicesAllowed bool
 }
 
-func NewContext(config helpers.Config) *ConfiguredContext {
+func NewContext(config config.Config) *ConfiguredContext {
 	node := ginkgoconfig.GinkgoConfig.ParallelNode
 	timeTag := time.Now().Format("2006_01_02-15h04m05.999s")
 
@@ -76,7 +76,7 @@ func NewContext(config helpers.Config) *ConfiguredContext {
 	}
 }
 
-func NewPersistentAppContext(config helpers.Config) *ConfiguredContext {
+func NewPersistentAppContext(config config.Config) *ConfiguredContext {
 	baseContext := NewContext(config)
 
 	baseContext.quotaDefinitionName = config.PersistentAppQuotaName
@@ -118,24 +118,24 @@ func (context *ConfiguredContext) Setup() {
 			args = append(args, "--allow-paid-service-plans")
 		}
 
-		Eventually(cf.Cf(args...), context.shortTimeout).Should(Exit(0))
+		EventuallyWithOffset(1, cf.Cf(args...), context.shortTimeout).Should(Exit(0))
 
 		if !context.config.UseExistingUser {
 			createUserCmd := cf.Cf("create-user", context.regularUserUsername, context.regularUserPassword)
-			Eventually(createUserCmd, context.shortTimeout).Should(Exit())
+			EventuallyWithOffset(1, createUserCmd, context.shortTimeout).Should(Exit())
 			if createUserCmd.ExitCode() != 0 {
-				Expect(createUserCmd.Out).To(Say("scim_resource_already_exists"))
+				ExpectWithOffset(1, createUserCmd.Out).To(Say("scim_resource_already_exists"))
 			}
 		}
 
-		Eventually(cf.Cf("create-org", context.organizationName), context.shortTimeout).Should(Exit(0))
-		Eventually(cf.Cf("set-quota", context.organizationName, definition.Name), context.shortTimeout).Should(Exit(0))
+		EventuallyWithOffset(1, cf.Cf("create-org", context.organizationName), context.shortTimeout).Should(Exit(0))
+		EventuallyWithOffset(1, cf.Cf("set-quota", context.organizationName, definition.Name), context.shortTimeout).Should(Exit(0))
 	})
 }
 
 func (context *ConfiguredContext) SetRunawayQuota() {
 	AsUser(context.AdminUserContext(), context.shortTimeout, func() {
-		Eventually(cf.Cf("update-quota", context.quotaDefinitionName, "-m", RUNAWAY_QUOTA_MEM_LIMIT, "-i=-1"), context.shortTimeout).Should(Exit(0))
+		EventuallyWithOffset(1, cf.Cf("update-quota", context.quotaDefinitionName, "-m", RUNAWAY_QUOTA_MEM_LIMIT, "-i=-1"), context.shortTimeout).Should(Exit(0))
 	})
 }
 
@@ -143,12 +143,12 @@ func (context *ConfiguredContext) Teardown() {
 	AsUser(context.AdminUserContext(), context.shortTimeout, func() {
 
 		if !context.config.ShouldKeepUser {
-			Eventually(cf.Cf("delete-user", "-f", context.regularUserUsername), context.shortTimeout).Should(Exit(0))
+			EventuallyWithOffset(1, cf.Cf("delete-user", "-f", context.regularUserUsername), context.shortTimeout).Should(Exit(0))
 		}
 
 		if !context.isPersistent {
-			Eventually(cf.Cf("delete-org", "-f", context.organizationName), context.shortTimeout).Should(Exit(0))
-			Eventually(cf.Cf("delete-quota", "-f", context.quotaDefinitionName), context.shortTimeout).Should(Exit(0))
+			EventuallyWithOffset(1, cf.Cf("delete-org", "-f", context.organizationName), context.shortTimeout).Should(Exit(0))
+			EventuallyWithOffset(1, cf.Cf("delete-quota", "-f", context.quotaDefinitionName), context.shortTimeout).Should(Exit(0))
 		}
 	})
 }

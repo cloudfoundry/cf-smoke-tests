@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
+	"github.com/cloudfoundry-incubator/cf-test-helpers/commandstarter"
+	"github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers/internal"
 	ginkgoconfig "github.com/onsi/ginkgo/config"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gexec"
@@ -39,7 +41,9 @@ func InitiateUserContext(userContext UserContext, timeout time.Duration) (origin
 	}
 
 	cf.Cf(cfSetApiArgs...).Wait(timeout)
-	cf.CfAuth(userContext.Username, userContext.Password).Wait(timeout)
+
+	cmdStarter := commandstarter.NewCommandStarter()
+	internal.CfAuth(userContext.Username, userContext.Password, cmdStarter).Wait(timeout)
 
 	return
 }
@@ -47,15 +51,15 @@ func InitiateUserContext(userContext UserContext, timeout time.Duration) (origin
 func TargetSpace(userContext UserContext, timeout time.Duration) {
 	if userContext.Org != "" {
 		if userContext.Space != "" {
-			Eventually(cf.Cf("target", "-o", userContext.Org, "-s", userContext.Space), timeout).Should(Exit(0))
+			EventuallyWithOffset(1, cf.Cf("target", "-o", userContext.Org, "-s", userContext.Space), timeout).Should(Exit(0))
 		} else {
-			Eventually(cf.Cf("target", "-o", userContext.Org), timeout).Should(Exit(0))
+			EventuallyWithOffset(1, cf.Cf("target", "-o", userContext.Org), timeout).Should(Exit(0))
 		}
 	}
 }
 
 func RestoreUserContext(_ UserContext, timeout time.Duration, originalCfHomeDir, currentCfHomeDir string) {
-	Eventually(cf.Cf("logout"), timeout).Should(Exit(0))
+	EventuallyWithOffset(1, cf.Cf("logout"), timeout).Should(Exit(0))
 	os.Setenv("CF_HOME", originalCfHomeDir)
 	os.RemoveAll(currentCfHomeDir)
 }

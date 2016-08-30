@@ -2,18 +2,18 @@ package helpers
 
 import (
 	"github.com/cloudfoundry-incubator/cf-test-helpers/commandstarter"
+	"github.com/cloudfoundry-incubator/cf-test-helpers/config"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers/internal"
 	"github.com/onsi/gomega/gexec"
 )
 
-var SkipSSLValidation bool
-
 func Curl(args ...string) *gexec.Session {
-	cmdStarter := runner.NewCommandStarter()
-	return helpersinternal.Curl(cmdStarter, args...)
+	cfg := config.LoadConfig()
+	cmdStarter := commandstarter.NewCommandStarter()
+	return helpersinternal.Curl(cmdStarter, cfg.SkipSSLValidation, args...)
 }
 
 func CurlSkipSSL(skip bool, args ...string) *gexec.Session {
-	cmdStarter := runner.NewCommandStarter()
-	return helpersinternal.CurlSkipSSL(cmdStarter, skip, args...)
+	cmdStarter := commandstarter.NewCommandStarter()
+	return helpersinternal.Curl(cmdStarter, skip, args...)
 }
