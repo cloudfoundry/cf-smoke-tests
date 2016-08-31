@@ -63,11 +63,7 @@ var _ = Describe("Runtime:", func() {
 })
 
 func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
-	if testConfig.SkipSSLValidation {
-		Expect(helpers.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
-	} else {
-		Expect(helpers.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
-	}
+	Expect(helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
 
 	instances := 2
 	maxAttempts := 30
@@ -88,11 +84,7 @@ func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
 		}, 5).Should(Say("not found"))
 
 		Eventually(func() *Session {
-			if testConfig.SkipSSLValidation {
-				return helpers.Curl("-k", appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-			} else {
-				return helpers.Curl(appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-			}
+			return helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
 		}, 5).Should(Say("404"))
 	}
 }
@@ -146,11 +138,7 @@ func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempt
 	var testConfig = smoke.GetConfig()
 	var session *Session
 	for i := 0; i < maxAttempts; i++ {
-		if testConfig.SkipSSLValidation {
-			session = helpers.Curl("-k", appUrl)
-		} else {
-			session = helpers.Curl(appUrl)
-		}
+		session = helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl)
 		Expect(session.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		output := string(session.Out.Contents())
