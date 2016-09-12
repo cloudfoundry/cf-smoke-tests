@@ -85,7 +85,7 @@ func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
 
 		Eventually(func() *Session {
 			return helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-		}, 5).Should(Say("404"))
+		}, 5).Should(Exit(22))
 	}
 }
 
