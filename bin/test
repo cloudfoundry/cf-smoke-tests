@@ -14,6 +14,6 @@ mkdir -p $local_gopath/bin
 export GOPATH=$local_gopath:$GOPATH
 export PATH=$local_gopath/bin:$PATH
 
-go install -v github.com/onsi/ginkgo/ginkgo
+go install -v github.com/cloudfoundry/cf-smoke-tests/vendor/github.com/onsi/ginkgo/ginkgo
 ginkgo -r --succinct -slowSpecThreshold=300 "$@"
 
