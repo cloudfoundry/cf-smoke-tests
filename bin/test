@@ -7,7 +7,7 @@ if ! which go 2>/dev/null; then
   exit 1
 fi
 
-local_gopath=$PWD/Godeps/_workspace
+local_gopath=$PWD/vendor
 
 mkdir -p $local_gopath/bin
 
