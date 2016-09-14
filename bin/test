@@ -2,18 +2,23 @@
 
 set -e -x
 
-if ! which go 2>/dev/null; then
+if ! command -v go >/dev/null 2>&1 ; then
   echo "Go is not installed."
   exit 1
 fi
 
-local_gopath=$PWD/vendor
+if [[ -z "$GOPATH" ]]; then
+  echo "GOPATH not specified"
+  exit 1
+fi
 
-mkdir -p $local_gopath/bin
+export PATH=$GOPATH/bin:$PATH
 
-export GOPATH=$local_gopath:$GOPATH
-export PATH=$local_gopath/bin:$PATH
+if ! command -v ginkgo >/dev/null 2>&1; then
+  mkdir -p $GOPATH/src/github.com/onsi
+  cp -R vendor/github.com/onsi/ginkgo $GOPATH/src/github.com/onsi/ginkgo
+  go install -v github.com/onsi/ginkgo/ginkgo
+fi
 
-go install -v github.com/cloudfoundry/cf-smoke-tests/vendor/github.com/onsi/ginkgo/ginkgo
 ginkgo -r --succinct -slowSpecThreshold=300 "$@"
 
