@@ -39,7 +39,7 @@ var _ = Describe("Loggregator:", func() {
 					appLogsSession := cf.Cf("logs", "--recent", appName)
 					Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 					return appLogsSession
-				}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[(App|APP)/0\]`))
+				}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[(App|APP).*/0\]`))
 			})
 		})
 
@@ -58,7 +58,7 @@ var _ = Describe("Loggregator:", func() {
 					appLogsSession := cf.Cf("logs", "--recent", appName)
 					Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 					return appLogsSession
-				}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[(App|APP)/0\]`))
+				}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[(App|APP).*/0\]`))
 			})
 		})
 	})
