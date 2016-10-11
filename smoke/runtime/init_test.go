@@ -75,6 +75,8 @@ func TestSmokeTests(t *testing.T) {
 
 	SynchronizedAfterSuite(func() {
 	}, func() {
+		smoke.TestResourcesSummary(testConfig)
+
 		if testConfig.Cleanup && !testConfig.UseExistingSpace {
 			Expect(cf.Cf("delete-space", testConfig.Space, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}

@@ -50,3 +50,8 @@ func AppReport(appName string, timeout time.Duration) {
 	Eventually(cf.Cf("app", appName, "--guid"), timeout*time.Second).Should(Exit())
 	Eventually(cf.Cf("logs", appName, "--recent"), timeout*time.Second).Should(Exit())
 }
+
+func TestResourcesSummary(testConfig *Config) {
+	Expect(cf.Cf("org", testConfig.Org, "--guid").Wait(DEFAULT_TIMEOUT)).To(Exit(0))
+	Expect(cf.Cf("space", testConfig.Space, "--guid").Wait(DEFAULT_TIMEOUT)).To(Exit(0))
+}
