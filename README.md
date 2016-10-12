@@ -18,6 +18,10 @@ development pipeline and not against production environments.
 
 ## Running the tests
 
+### Using the docker image
+`docker build .`
+`docker run -e "CONFIG_CONTENT=$(cat ../runtime-config.json)" <image_id>`
+
 ### Set up your `go` environment
 
 Set up your golang development environment, [per golang.org](http://golang.org/doc/install).
