@@ -41,10 +41,13 @@ github.com/cloudfoundry/cf-smoke-tests`. You will receive a warning "no
 buildable Go source files"; this can be ignored as there is no compilable go
 code in the package.
 
-All `go` dependencies required by the smoke tests are vendored in
-`cf-smoke-tests/Godeps`. The test script itself, `bin/test`, ensures that the
-vendored dependencies are available when executing the tests by prepending this
-directory to `$GOPATH`.
+This repository uses [gvt](https://github.com/FiloSottile/gvt) to manage `go` dependencies.
+
+All `go` dependencies required by cf-smoke-tests are vendored in the `vendor` directory.
+
+When making changes to the test suite that bring in additional `go` packages,
+you should use the workflow described in the
+[gvt documentation](https://github.com/FiloSottile/gvt#basic-usage).
 
 ### Test Setup
 
