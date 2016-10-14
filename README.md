@@ -41,14 +41,6 @@ github.com/cloudfoundry/cf-smoke-tests`. You will receive a warning "no
 buildable Go source files"; this can be ignored as there is no compilable go
 code in the package.
 
-This repository uses [gvt](https://github.com/FiloSottile/gvt) to manage `go` dependencies.
-
-All `go` dependencies required by cf-smoke-tests are vendored in the `vendor` directory.
-
-When making changes to the test suite that bring in additional `go` packages,
-you should use the workflow described in the
-[gvt documentation](https://github.com/FiloSottile/gvt#basic-usage).
-
 ### Test Setup
 
 To run the CF Smoke tests, you will need:
@@ -153,9 +145,10 @@ junit-Applications-1.xml
 
 ### Dependency Management
 
-Smoke Tests use [godep](https://github.com/tools/godep) to manage `go` dependencies.
+Smoke Tests use [gvt](https://github.com/FiloSottile/gvt) to manage `go` dependencies.
 
-All `go` packages required to run smoke tests are vendored into the `cf-smoke-tests/Godeps` directory.
+All `go` packages required to run smoke tests are vendored into the `vendor/` directory.
 
-When making changes to the test suite that bring in additional `go` packages, you should use the workflow described in the
-[Add or Update a Dependency](https://github.com/tools/godep#add-a-dependency) section of the godep documentation.
+When making changes to the test suite that bring in additional `go` packages,
+you should use the workflow described in the
+[gvt documentation](https://github.com/FiloSottile/gvt#basic-usage).
