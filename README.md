@@ -51,20 +51,22 @@ contains the application domain
 Below is an example `integration_config.json`:
 ```json
 {
-  "suite_name"           : "CF_SMOKE_TESTS",
-  "api"                  : "api.bosh-lite.com",
-  "apps_domain"          : "bosh-lite.com",
-  "user"                 : "admin",
-  "password"             : "admin",
-  "org"                  : "CF-SMOKE-ORG",
-  "space"                : "CF-SMOKE-SPACE",
-  "cleanup"              : true,
-  "use_existing_org"     : false,
-  "use_existing_space"   : false,
-  "logging_app"          : "",
-  "runtime_app"          : "",
-  "enable_windows_tests" : false,
-  "backend"              : "diego"
+  "suite_name"                      : "CF_SMOKE_TESTS",
+  "api"                             : "api.bosh-lite.com",
+  "apps_domain"                     : "bosh-lite.com",
+  "user"                            : "admin",
+  "password"                        : "admin",
+  "org"                             : "CF-SMOKE-ORG",
+  "space"                           : "CF-SMOKE-SPACE",
+  "cleanup"                         : true,
+  "use_existing_org"                : false,
+  "use_existing_space"              : false,
+  "logging_app"                     : "",
+  "runtime_app"                     : "",
+  "enable_windows_tests"            : false,
+  "enable_etcd_cluster_check_tests" : false,
+  "etcd_ip_address"                 : "",
+  "backend"                         : "diego"
 }
 ```
 
@@ -94,6 +96,8 @@ If you like to a specific backend, add (allowed diego, dea or empty (default))
 ```
   "backend" : "diego"
 ```
+
+If you like to validate the security of your etcd cluster, set `enable_etcd_cluster_check_tests` to true and provide the `etcd_ip_address` to be the least restrictive IP that your etcd cluster has (private if that is the only IP etcd has, public otherwise)
 
 
 ### Test Execution
