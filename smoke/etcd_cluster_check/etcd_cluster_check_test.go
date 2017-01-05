@@ -44,7 +44,9 @@ var _ = Describe("Etcd Cluster Check:", func() {
 			p.Add("path", "/v2/keys/foo")
 			p.Add("port", "4001")
 			p.Add("data", "value=updated_value")
-			Expect(helpers.CurlApp(appName, fmt.Sprintf("/put/?%s", p.Encode()))).Should(ContainSubstring("Connection refused"))
+			curlCmd := helpers.CurlSkipSSL(true, fmt.Sprintf("https://%s.%s/put/?%s", appName, testConfig.AppsDomain, p.Encode())).Wait(CF_TIMEOUT_IN_SECONDS)
+			Expect(curlCmd).To(Exit(0))
+			Expect(string(curlCmd.Out.Contents())).To(ContainSubstring("Connection refused"))
 		})
 
 		AfterEach(func() {
