@@ -22,6 +22,7 @@ var _ = Describe("Runtime:", func() {
 	var testConfig = smoke.GetConfig()
 	var appName string
 	var appUrl string
+	var expectedNullResponse string
 
 	BeforeEach(func() {
 		appName = testConfig.RuntimeApp
@@ -30,6 +31,9 @@ var _ = Describe("Runtime:", func() {
 		}
 
 		appUrl = "https://" + appName + "." + testConfig.AppsDomain
+
+		nullSession := helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
+		expectedNullResponse = string(nullSession.Buffer().Contents())
 	})
 
 	AfterEach(func() {
@@ -45,7 +49,7 @@ var _ = Describe("Runtime:", func() {
 			smoke.SetBackend(appName)
 			Expect(cf.Cf("start", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
-			runPushTests(appName, appUrl, testConfig)
+			runPushTests(appName, appUrl, expectedNullResponse, testConfig)
 		})
 	})
 
@@ -57,12 +61,12 @@ var _ = Describe("Runtime:", func() {
 			smoke.EnableDiego(appName)
 			Expect(cf.Cf("start", appName).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
-			runPushTests(appName, appUrl, testConfig)
+			runPushTests(appName, appUrl, expectedNullResponse, testConfig)
 		})
 	})
 })
 
-func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
+func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smoke.Config) {
 	Expect(helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
 
 	instances := 2
@@ -85,7 +89,7 @@ func runPushTests(appName, appUrl string, testConfig *smoke.Config) {
 
 		Eventually(func() *Session {
 			return helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-		}, 5).Should(Say("404"))
+		}, 5).Should(Say(expectedNullResponse))
 	}
 }
 
