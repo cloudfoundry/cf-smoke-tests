@@ -87,9 +87,9 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 			return appStatusSession
 		}, 5).Should(Say("not found"))
 
-		Eventually(func() *Session {
-			return helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-		}, 5).Should(Say(expectedNullResponse))
+		Eventually(func() string {
+			return string(helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS).Buffer().Contents())
+		}, 5).Should(ContainSubstring(string(expectedNullResponse)))
 	}
 }
 
