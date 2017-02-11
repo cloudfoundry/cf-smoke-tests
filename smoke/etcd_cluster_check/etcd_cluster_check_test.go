@@ -44,9 +44,10 @@ var _ = Describe("Etcd Cluster Check:", func() {
 			p.Add("path", "/v2/keys/foo")
 			p.Add("port", "4001")
 			p.Add("data", "value=updated_value")
-			curlCmd := helpers.CurlSkipSSL(true, fmt.Sprintf("https://%s.%s/put/?%s", appName, testConfig.AppsDomain, p.Encode())).Wait(CF_TIMEOUT_IN_SECONDS)
-			Expect(curlCmd).To(Exit(0))
-			Expect(string(curlCmd.Out.Contents())).To(ContainSubstring("Connection refused"))
+			curlCmd := helpers.CurlSkipSSL(true, fmt.Sprintf("https://%s.%s/put/?%s", appName, testConfig.AppsDomain, p.Encode()))
+			errorMsg := fmt.Sprintf("Connections from application containers to internal IP addresses such as etcd node <%s> were not rejected. Please review the documentation on Application Security Groups to disallow traffic from application containers to internal IP addresses: https://docs.cloudfoundry.org/adminguide/app-sec-groups.html", testConfig.EtcdIpAddress)
+			Eventually(curlCmd, CF_TIMEOUT_IN_SECONDS).Should(Exit(0), errorMsg)
+			Expect(string(curlCmd.Out.Contents())).To(ContainSubstring("Connection refused"), errorMsg)
 		})
 
 		AfterEach(func() {
