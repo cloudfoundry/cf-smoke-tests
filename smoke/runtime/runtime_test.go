@@ -1,7 +1,10 @@
 package runtime
 
 import (
+	"crypto/tls"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -9,7 +12,6 @@ import (
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
 
 	. "github.com/onsi/ginkgo"
@@ -32,8 +34,11 @@ var _ = Describe("Runtime:", func() {
 
 		appUrl = "https://" + appName + "." + testConfig.AppsDomain
 
-		nullSession := helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)
-		expectedNullResponse = string(nullSession.Buffer().Contents())
+		Eventually(func() error {
+			var err error
+			expectedNullResponse, err = curl(testConfig.SkipSSLValidation, appUrl)
+			return err
+		}, CF_TIMEOUT_IN_SECONDS).Should(BeNil())
 	})
 
 	AfterEach(func() {
@@ -67,7 +72,9 @@ var _ = Describe("Runtime:", func() {
 })
 
 func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smoke.Config) {
-	Expect(helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS)).To(Say("It just needed to be restarted!"))
+	Eventually(func() (string, error) {
+		return curl(testConfig.SkipSSLValidation, appUrl)
+	}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring("It just needed to be restarted!"))
 
 	instances := 2
 	maxAttempts := 30
@@ -87,9 +94,9 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 			return appStatusSession
 		}, 5).Should(Say("not found"))
 
-		Eventually(func() string {
-			return string(helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl).Wait(CF_TIMEOUT_IN_SECONDS).Buffer().Contents())
-		}, 5).Should(ContainSubstring(string(expectedNullResponse)))
+		Eventually(func() (string, error) {
+			return curl(testConfig.SkipSSLValidation, appUrl)
+		}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring(string(expectedNullResponse)))
 	}
 }
 
@@ -140,12 +147,13 @@ func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempt
 	branchesSeen := make([]bool, instances)
 	var sawAll bool
 	var testConfig = smoke.GetConfig()
-	var session *Session
 	for i := 0; i < maxAttempts; i++ {
-		session = helpers.CurlSkipSSL(testConfig.SkipSSLValidation, appUrl)
-		Expect(session.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
-		output := string(session.Out.Contents())
+		var output string
+		Eventually(func() error {
+			var err error
+			output, err = curl(testConfig.SkipSSLValidation, appUrl)
+			return err
+		}, CF_TIMEOUT_IN_SECONDS).Should(BeNil())
 
 		matches := matcher.FindStringSubmatch(output)
 		if matches == nil {
@@ -174,4 +182,24 @@ func allTrue(bools []bool) bool {
 		}
 	}
 	return true
+}
+
+func curl(skip bool, url string) (string, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: skip},
+	}
+	client := &http.Client{Transport: tr}
+	resp, err := client.Get(url)
+
+	if err != nil {
+		return "", err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
 }
