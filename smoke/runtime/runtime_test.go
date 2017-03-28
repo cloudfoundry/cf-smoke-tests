@@ -36,7 +36,7 @@ var _ = Describe("Runtime:", func() {
 
 		Eventually(func() error {
 			var err error
-			expectedNullResponse, err = curl(testConfig.SkipSSLValidation, appUrl)
+			expectedNullResponse, err = getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
 			return err
 		}, CF_TIMEOUT_IN_SECONDS).Should(BeNil())
 	})
@@ -73,7 +73,7 @@ var _ = Describe("Runtime:", func() {
 
 func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smoke.Config) {
 	Eventually(func() (string, error) {
-		return curl(testConfig.SkipSSLValidation, appUrl)
+		return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
 	}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring("It just needed to be restarted!"))
 
 	instances := 2
@@ -95,7 +95,7 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 		}, 5).Should(Say("not found"))
 
 		Eventually(func() (string, error) {
-			return curl(testConfig.SkipSSLValidation, appUrl)
+			return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
 		}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring(string(expectedNullResponse)))
 	}
 }
@@ -151,7 +151,7 @@ func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempt
 		var output string
 		Eventually(func() error {
 			var err error
-			output, err = curl(testConfig.SkipSSLValidation, appUrl)
+			output, err = getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
 			return err
 		}, CF_TIMEOUT_IN_SECONDS).Should(BeNil())
 
@@ -184,11 +184,11 @@ func allTrue(bools []bool) bool {
 	return true
 }
 
-func curl(skip bool, url string) (string, error) {
-	tr := &http.Transport{
+func getBodySkipSSL(skip bool, url string) (string, error) {
+	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: skip},
 	}
-	client := &http.Client{Transport: tr}
+	client := &http.Client{Transport: transport}
 	resp, err := client.Get(url)
 
 	if err != nil {
