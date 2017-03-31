@@ -9,6 +9,8 @@ import (
 type Config struct {
 	SuiteName string `json:"suite_name"`
 
+	Reporter string `json:"reporter"`
+
 	ApiEndpoint string `json:"api"`
 	AppsDomain  string `json:"apps_domain"`
 
