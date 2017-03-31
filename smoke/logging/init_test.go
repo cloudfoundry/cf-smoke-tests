@@ -96,6 +96,10 @@ func TestSmokeTests(t *testing.T) {
 		rs = append(rs, reporters.NewJUnitReporter(jUnitReportFilePath(testConfig)))
 	}
 
+	if testConfig.Reporter == "TeamCity" {
+		rs = append(rs, reporters.NewTeamCityReporter(GinkgoWriter))
+	}
+
 	RunSpecsWithDefaultAndCustomReporters(t, "CF-Logging-Smoke-Tests", rs)
 }
 
