@@ -20,5 +20,7 @@ if ! command -v ginkgo >/dev/null 2>&1; then
   go install -v github.com/onsi/ginkgo/ginkgo
 fi
 
+export CF_DIAL_TIMEOUT=11
+
 ginkgo -r --succinct -slowSpecThreshold=300 "$@"
 
