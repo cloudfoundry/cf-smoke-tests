@@ -15,7 +15,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
 )
 
@@ -86,12 +85,6 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 
 	if testConfig.Cleanup {
 		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
-		Eventually(func() *Session {
-			appStatusSession := cf.Cf("app", appName)
-			Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
-			return appStatusSession
-		}, 5).Should(Say("not found"))
 
 		Eventually(func() (string, error) {
 			return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
