@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
@@ -16,7 +15,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
 )
 
@@ -88,12 +86,6 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 	if testConfig.Cleanup {
 		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
-		Eventually(func() *Session {
-			appStatusSession := cf.Cf("app", appName)
-			Expect(appStatusSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(1))
-			return appStatusSession
-		}, 5).Should(Say("not found"))
-
 		Eventually(func() (string, error) {
 			return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
 		}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring(string(expectedNullResponse)))
@@ -107,7 +99,7 @@ func ExpectAppToScale(appName string, instances int) {
 // Gets app status (up to maxAttempts) until all instances are up
 func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int) {
 	var found bool
-	expectedOutput := fmt.Sprintf("instances: %d/%d", instances, instances)
+	expectedOutput := regexp.MustCompile(fmt.Sprintf(`instances:\s+%d/%d`, instances, instances))
 
 	outputMatchers := make([]*regexp.Regexp, instances)
 	for i := 0; i < instances; i++ {
@@ -119,7 +111,7 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 		Expect(session.Wait(CF_APP_STATUS_TIMEOUT_IN_SECONDS)).To(Exit(0))
 
 		output := string(session.Out.Contents())
-		found = strings.Contains(output, expectedOutput)
+		found = expectedOutput.MatchString(output)
 
 		if found {
 			for _, matcher := range outputMatchers {
