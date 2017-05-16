@@ -141,6 +141,15 @@ junit-Applications-1.xml
 ...
 ```
 
+## Running Smoke Tests as an app
+
+It is possible to run smoke tests as a CF app. Create a user that has permissions to create apps in a space, then run:
+
+```
+INSTANCE_COUNT=1 DATADOG_API_KEY=asdfasdf CF_USER=asdfasdf CF_PASS=asdfasdf CF_ORG=cf-smoke-tests-org CF_SPACE=cf-smoke-tests-as-an-app-wootsauce CF_API=https://api.asdfasdf.com CF_APPS_DOMAIN=run.asdfasdf.com DEPLOYMENT=asdfasdf-cf rake push
+
+```
+
 ## Changing Smoke Tests
 
 ### Dependency Management

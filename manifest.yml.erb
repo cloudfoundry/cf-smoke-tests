@@ -1,0 +1,18 @@
+---
+memory: 1024M
+disk_quota: 2047M
+instances: <%= ENV.fetch("INSTANCE_COUNT") %>
+applications:
+- name: cf-smoke-tests
+  buildpack: binary_buildpack
+  command: bin/test_as_app
+  no-route: true
+  env:
+    DATADOG_API_KEY: "<%= ENV.fetch("DATADOG_API_KEY") %>"
+    CF_API: "<%= ENV.fetch("CF_API") %>"
+    CF_USER: "<%= ENV.fetch("CF_USER") %>"
+    CF_PASS: "<%= ENV.fetch("CF_PASS") %>"
+    CF_ORG: "<%= ENV.fetch("CF_ORG") %>"
+    CF_SPACE: "<%= ENV.fetch("CF_SPACE") %>"
+    CF_APPS_DOMAIN: "<%= ENV.fetch("CF_APPS_DOMAIN") %>"
+    DEPLOYMENT: "<%= ENV.fetch("DEPLOYMENT") %>"
