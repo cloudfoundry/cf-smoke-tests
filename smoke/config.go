@@ -199,6 +199,11 @@ func loadConfigFromJson(config *Config) {
 	if err != nil {
 		panic(err)
 	}
+
+	if config.TimeoutScale == nil {
+		defaultTimeout := 1.0
+		config.TimeoutScale = &defaultTimeout
+	}
 }
 
 func configPath() string {
