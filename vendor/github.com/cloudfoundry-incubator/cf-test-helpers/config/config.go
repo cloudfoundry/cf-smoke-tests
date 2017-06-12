@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"reflect"
 	"time"
 )
 
@@ -24,6 +23,12 @@ type Config struct {
 
 	ConfigurableTestPassword string `json:"test_password"`
 
+	UseExistingOrganization bool   `json:"use_existing_organization"`
+	ExistingOrganization    string `json:"existing_organization"`
+
+	UseExistingSpace bool   `json:"use_existing_space"`
+	ExistingSpace    string `json:"existing_space"`
+
 	PersistentAppHost      string `json:"persistent_app_host"`
 	PersistentAppSpace     string `json:"persistent_app_space"`
 	PersistentAppOrg       string `json:"persistent_app_org"`
@@ -34,13 +39,13 @@ type Config struct {
 
 	ArtifactsDirectory string `json:"artifacts_directory"`
 
-	DefaultTimeout               time.Duration `json:"default_timeout"`
-	SleepTimeout                 time.Duration `json:"sleep_timeout"`
-	DetectTimeout                time.Duration `json:"detect_timeout"`
-	CfPushTimeout                time.Duration `json:"cf_push_timeout"`
-	LongCurlTimeout              time.Duration `json:"long_curl_timeout"`
-	BrokerStartTimeout           time.Duration `json:"broker_start_timeout"`
-	AsyncServiceOperationTimeout time.Duration `json:"async_service_operation_timeout"`
+	DefaultTimeout               int `json:"default_timeout"`
+	SleepTimeout                 int `json:"sleep_timeout"`
+	DetectTimeout                int `json:"detect_timeout"`
+	CfPushTimeout                int `json:"cf_push_timeout"`
+	LongCurlTimeout              int `json:"long_curl_timeout"`
+	BrokerStartTimeout           int `json:"broker_start_timeout"`
+	AsyncServiceOperationTimeout int `json:"async_service_operation_timeout"`
 
 	TimeoutScale float64 `json:"timeout_scale"`
 
@@ -108,63 +113,61 @@ var defaults = Config{
 	IncludeSsh:                 true,
 	IncludeV3:                  true,
 
+	DefaultTimeout:               30,
+	CfPushTimeout:                2,
+	LongCurlTimeout:              2,
+	BrokerStartTimeout:           5,
+	AsyncServiceOperationTimeout: 2,
+	DetectTimeout:                5,
+	SleepTimeout:                 30,
+
 	ArtifactsDirectory: filepath.Join("..", "results"),
 
 	NamePrefix: "CATS",
 }
 
-func (c Config) ScaledTimeout(timeout time.Duration) time.Duration {
+func (c Config) GetScaledTimeout(timeout time.Duration) time.Duration {
 	return time.Duration(float64(timeout) * c.TimeoutScale)
 }
 
 var loadedConfig *Config
 
-func Load(path string, config interface{}) error {
-	c, ok := config.(*Config)
-	if !ok {
-		val := reflect.ValueOf(config).Elem().FieldByName("Config").Addr()
-		c = val.Interface().(*Config)
-	}
-
-	*c = defaults
+func Load(path string, config *Config) error {
 	err := loadConfigFromPath(path, config)
 	if err != nil {
 		return err
 	}
 
-	if c.ApiEndpoint == "" {
+	if config.ApiEndpoint == "" {
 		return fmt.Errorf("missing configuration 'api'")
 	}
 
-	if c.AdminUser == "" {
+	if config.AdminUser == "" {
 		return fmt.Errorf("missing configuration 'admin_user'")
 	}
 
-	if c.AdminPassword == "" {
+	if config.AdminPassword == "" {
 		return fmt.Errorf("missing configuration 'admin_password'")
 	}
 
-	if c.TimeoutScale <= 0 {
-		c.TimeoutScale = 1.0
+	if config.TimeoutScale <= 0 {
+		config.TimeoutScale = 1.0
 	}
 
 	return nil
 }
 
-func LoadConfig() Config {
+func LoadConfig() *Config {
 	if loadedConfig != nil {
-		return *loadedConfig
+		return loadedConfig
 	}
 
-	var config Config
-
-	err := Load(ConfigPath(), &config)
+	loadedConfig = &defaults
+	err := Load(ConfigPath(), loadedConfig)
 	if err != nil {
 		panic(err)
 	}
-
-	loadedConfig = &config
-	return config
+	return loadedConfig
 }
 
 func (c Config) Protocol() string {
@@ -193,4 +196,105 @@ func ConfigPath() string {
 	}
 
 	return path
+}
+
+func (c *Config) DefaultTimeoutDuration() time.Duration {
+	return time.Duration(c.DefaultTimeout) * time.Second
+}
+func (c *Config) SleepTimeoutDuration() time.Duration {
+	return time.Duration(c.SleepTimeout) * time.Second
+}
+
+func (c *Config) DetectTimeoutDuration() time.Duration {
+	return time.Duration(c.DetectTimeout) * time.Minute
+}
+
+func (c *Config) CfPushTimeoutDuration() time.Duration {
+	return time.Duration(c.CfPushTimeout) * time.Minute
+}
+
+func (c *Config) LongCurlTimeoutDuration() time.Duration {
+	return time.Duration(c.LongCurlTimeout) * time.Minute
+}
+
+func (c *Config) BrokerStartTimeoutDuration() time.Duration {
+	return time.Duration(c.BrokerStartTimeout) * time.Minute
+}
+
+func (c *Config) AsyncServiceOperationTimeoutDuration() time.Duration {
+	return time.Duration(c.AsyncServiceOperationTimeout) * time.Minute
+}
+
+func (c *Config) GetAppsDomain() string {
+	return c.AppsDomain
+}
+
+func (c *Config) GetSkipSSLValidation() bool {
+	return c.SkipSSLValidation
+}
+
+func (c *Config) GetArtifactsDirectory() string {
+	return c.ArtifactsDirectory
+}
+
+func (c *Config) GetPersistentAppSpace() string {
+	return c.PersistentAppSpace
+}
+func (c *Config) GetPersistentAppOrg() string {
+	return c.PersistentAppOrg
+}
+func (c *Config) GetPersistentAppQuotaName() string {
+	return c.PersistentAppQuotaName
+}
+
+func (c *Config) GetNamePrefix() string {
+	return c.NamePrefix
+}
+
+func (c *Config) GetUseExistingUser() bool {
+	return c.UseExistingUser
+}
+
+func (c *Config) GetUseExistingSpace() bool {
+	return c.UseExistingSpace
+}
+
+func (c *Config) GetExistingUser() string {
+	return c.ExistingUser
+}
+
+func (c *Config) GetExistingUserPassword() string {
+	return c.ExistingUserPassword
+}
+
+func (c *Config) GetConfigurableTestPassword() string {
+	return c.ConfigurableTestPassword
+}
+
+func (c *Config) GetShouldKeepUser() bool {
+	return c.ShouldKeepUser
+}
+
+func (c *Config) GetAdminUser() string {
+	return c.AdminUser
+}
+
+func (c *Config) GetAdminPassword() string {
+	return c.AdminPassword
+}
+
+func (c *Config) GetUseExistingOrganization() bool {
+	return c.UseExistingOrganization
+}
+
+func (c *Config) GetExistingOrganization() string {
+	return c.ExistingOrganization
+}
+
+func (c *Config) GetExistingSpace() string {
+	return c.ExistingSpace
+}
+
+func (c *Config) GetApiEndpoint() string {
+	return c.ApiEndpoint
 }
