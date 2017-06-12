@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type Config struct {
@@ -42,6 +43,80 @@ type Config struct {
 	EtcdIpAddress string `json:"etcd_ip_address"`
 
 	Backend string `json:"backend"`
+
+	TimeoutScale *float64 `json:"timeout_scale"`
+}
+
+func (c *Config) GetApiEndpoint() string {
+	return c.ApiEndpoint
+}
+
+func (c *Config) GetConfigurableTestPassword() string {
+	return c.Password
+}
+
+func (c *Config) GetPersistentAppOrg() string {
+	return ""
+}
+
+func (c *Config) GetPersistentAppQuotaName() string {
+	return ""
+}
+
+func (c *Config) GetPersistentAppSpace() string {
+	return ""
+}
+
+func (c *Config) GetScaledTimeout(timeout time.Duration) time.Duration {
+	return time.Duration(float64(timeout) * *c.TimeoutScale)
+}
+
+func (c *Config) GetAdminPassword() string {
+	return c.Password
+}
+
+func (c *Config) GetExistingUser() string {
+	return c.User
+}
+
+func (c *Config) GetExistingUserPassword() string {
+	return c.Password
+}
+
+func (c *Config) GetShouldKeepUser() bool {
+	return true
+}
+
+func (c *Config) GetUseExistingUser() bool {
+	return true
+}
+
+func (c *Config) GetAdminUser() string {
+	return c.User
+}
+
+func (c *Config) GetUseExistingOrganization() bool {
+	return c.UseExistingOrg
+}
+
+func (c *Config) GetExistingOrganization() string {
+	return c.Org
+}
+
+func (c *Config) GetExistingSpace() string {
+	return c.Space
+}
+
+func (c *Config) GetUseExistingSpace() bool {
+	return c.UseExistingSpace
+}
+
+func (c *Config) GetSkipSSLValidation() bool {
+	return c.SkipSSLValidation
+}
+
+func (c *Config) GetNamePrefix() string {
+	return "SMOKE"
 }
 
 // singleton cache
@@ -95,11 +170,11 @@ func validateRequiredFields(config *Config) {
 		panic("missing configuration 'password'")
 	}
 
-	if config.Org == "" {
+	if config.UseExistingOrg && config.Org == "" {
 		panic("missing configuration 'org'")
 	}
 
-	if config.Space == "" {
+	if config.UseExistingSpace && config.Space == "" {
 		panic("missing configuration 'space'")
 	}
 }

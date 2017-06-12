@@ -11,9 +11,7 @@ import (
 	ginkgoconfig "github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gexec"
 
-	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers"
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
 )
@@ -39,54 +37,19 @@ const (
 )
 
 func TestSmokeTests(t *testing.T) {
-	testConfig := smoke.GetConfig()
-
-	testUserContext := workflowhelpers.NewUserContext(
-		testConfig.ApiEndpoint,
-		testConfig.User,
-		testConfig.Password,
-		testConfig.Org,
-		testConfig.Space,
-		testConfig.SkipSSLValidation,
-	)
-
 	RegisterFailHandler(Fail)
 
-	var originalCfHomeDir, currentCfHomeDir string
+	testConfig := smoke.GetConfig()
+	testSetup := workflowhelpers.NewTestSuiteSetup(testConfig)
 
 	SynchronizedBeforeSuite(func() []byte {
-		originalCfHomeDir, currentCfHomeDir = workflowhelpers.InitiateUserContext(testUserContext, CF_API_TIMEOUT)
-
-		if !testConfig.UseExistingOrg {
-			Expect(cf.Cf("create-quota", quotaName(testConfig.Org), "-m", "10G", "-r", "10", "-s", "2").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			Expect(cf.Cf("create-org", testConfig.Org).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			Expect(cf.Cf("set-quota", testConfig.Org, quotaName(testConfig.Org)).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		}
-
-		Expect(cf.Cf("target", "-o", testConfig.Org).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-
-		if !testConfig.UseExistingSpace {
-			Expect(cf.Cf("create-space", "-o", testConfig.Org, testConfig.Space).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		}
-
-		Expect(cf.Cf("target", "-s", testConfig.Space).Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		return []byte("")
+		testSetup.Setup()
+		return nil
 	}, func(data []byte) {})
 
 	SynchronizedAfterSuite(func() {
 	}, func() {
-		smoke.TestResourcesSummary(testConfig)
-
-		if testConfig.Cleanup && !testConfig.UseExistingSpace {
-			Expect(cf.Cf("delete-space", testConfig.Space, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		}
-
-		if testConfig.Cleanup && !testConfig.UseExistingOrg {
-			Expect(cf.Cf("delete-org", testConfig.Org, "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-			Expect(cf.Cf("delete-quota", quotaName(testConfig.Org), "-f").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
-		}
-
-		workflowhelpers.RestoreUserContext(testUserContext, CF_API_TIMEOUT, originalCfHomeDir, currentCfHomeDir)
+		testSetup.Teardown()
 	})
 
 	rs := []Reporter{}
