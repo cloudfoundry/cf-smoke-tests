@@ -72,7 +72,7 @@ func (user *TestUser) Create() {
 	session := internal.Cf(user.cmdStarter, "create-user", user.username, user.password)
 	EventuallyWithOffset(1, session, user.timeout).Should(Exit())
 	if session.ExitCode() != 0 {
-		ExpectWithOffset(1, session.Out).Should(Say("scim_resource_already_exists|Insufficient scope"))
+		ExpectWithOffset(1, combineOutput(session)).Should(Say("scim_resource_already_exists|Insufficient scope"))
 	}
 }
 
@@ -91,4 +91,10 @@ func (user *TestUser) Password() string {
 
 func (user *TestUser) ShouldRemain() bool {
 	return user.shouldKeepUser
+}
+
+func combineOutput(session *Session) *Buffer {
+	stdout := session.Out.Contents()
+	stderr := session.Err.Contents()
+	return BufferWithBytes(append(stdout, stderr...))
 }

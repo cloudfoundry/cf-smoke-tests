@@ -132,6 +132,45 @@ var _ = Describe("User", func() {
 					Expect(failures).To(BeEmpty())
 				})
 			})
+
+			Context("and the output mentions that the user could not be created", func() {
+				BeforeEach(func() {
+					fakeStarter.ToReturn[0].Output = "Insufficient scope for this resource"
+				})
+
+				It("considers the command successful and does not fail", func() {
+					failures := InterceptGomegaFailures(func() {
+						user.Create()
+					})
+					Expect(failures).To(BeEmpty())
+				})
+			})
+
+			Context("and stderr mentions that the user already exists", func() {
+				BeforeEach(func() {
+					fakeStarter.ToReturn[0].Stderr = "scim_resource_already_exists"
+				})
+
+				It("considers the command successful and does not fail", func() {
+					failures := InterceptGomegaFailures(func() {
+						user.Create()
+					})
+					Expect(failures).To(BeEmpty())
+				})
+			})
+
+			Context("and stderr mentions that the user could not be created", func() {
+				BeforeEach(func() {
+					fakeStarter.ToReturn[0].Stderr = "Insufficient scope for this resource"
+				})
+
+				It("considers the command successful and does not fail", func() {
+					failures := InterceptGomegaFailures(func() {
+						user.Create()
+					})
+					Expect(failures).To(BeEmpty())
+				})
+			})
 		})
 
 		Context("when 'cf create-user' takes longer than the short timeout", func() {
