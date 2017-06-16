@@ -1,0 +1,13 @@
+{
+    "dependencies": {
+        "github.com/cloudfoundry-incubator/cf-test-helpers": {
+            "revision": "29ca1e46a0417161db5f73bd5acb6bd7bff3e817"
+        },
+        "github.com/onsi/ginkgo": {
+            "revision": "07d85e6b10c4289c7d612f9b13f45ba36f66d55b"
+        },
+        "github.com/onsi/gomega": {
+            "revision": "c72df929b80ef4930aaa75d5e486887ff2f3e06a"
+        }
+    }
+}

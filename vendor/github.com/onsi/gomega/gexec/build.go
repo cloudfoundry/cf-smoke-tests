@@ -9,13 +9,9 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"sync"
 )
 
-var (
-	mu     sync.Mutex
-	tmpDir string
-)
+var tmpDir string
 
 /*
 Build uses go build to compile the package at packagePath.  The resulting binary is saved off in a temporary directory.
@@ -64,18 +60,13 @@ You should call CleanupBuildArtifacts before your test ends to clean up any temp
 gexec. In Ginkgo this is typically done in an AfterSuite callback.
 */
 func CleanupBuildArtifacts() {
-	mu.Lock()
-	defer mu.Unlock()
 	if tmpDir != "" {
 		os.RemoveAll(tmpDir)
-		tmpDir = ""
 	}
 }
 
 func temporaryDirectory() (string, error) {
 	var err error
-	mu.Lock()
-	defer mu.Unlock()
 	if tmpDir == "" {
 		tmpDir, err = ioutil.TempDir("", "gexec_artifacts")
 		if err != nil {

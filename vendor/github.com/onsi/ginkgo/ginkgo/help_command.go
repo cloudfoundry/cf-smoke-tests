@@ -9,7 +9,7 @@ func BuildHelpCommand() *Command {
 	return &Command{
 		Name:         "help",
 		FlagSet:      flag.NewFlagSet("help", flag.ExitOnError),
-		UsageCommand: "ginkgo help <COMMAND>",
+		UsageCommand: "ginkgo help <COMAND>",
 		Usage: []string{
 			"Print usage information.  If a command is passed in, print usage information just for that command.",
 		},
