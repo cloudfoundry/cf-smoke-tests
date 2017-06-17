@@ -1,0 +1,90 @@
+{
+    "memo": "5c3527206a2d651b7116d7ac2d74a6d27dfb01bdf72e3a7d3859b4ebc16f2f65",
+    "projects": [
+        {
+            "name": "github.com/cloudfoundry-incubator/cf-test-helpers",
+            "branch": "master",
+            "revision": "d13436afcc93d82753593dc1941813e1170167af",
+            "packages": [
+                "cf",
+                "commandreporter",
+                "commandstarter",
+                "generator",
+                "helpers",
+                "helpers/internal",
+                "internal",
+                "workflowhelpers",
+                "workflowhelpers/internal"
+            ]
+        },
+        {
+            "name": "github.com/nu7hatch/gouuid",
+            "revision": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/onsi/ginkgo",
+            "version": "v1.3.1",
+            "revision": "77a8c1e5c40d6bb6c5eb4dd4bdce9763564f6298",
+            "packages": [
+                ".",
+                "config",
+                "internal/codelocation",
+                "internal/containernode",
+                "internal/failer",
+                "internal/leafnodes",
+                "internal/remote",
+                "internal/spec",
+                "internal/spec_iterator",
+                "internal/specrunner",
+                "internal/suite",
+                "internal/testingtproxy",
+                "internal/writer",
+                "reporters",
+                "reporters/stenographer",
+                "reporters/stenographer/support/go-colorable",
+                "reporters/stenographer/support/go-isatty",
+                "types"
+            ]
+        },
+        {
+            "name": "github.com/onsi/gomega",
+            "version": "v1.1.0",
+            "revision": "334b8f472b3af5d541c5642701c1e29e2126f486",
+            "packages": [
+                ".",
+                "format",
+                "gbytes",
+                "gexec",
+                "internal/assertion",
+                "internal/asyncassertion",
+                "internal/oraclematcher",
+                "internal/testingtsupport",
+                "matchers",
+                "matchers/support/goraph/bipartitegraph",
+                "matchers/support/goraph/edge",
+                "matchers/support/goraph/node",
+                "matchers/support/goraph/util",
+                "types"
+            ]
+        },
+        {
+            "name": "golang.org/x/sys",
+            "branch": "master",
+            "revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
+            "packages": [
+                "unix"
+            ]
+        },
+        {
+            "name": "gopkg.in/yaml.v2",
+            "branch": "v2",
+            "revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
+            "packages": [
+                "."
+            ]
+        }
+    ]
+}
