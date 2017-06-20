@@ -33,9 +33,13 @@ var _ = Describe("RoutingIsolationSegments", func() {
 	var originallyEntitledToShared bool
 
 	BeforeEach(func() {
+
 		// New up a organization since we will be assigning isolation segments.
 		// This has a potential to cause other tests to fail if running in parallel mode.
 		testConfig = smoke.GetConfig()
+		if testConfig.EnableIsolationSegmentTests != true {
+			Skip("Skipping because EnableIsolationSegmentTests flag is set to false")
+		}
 		testSetup = workflowhelpers.NewTestSuiteSetup(testConfig)
 		testSetup.Setup()
 

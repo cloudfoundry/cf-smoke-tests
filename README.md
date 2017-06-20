@@ -62,7 +62,10 @@ Below is an example `integration_config.json`:
   "enable_windows_tests"            : false,
   "enable_etcd_cluster_check_tests" : false,
   "etcd_ip_address"                 : "",
-  "backend"                         : "diego"
+  "backend"                         : "diego",
+  "isolation_segment_name"          : "is1",
+  "isolation_segment_domain"        :"iso-seg.bosh-lite.com",
+  "enable_isolation_segment_tests"  : true
 }
 ```
 
@@ -95,6 +98,7 @@ If you like to a specific backend, add (allowed diego, dea or empty (default))
 
 If you like to validate the security of your etcd cluster, set `enable_etcd_cluster_check_tests` to true and provide the `etcd_ip_address` to be the least restrictive IP that your etcd cluster has (private if that is the only IP etcd has, public otherwise)
 
+If you like to run isolation segment test, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain` and set `backend` to `diego`. For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html)
 
 ### Test Execution
 

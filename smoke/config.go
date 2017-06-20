@@ -2,7 +2,6 @@ package smoke
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -214,20 +213,19 @@ func validateEtcdClusterCheckTests(config *Config) {
 	}
 }
 
-func validateIsolationSegments(config *Config) error {
+func validateIsolationSegments(config *Config) {
 	if !config.EnableIsolationSegmentTests {
-		return nil
+		return
 	}
 	if config.GetBackend() != "diego" {
-		return fmt.Errorf("* Invalid Configuration: 'backend' must be set to 'diego' if 'enable_isolation_segment_tests' is true")
+		panic("* Invalid Configuration: 'backend' must be set to 'diego' if 'enable_isolation_segment_tests' is true")
 	}
 	if config.GetIsolationSegmentName() == "" {
-		return fmt.Errorf("* Invalid configuration: 'isolation_segment_name' must be provided if 'enable_isolation_segment_tests' is true")
+		panic("* Invalid configuration: 'isolation_segment_name' must be provided if 'enable_isolation_segment_tests' is true")
 	}
 	if config.GetIsolationSegmentDomain() == "" {
-		return fmt.Errorf("* Invalid configuration: 'isolation_segment_domain' must be provided if 'enable_isolation_segment_tests' is true")
+		panic("* Invalid configuration: 'isolation_segment_domain' must be provided if 'enable_isolation_segment_tests' is true")
 	}
-	return nil
 }
 
 // Loads the config from json into the supplied config object
