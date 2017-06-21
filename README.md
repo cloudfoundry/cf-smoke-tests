@@ -50,13 +50,13 @@ Below is an example `integration_config.json`:
   "suite_name"                      : "CF_SMOKE_TESTS",
   "api"                             : "api.bosh-lite.com",
   "apps_domain"                     : "bosh-lite.com",
-  "user"                            : "admin",
-  "password"                        : "admin",
+  "user"                            : "non-admin",
+  "password"                        : "super-secure",
   "org"                             : "CF-SMOKE-ORG",
   "space"                           : "CF-SMOKE-SPACE",
   "cleanup"                         : true,
-  "use_existing_org"                : false,
-  "use_existing_space"              : false,
+  "use_existing_org"                : true,
+  "use_existing_space"              : true,
   "logging_app"                     : "",
   "runtime_app"                     : "",
   "enable_windows_tests"            : false,
@@ -65,10 +65,11 @@ Below is an example `integration_config.json`:
   "backend"                         : "diego"
 }
 ```
+**NOTE** Unless you supply an admin user, you _must_ use an existing space and org
 
-If you are running the tests with version newer than 6.0.2-0bba99f of the Go
-CLI against bosh-lite or any other environment using self-signed certificates,
-add
+
+If you are running the tests against bosh-lite or any other environment using
+self-signed certificates, add
 
 ```
   "skip_ssl_validation": true
@@ -145,10 +146,6 @@ junit-Applications-1.xml
 
 ### Dependency Management
 
-Smoke Tests use [gvt](https://github.com/FiloSottile/gvt) to manage `go` dependencies.
+Smoke Tests use [dep](https://github.com/golang/dep) to manage `go` dependencies.
 
 All `go` packages required to run smoke tests are vendored into the `vendor/` directory.
-
-When making changes to the test suite that bring in additional `go` packages,
-you should use the workflow described in the
-[gvt documentation](https://github.com/FiloSottile/gvt#basic-usage).
