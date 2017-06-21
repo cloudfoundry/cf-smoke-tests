@@ -178,6 +178,7 @@ func allTrue(bools []bool) bool {
 
 func getBodySkipSSL(skip bool, url string) (string, error) {
 	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: skip},
 	}
 	client := &http.Client{Transport: transport}
