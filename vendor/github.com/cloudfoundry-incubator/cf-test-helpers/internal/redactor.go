@@ -17,28 +17,9 @@ func NewRedactor(redactees ...string) Redactor {
 }
 
 func (r *redactor) Redact(toRedact string) string {
-	if len(r.redactees) == 0 {
-		return toRedact
+	for _, r := range r.redactees {
+		toRedact = strings.Replace(toRedact, r, "[REDACTED]", -1)
 	}
 
-	var out []string
-	for _, candidate := range strings.Fields(toRedact) {
-		if r.shouldBeRedacted(candidate) {
-			out = append(out, "[REDACTED]")
-		} else {
-			out = append(out, candidate)
-		}
-	}
-
-	return strings.Join(out, " ")
-}
-
-func (r *redactor) shouldBeRedacted(val string) bool {
-	for _, v := range r.redactees {
-		if v == val {
-			return true
-		}
-	}
-
-	return false
+	return toRedact
 }
