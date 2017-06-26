@@ -28,32 +28,6 @@ func AssignIsolationSegmentToSpace(spaceGuid, isoSegGuid string) {
 		CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
 }
 
-func CreateIsolationSegment(name string) string {
-	session := cf.Cf("curl", "/v3/isolation_segments", "-X", "POST", "-d", fmt.Sprintf(`{"name":"%s"}`, name))
-	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
-
-	var isolation_segment struct {
-		Guid string `json:"guid"`
-	}
-	err := json.Unmarshal(bytes, &isolation_segment)
-	Expect(err).ToNot(HaveOccurred())
-
-	return isolation_segment.Guid
-}
-
-func CreateOrGetIsolationSegment(name string) (string, bool) {
-	var isoSegGuid string
-	var created bool
-	if IsolationSegmentExists(name) {
-		isoSegGuid = GetIsolationSegmentGuid(name)
-		created = false
-	} else {
-		isoSegGuid = CreateIsolationSegment(name)
-		created = true
-	}
-	return isoSegGuid, created
-}
-
 func DeleteIsolationSegment(guid string) {
 	Eventually(cf.Cf("curl", fmt.Sprintf("/v3/isolation_segments/%s", guid), "-X", "DELETE"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
 }
