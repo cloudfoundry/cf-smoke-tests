@@ -25,11 +25,9 @@ var _ = Describe("RoutingIsolationSegments", func() {
 	var appsDomain string
 	var orgGuid, orgName string
 	var spaceGuid, spaceName string
-	var isoSegGuid string
 	var isoSegName, isoSegDomain string
 	var testSetup *workflowhelpers.ReproducibleTestSuiteSetup
 	var testConfig *smoke.Config
-	var originallyEntitledToShared bool
 
 	BeforeEach(func() {
 
@@ -52,29 +50,17 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		session := cf.Cf("curl", fmt.Sprintf("/v3/organizations?names=%s", orgName))
 		bytes := session.Wait(testConfig.GetDefaultTimeout()).Out.Contents()
 		orgGuid = GetGuidFromResponse(bytes)
-		workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-			originallyEntitledToShared = OrgEntitledToIsolationSegment(orgGuid, SHARED_ISOLATION_SEGMENT_NAME)
-		})
 	})
 
 	AfterEach(func() {
 		testSetup.Teardown()
-		if !originallyEntitledToShared && testConfig.GetUseExistingOrganization() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				RevokeOrgEntitlementForIsolationSegment(orgGuid, SHARED_ISOLATION_SEGMENT_GUID)
-			})
-		}
 	})
 
 	Context("When an app is pushed to a space assigned the shared isolation segment", func() {
 		var appName string
 
 		BeforeEach(func() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				EntitleOrgToIsolationSegment(orgGuid, SHARED_ISOLATION_SEGMENT_GUID)
-				AssignIsolationSegmentToSpace(spaceGuid, SHARED_ISOLATION_SEGMENT_GUID)
-				appName = generator.PrefixedRandomName("SMOKES", "APP")
-			})
+			appName = generator.PrefixedRandomName("SMOKES", "APP")
 			Eventually(cf.Cf(
 				"push", appName,
 				"-p", BINARY_APP_BITS_PATH,
@@ -111,14 +97,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		var appName string
 
 		BeforeEach(func() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				isoSegGuid = GetIsolationSegmentGuid(isoSegName)
-				EntitleOrgToIsolationSegment(orgGuid, isoSegGuid)
-				session := cf.Cf("curl", fmt.Sprintf("/v3/spaces?names=%s", spaceName))
-				bytes := session.Wait(testConfig.GetDefaultTimeout()).Out.Contents()
-				spaceGuid = GetGuidFromResponse(bytes)
-				AssignIsolationSegmentToSpace(spaceGuid, isoSegGuid)
-			})
 			appName = generator.PrefixedRandomName("SMOKES", "APP")
 			Eventually(cf.Cf(
 				"push", appName,
@@ -130,13 +108,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				testConfig.GetPushTimeout()).Should(Exit(0))
 			smoke.SetBackend(appName)
 			Eventually(cf.Cf("start", appName), testConfig.GetDefaultTimeout()).Should(Exit(0))
-		})
-
-		AfterEach(func() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				UnassignIsolationSegmentFromSpace(spaceGuid)
-				RevokeOrgEntitlementForIsolationSegment(orgGuid, isoSegGuid)
-			})
 		})
 
 		It("the app is reachable from the isolated router", func() {
