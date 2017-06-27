@@ -27,10 +27,12 @@ const (
 	CF_APP_STATUS_TIMEOUT_IN_SECONDS = 120
 )
 
+var testConfig *smoke.Config
+
 func TestSmokeTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	testConfig := smoke.GetConfig()
+	testConfig = smoke.GetConfig()
 	rs := []Reporter{}
 
 	if testConfig.ArtifactsDirectory != "" {

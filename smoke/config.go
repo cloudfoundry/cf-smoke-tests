@@ -20,8 +20,9 @@ type Config struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 
-	Org   string `json:"org"`
-	Space string `json:"space"`
+	Org      string `json:"org"`
+	Space    string `json:"space"`
+	IsoSpace string `json:"iso_space"`
 
 	UseExistingOrg   bool `json:"use_existing_org"`
 	UseExistingSpace bool `json:"use_existing_space"`
@@ -116,6 +117,10 @@ func (c *Config) GetUseExistingOrganization() bool {
 
 func (c *Config) GetExistingOrganization() string {
 	return c.Org
+}
+
+func (c *Config) GetExistingIsoSpace() string {
+	return c.IsoSpace
 }
 
 func (c *Config) GetExistingSpace() string {
@@ -225,6 +230,15 @@ func validateIsolationSegments(config *Config) {
 	}
 	if config.GetIsolationSegmentDomain() == "" {
 		panic("* Invalid configuration: 'isolation_segment_domain' must be provided if 'enable_isolation_segment_tests' is true")
+	}
+	if !config.GetUseExistingOrganization() {
+		panic("* Invalid configuration: 'use_existing_org' must be provided if 'enable_isolation_segment_tests' is true")
+	}
+	if !config.GetUseExistingSpace() {
+		panic("* Invalid configuration: 'use_existing_space' must be provided if 'enable_isolation_segment_tests' is true")
+	}
+	if config.GetExistingIsoSpace() == "" {
+		panic("* Invalid configuration: 'iso_space' must be provided if 'enable_isolation_segment_tests' is true")
 	}
 }
 
