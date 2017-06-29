@@ -39,12 +39,23 @@ type Config struct {
 
 	EnableWindowsTests          bool `json:"enable_windows_tests"`
 	EnableEtcdClusterCheckTests bool `json:"enable_etcd_cluster_check_tests"`
+	EnableIsolationSegmentTests bool `json:"enable_isolation_segment_tests"`
 
 	EtcdIpAddress string `json:"etcd_ip_address"`
 
 	Backend string `json:"backend"`
 
-	TimeoutScale *float64 `json:"timeout_scale"`
+	TimeoutScale           *float64 `json:"timeout_scale"`
+	IsolationSegmentName   string   `json:"isolation_segment_name"`
+	IsolationSegmentDomain string   `json:"isolation_segment_domain"`
+}
+
+func (c *Config) GetIsolationSegmentName() string {
+	return c.IsolationSegmentName
+}
+
+func (c *Config) GetIsolationSegmentDomain() string {
+	return c.IsolationSegmentDomain
 }
 
 func (c *Config) GetApiEndpoint() string {
@@ -95,6 +106,10 @@ func (c *Config) GetAdminUser() string {
 	return c.User
 }
 
+func (c *Config) GetAppsDomains() string {
+	return c.AppsDomain
+}
+
 func (c *Config) GetUseExistingOrganization() bool {
 	return c.UseExistingOrg
 }
@@ -119,6 +134,18 @@ func (c *Config) GetNamePrefix() string {
 	return "SMOKE"
 }
 
+func (c *Config) GetDefaultTimeout() int {
+	return 30
+}
+
+func (c *Config) GetPushTimeout() int {
+	return 300
+}
+
+func (c *Config) GetBackend() string {
+	return c.Backend
+}
+
 // singleton cache
 var cachedConfig *Config
 
@@ -134,6 +161,7 @@ func loadConfig() *Config {
 	loadConfigFromJson(config)
 	validateRequiredFields(config)
 	validateEtcdClusterCheckTests(config)
+	validateIsolationSegments(config)
 	return config
 }
 
@@ -182,6 +210,21 @@ func validateRequiredFields(config *Config) {
 func validateEtcdClusterCheckTests(config *Config) {
 	if config.EnableEtcdClusterCheckTests == true && config.EtcdIpAddress == "" {
 		panic("when etcd_cluster_check_tests is true, etcd_ip_address must be provided but it was not")
+	}
+}
+
+func validateIsolationSegments(config *Config) {
+	if !config.EnableIsolationSegmentTests {
+		return
+	}
+	if config.GetBackend() != "diego" {
+		panic("* Invalid Configuration: 'backend' must be set to 'diego' if 'enable_isolation_segment_tests' is true")
+	}
+	if config.GetIsolationSegmentName() == "" {
+		panic("* Invalid configuration: 'isolation_segment_name' must be provided if 'enable_isolation_segment_tests' is true")
+	}
+	if config.GetIsolationSegmentDomain() == "" {
+		panic("* Invalid configuration: 'isolation_segment_domain' must be provided if 'enable_isolation_segment_tests' is true")
 	}
 }
 
