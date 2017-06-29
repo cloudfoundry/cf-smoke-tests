@@ -28,7 +28,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 	var isoSegGuid string
 	var isoSegName, isoSegDomain string
 	var testSetup *workflowhelpers.ReproducibleTestSuiteSetup
-	var created bool
 	var testConfig *smoke.Config
 	var originallyEntitledToShared bool
 
@@ -113,7 +112,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 		BeforeEach(func() {
 			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				isoSegGuid, created = CreateOrGetIsolationSegment(isoSegName)
+				isoSegGuid = GetIsolationSegmentGuid(isoSegName)
 				EntitleOrgToIsolationSegment(orgGuid, isoSegGuid)
 				session := cf.Cf("curl", fmt.Sprintf("/v3/spaces?names=%s", spaceName))
 				bytes := session.Wait(testConfig.GetDefaultTimeout()).Out.Contents()
@@ -134,14 +133,12 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		})
 
 		AfterEach(func() {
-			if created {
-				workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-					UnassignIsolationSegmentFromSpace(spaceGuid)
-					RevokeOrgEntitlementForIsolationSegment(orgGuid, isoSegGuid)
-					DeleteIsolationSegment(isoSegGuid)
-				})
-			}
+			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
+				UnassignIsolationSegmentFromSpace(spaceGuid)
+				RevokeOrgEntitlementForIsolationSegment(orgGuid, isoSegGuid)
+			})
 		})
+
 		It("the app is reachable from the isolated router", func() {
 			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), isoSegDomain)
 			defer resp.Body.Close()

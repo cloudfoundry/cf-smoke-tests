@@ -41,23 +41,6 @@ func CreateIsolationSegment(name string) string {
 	return isolation_segment.Guid
 }
 
-func CreateOrGetIsolationSegment(name string) (string, bool) {
-	var isoSegGuid string
-	var created bool
-	if IsolationSegmentExists(name) {
-		isoSegGuid = GetIsolationSegmentGuid(name)
-		created = false
-	} else {
-		isoSegGuid = CreateIsolationSegment(name)
-		created = true
-	}
-	return isoSegGuid, created
-}
-
-func DeleteIsolationSegment(guid string) {
-	Eventually(cf.Cf("curl", fmt.Sprintf("/v3/isolation_segments/%s", guid), "-X", "DELETE"), CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
-}
-
 func EntitleOrgToIsolationSegment(orgGuid, isoSegGuid string) {
 	Eventually(cf.Cf("curl",
 		fmt.Sprintf("/v3/isolation_segments/%s/relationships/organizations", isoSegGuid),
