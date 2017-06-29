@@ -54,7 +54,6 @@ Below is an example `integration_config.json`:
   "password"                        : "admin",
   "org"                             : "CF-SMOKE-ORG",
   "space"                           : "CF-SMOKE-SPACE",
-  "iso_space"                       : "CF_SMOKE-ISO-SPACE",
   "cleanup"                         : true,
   "use_existing_org"                : false,
   "use_existing_space"              : false,
@@ -99,18 +98,7 @@ If you like to a specific backend, add (allowed diego, dea or empty (default))
 
 If you like to validate the security of your etcd cluster, set `enable_etcd_cluster_check_tests` to true and provide the `etcd_ip_address` to be the least restrictive IP that your etcd cluster has (private if that is the only IP etcd has, public otherwise)
 
-```
-  enable_isolation_segment_tests: true
-```
-
-If you like to run isolation segment test, set `enable_isolation_segment_tests`
-to true and provide values for `isolation_segment_name`,
-`isolation_segment_domain` and set `backend` to `diego`. This test requires an
-existing org `org` which is entitled to `isolation_segment_name`, existing
-isolation segment `isolation_segment_name` which is assigned to an existing space `iso_space` and an existing space `space`
-which is not assigned an isolation segment. For more details on how to
-setup routing isolation segments, read this
-[document](https://docs.cloudfoundry.org/adminguide/routing-is.html)
+If you like to run isolation segment test, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain` and set `backend` to `diego`. For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html)
 
 ### Test Execution
 
