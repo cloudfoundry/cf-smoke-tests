@@ -39,7 +39,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		if testConfig.EnableIsolationSegmentTests != true {
 			Skip("Skipping because EnableIsolationSegmentTests flag is set to false")
 		}
-		testSetup = workflowhelpers.NewTestSuiteSetup(testConfig)
+		testSetup = workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
 		testSetup.Setup()
 
 		appsDomain = testConfig.GetAppsDomains()

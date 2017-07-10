@@ -77,7 +77,7 @@ func (user *TestUser) Create() {
 	EventuallyWithOffset(1, session, user.timeout).Should(Exit())
 
 	if session.ExitCode() != 0 {
-		ExpectWithOffset(1, combineOutputAndRedact(session, redactor)).Should(Say("scim_resource_already_exists|Insufficient scope"))
+		ExpectWithOffset(1, combineOutputAndRedact(session, redactor)).Should(Say("scim_resource_already_exists"))
 	}
 }
 

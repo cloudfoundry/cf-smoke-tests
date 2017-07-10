@@ -43,7 +43,7 @@ func TestSmokeTests(t *testing.T) {
 	SynchronizedBeforeSuite(func() []byte {
 		return nil
 	}, func(data []byte) {
-		testSetup = workflowhelpers.NewTestSuiteSetup(testConfig)
+		testSetup = workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
 		testSetup.Setup()
 	})
 

@@ -40,7 +40,7 @@ func TestSmokeTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 
 	testConfig := smoke.GetConfig()
-	testSetup := workflowhelpers.NewTestSuiteSetup(testConfig)
+	testSetup := workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
 
 	SynchronizedBeforeSuite(func() []byte {
 		testSetup.Setup()
