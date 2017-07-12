@@ -5,6 +5,15 @@ Smoke tests are a suite of basic core functionality tests for Cloud Foundry.
 They are suitable as an initial test against a new or updated deployment to
 reveal fundamental problems with the system.
 
+There are four tests in this suite, all of which are pretty simple:
+1. `runtime`: Pushes an app and validates that HTTP requests are properly routed to the app.
+2. `logging`: Pushes an app and validates that logs can be fetched for the app.
+3. `etcd_cluster_check`: Pushes an app and validates that app instances cannot reach the IP addresses of the etcd cluster.
+4. `isolation_segments`: Entitles an org to an isolation segment and pushes two apps,
+  one to the isolation segment, and one to the shared segment.
+  The test validates that isolated apps are only accessed via the isolated router,
+  and that apps on the shared segment are only accessed via the shared router.
+
 They are not intended to test more sophisticated functionality of Cloud Foundry
 or to test administrator operations. The [CF Acceptance
 Tests](https://github.com/cloudfoundry/cf-acceptance-tests) do perform this
@@ -68,7 +77,9 @@ Below is an example `integration_config.json`:
   "enable_isolation_segment_tests"  : true
 }
 ```
-**NOTE** Unless you supply an admin user, you _must_ use an existing space and org
+**NOTE** Unless you supply an admin user, you _must_ use an existing space and org.
+If you provide an admin user, you can omit the existing space and org,
+and the test setup will create those resources for you before running the test.
 
 
 If you are running the tests against bosh-lite or any other environment using
