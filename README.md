@@ -41,10 +41,12 @@ Make sure that [curl](http://curl.haxx.se/) is installed on your system.
 Make sure that the go version of `cf` is accessible in your `$PATH`.
 
 Check out a copy of `cf-smoke-tests` and make sure that it is added to your
-`$GOPATH`.  The recommended way to do this is to run `go get -d
+`$GOPATH`.  The recommended way to do this is to run `go get -u -d
 github.com/cloudfoundry/cf-smoke-tests`. You will receive a warning "no
 buildable Go source files"; this can be ignored as there is no compilable go
 code in the package.
+(Alternatively, you can simply `cd` into the directory
+and run `git pull`.)
 
 ### Test Setup
 
