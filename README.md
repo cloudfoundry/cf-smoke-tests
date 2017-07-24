@@ -75,7 +75,7 @@ Below is an example `integration_config.json`:
   "etcd_ip_address"                 : "",
   "backend"                         : "diego",
   "isolation_segment_name"          : "is1",
-  "isolation_segment_domain"        :"iso-seg.bosh-lite.com",
+  "isolation_segment_domain"        : "is1.bosh-lite.com",
   "enable_isolation_segment_tests"  : true
 }
 ```
