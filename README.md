@@ -147,7 +147,56 @@ junit-Applications-1.xml
 ...
 ```
 
-## Changing Smoke Tests
+## Contributing to Smoke Tests
+
+### Guidelines
+The goal of smoke tests
+is to provide a small, simple set of tests
+to verify basic deployment configuration.
+As such, we have some guidelines
+for contributing new tests to this suite.
+
+#### 1. Creating API resources in the test
+One basic rule for good test design is not to mock the object under test.
+We can translate that idea to a suite like smoke tests in the following way:
+If smoke tests exist to validate deployment configuration,
+then smoke tests should not itself mutate deployment configuration.
+
+There are, however, several resources
+that can be defined as either deployment configuration or as API resources.
+For example, shared app domains and isolation segments
+are both resources that can be created via the API,
+so it might be tempting to have a test create them in a `BeforeSuite`.
+However, shared app domains and isolation segments really represent deployment configurations.
+Accordingly, smoke tests should not create those resources as part of the test;
+instead, it should validate (either implicitly or explicitly)
+that those resources have already been created, and configured correctly.
+
+Other API resources, like orgs and spaces
+that exist simply to be able to push an app,
+can absolutely be created as part of a test.
+
+#### 2. Admin vs. Regular User workflows
+There are two common user workflows
+that can be validated in smoke tests.
+
+1. **Regular user**:
+Smoke tests are run with a configuration
+that provides a non-admin user.
+In this configuration,
+tests should also expect
+that the org and space used for the tests
+have already been created.
+This workflow is recommended for tests run against environments run by humans
+-- in particular, production deployments.
+
+2. **Admin user:**
+Smoke tests are configured to run using admin credentials.
+Given this configuration,
+the tests may or may not use existing resources like orgs and spaces,
+because an admin user can easily create them.
+This configuration is recommended for tests run against environments created using automation tools,
+for example, CI (continuous integration) environments on development teams.
 
 ### Dependency Management
 
