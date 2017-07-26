@@ -27,18 +27,12 @@ development pipeline and not against production environments.
 
 Set up your golang development environment, [per golang.org](http://golang.org/doc/install).
 
-You will probably also need the following SCM programs in order to `go get`
-source code:
+Make sure you have the following installed:
 * [git](http://git-scm.com/)
-* [mercurial](http://mercurial.selenic.com/)
-* [bazaar](http://bazaar.canonical.com/)
-
-See [Go CLI](https://github.com/cloudfoundry/cli) for instructions on
-installing the go version of `cf`.
-
-Make sure that [curl](http://curl.haxx.se/) is installed on your system.
-
-Make sure that the go version of `cf` is accessible in your `$PATH`.
+* [mercurial](http://mercurial.selenic.com/) (for `go get`)
+* [bazaar](http://bazaar.canonical.com/) ( for `go get`)
+* [`cf` CLI](https://github.com/cloudfoundry/cli)
+* [curl](http://curl.haxx.se/)
 
 Check out a copy of `cf-smoke-tests` and make sure that it is added to your
 `$GOPATH`.  The recommended way to do this is to run `go get -u -d
@@ -102,12 +96,6 @@ If you have deployed Windows cells, add
 
 ```
   "enable_windows_tests" : true
-```
-
-If you like to a specific backend, add (allowed diego, dea or empty (default))
-
-```
-  "backend" : "diego"
 ```
 
 If you like to validate the security of your etcd cluster, set `enable_etcd_cluster_check_tests` to true and provide the `etcd_ip_address` to be the least restrictive IP that your etcd cluster has (private if that is the only IP etcd has, public otherwise)
