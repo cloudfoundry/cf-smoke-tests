@@ -27,18 +27,12 @@ development pipeline and not against production environments.
 
 Set up your golang development environment, [per golang.org](http://golang.org/doc/install).
 
-You will probably also need the following SCM programs in order to `go get`
-source code:
+Make sure you have the following installed:
 * [git](http://git-scm.com/)
-* [mercurial](http://mercurial.selenic.com/)
-* [bazaar](http://bazaar.canonical.com/)
-
-See [Go CLI](https://github.com/cloudfoundry/cli) for instructions on
-installing the go version of `cf`.
-
-Make sure that [curl](http://curl.haxx.se/) is installed on your system.
-
-Make sure that the go version of `cf` is accessible in your `$PATH`.
+* [mercurial](http://mercurial.selenic.com/) (for `go get`)
+* [bazaar](http://bazaar.canonical.com/) ( for `go get`)
+* [`cf` CLI](https://github.com/cloudfoundry/cli)
+* [curl](http://curl.haxx.se/)
 
 Check out a copy of `cf-smoke-tests` and make sure that it is added to your
 `$GOPATH`.  The recommended way to do this is to run `go get -u -d
@@ -104,12 +98,6 @@ If you have deployed Windows cells, add
   "enable_windows_tests" : true
 ```
 
-If you like to a specific backend, add (allowed diego, dea or empty (default))
-
-```
-  "backend" : "diego"
-```
-
 If you like to validate the security of your etcd cluster, set `enable_etcd_cluster_check_tests` to true and provide the `etcd_ip_address` to be the least restrictive IP that your etcd cluster has (private if that is the only IP etcd has, public otherwise)
 
 If you like to run isolation segment test, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain` and set `backend` to `diego`. Test setup assumes that isolation segment API resource with `isolation_segment_name` already exists. For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html)
@@ -159,7 +147,56 @@ junit-Applications-1.xml
 ...
 ```
 
-## Changing Smoke Tests
+## Contributing to Smoke Tests
+
+### Guidelines
+The goal of smoke tests
+is to provide a small, simple set of tests
+to verify basic deployment configuration.
+As such, we have some guidelines
+for contributing new tests to this suite.
+
+#### 1. Creating API resources in the test
+One basic rule for good test design is not to mock the object under test.
+We can translate that idea to a suite like smoke tests in the following way:
+If smoke tests exist to validate deployment configuration,
+then smoke tests should not itself mutate deployment configuration.
+
+There are, however, several resources
+that can be defined as either deployment configuration or as API resources.
+For example, shared app domains and isolation segments
+are both resources that can be created via the API,
+so it might be tempting to have a test create them in a `BeforeSuite`.
+However, shared app domains and isolation segments really represent deployment configurations.
+Accordingly, smoke tests should not create those resources as part of the test;
+instead, it should validate (either implicitly or explicitly)
+that those resources have already been created, and configured correctly.
+
+Other API resources, like orgs and spaces
+that exist simply to be able to push an app,
+can absolutely be created as part of a test.
+
+#### 2. Admin vs. Regular User workflows
+There are two common user workflows
+that can be validated in smoke tests.
+
+1. **Regular user**:
+Smoke tests are run with a configuration
+that provides a non-admin user.
+In this configuration,
+tests should also expect
+that the org and space used for the tests
+have already been created.
+This workflow is recommended for tests run against environments run by humans
+-- in particular, production deployments.
+
+2. **Admin user:**
+Smoke tests are configured to run using admin credentials.
+Given this configuration,
+the tests may or may not use existing resources like orgs and spaces,
+because an admin user can easily create them.
+This configuration is recommended for tests run against environments created using automation tools,
+for example, CI (continuous integration) environments on development teams.
 
 ### Dependency Management
 
