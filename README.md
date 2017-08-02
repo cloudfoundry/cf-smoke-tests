@@ -59,6 +59,7 @@ Below is an example `integration_config.json`:
   "password"                        : "super-secure",
   "org"                             : "CF-SMOKE-ORG",
   "space"                           : "CF-SMOKE-SPACE",
+  "isolation_segment_space"         : "CF-SMOKE-ISOLATED-SPACE",
   "cleanup"                         : true,
   "use_existing_org"                : true,
   "use_existing_space"              : true,
@@ -74,8 +75,11 @@ Below is an example `integration_config.json`:
 }
 ```
 **NOTE** Unless you supply an admin user, you _must_ use an existing space and org.
-If you provide an admin user, you can omit the existing space and org,
-and the test setup will create those resources for you before running the test.
+Additionally, if you are running the isolation_segment tests without an admin user,
+you must entitle the org to the isolation segment, have a space assigned to the shared segment,
+and provide an isolated space as well.
+If you provide an admin user, you can omit the existing spaces and org,
+and the test setup will create those resources for you before running the test. 
 
 
 If you are running the tests against bosh-lite or any other environment using

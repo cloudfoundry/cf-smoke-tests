@@ -48,6 +48,7 @@ type Config struct {
 	TimeoutScale           *float64 `json:"timeout_scale"`
 	IsolationSegmentName   string   `json:"isolation_segment_name"`
 	IsolationSegmentDomain string   `json:"isolation_segment_domain"`
+	IsolationSegmentSpace  string   `json:"isolation_segment_space"`
 }
 
 func (c *Config) GetIsolationSegmentName() string {
@@ -56,6 +57,10 @@ func (c *Config) GetIsolationSegmentName() string {
 
 func (c *Config) GetIsolationSegmentDomain() string {
 	return c.IsolationSegmentDomain
+}
+
+func (c *Config) GetIsolationSegmentSpace() string {
+	return c.IsolationSegmentSpace
 }
 
 func (c *Config) GetApiEndpoint() string {
@@ -205,6 +210,10 @@ func validateRequiredFields(config *Config) {
 	if config.UseExistingSpace && config.Space == "" {
 		panic("missing configuration 'space'")
 	}
+
+	if config.UseExistingSpace && !config.UseExistingOrg {
+		panic("'UseExistingOrg' must be set if 'UseExistingSpace' is set")
+	}
 }
 
 func validateEtcdClusterCheckTests(config *Config) {
@@ -217,14 +226,17 @@ func validateIsolationSegments(config *Config) {
 	if !config.EnableIsolationSegmentTests {
 		return
 	}
-	if config.GetBackend() != "diego" {
+	if config.Backend != "diego" {
 		panic("* Invalid Configuration: 'backend' must be set to 'diego' if 'enable_isolation_segment_tests' is true")
 	}
-	if config.GetIsolationSegmentName() == "" {
+	if config.IsolationSegmentName == "" {
 		panic("* Invalid configuration: 'isolation_segment_name' must be provided if 'enable_isolation_segment_tests' is true")
 	}
-	if config.GetIsolationSegmentDomain() == "" {
+	if config.IsolationSegmentDomain == "" {
 		panic("* Invalid configuration: 'isolation_segment_domain' must be provided if 'enable_isolation_segment_tests' is true")
+	}
+	if config.UseExistingOrg && config.UseExistingSpace && config.IsolationSegmentSpace == "" {
+		panic("* Invalid configuration: 'isolation_segment_space' must be provided if 'use_existing_org' and 'use_existing_space' are true")
 	}
 }
 

@@ -25,14 +25,14 @@ var _ = Describe("RoutingIsolationSegments", func() {
 	var appsDomain string
 	var orgGuid, orgName string
 	var spaceGuid, spaceName string
+	var isoSpaceGuid, isoSpaceName string
 	var isoSegGuid string
 	var isoSegName, isoSegDomain string
 	var testSetup *workflowhelpers.ReproducibleTestSuiteSetup
 	var testConfig *smoke.Config
-	var originallyEntitledToShared bool
+	var appName string
 
 	BeforeEach(func() {
-
 		// New up a organization since we will be assigning isolation segments.
 		// This has a potential to cause other tests to fail if running in parallel mode.
 		testConfig = smoke.GetConfig()
@@ -44,37 +44,47 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 		appsDomain = testConfig.GetAppsDomains()
 		orgName = testSetup.RegularUserContext().Org
+		orgGuid = GetOrgGuidFromName(orgName)
 		spaceName = testSetup.RegularUserContext().Space
 		spaceGuid = GetSpaceGuidFromName(spaceName)
+		isoSpaceName = spaceName
+		isoSpaceGuid = spaceGuid
+		appName = generator.PrefixedRandomName("SMOKES", "APP")
+
 		isoSegName = testConfig.GetIsolationSegmentName()
 		isoSegDomain = testConfig.GetIsolationSegmentDomain()
+
+		if testConfig.GetUseExistingOrganization() && testConfig.GetUseExistingSpace() {
+			if !OrgEntitledToIsolationSegment(orgGuid, isoSegName) {
+				Fail(fmt.Sprintf("Pre-existing org %s is not entitled to isolation segment %s", orgName, isoSegName))
+			}
+			isoSpaceName = testConfig.GetIsolationSegmentSpace()
+			isoSpaceGuid = GetSpaceGuidFromName(isoSpaceName)
+			if !IsolationSegmentAssignedToSpace(isoSegName, isoSpaceGuid) {
+				Fail(fmt.Sprintf("No isolation segment assigned  to pre-existing space %s", isoSpaceName))
+			}
+		}
 
 		session := cf.Cf("curl", fmt.Sprintf("/v3/organizations?names=%s", orgName))
 		bytes := session.Wait(testConfig.GetDefaultTimeout()).Out.Contents()
 		orgGuid = GetGuidFromResponse(bytes)
-		workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-			originallyEntitledToShared = OrgEntitledToIsolationSegment(orgGuid, SHARED_ISOLATION_SEGMENT_NAME)
-		})
 	})
 
 	AfterEach(func() {
-		testSetup.Teardown()
-		if !originallyEntitledToShared && testConfig.GetUseExistingOrganization() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				RevokeOrgEntitlementForIsolationSegment(orgGuid, SHARED_ISOLATION_SEGMENT_GUID)
-			})
+		if testConfig.Cleanup {
+			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
 		}
+		testSetup.Teardown()
 	})
 
 	Context("When an app is pushed to a space assigned the shared isolation segment", func() {
-		var appName string
-
 		BeforeEach(func() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				EntitleOrgToIsolationSegment(orgGuid, SHARED_ISOLATION_SEGMENT_GUID)
-				AssignIsolationSegmentToSpace(spaceGuid, SHARED_ISOLATION_SEGMENT_GUID)
-				appName = generator.PrefixedRandomName("SMOKES", "APP")
-			})
+			if !testConfig.GetUseExistingOrganization() && !testConfig.GetUseExistingSpace() {
+				workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
+					EntitleOrgToIsolationSegment(orgGuid, SHARED_ISOLATION_SEGMENT_GUID)
+					AssignIsolationSegmentToSpace(spaceGuid, SHARED_ISOLATION_SEGMENT_GUID)
+				})
+			}
 			Eventually(cf.Cf(
 				"push", appName,
 				"-p", BINARY_APP_BITS_PATH,
@@ -111,15 +121,16 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		var appName string
 
 		BeforeEach(func() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				isoSegGuid = GetIsolationSegmentGuid(isoSegName)
+			isoSegGuid = GetIsolationSegmentGuid(isoSegName)
+			if !testConfig.GetUseExistingOrganization() {
 				EntitleOrgToIsolationSegment(orgGuid, isoSegGuid)
-				session := cf.Cf("curl", fmt.Sprintf("/v3/spaces?names=%s", spaceName))
-				bytes := session.Wait(testConfig.GetDefaultTimeout()).Out.Contents()
-				spaceGuid = GetGuidFromResponse(bytes)
-				AssignIsolationSegmentToSpace(spaceGuid, isoSegGuid)
-			})
+			}
+
+			if !testConfig.GetUseExistingSpace() {
+				AssignIsolationSegmentToSpace(isoSpaceGuid, isoSegGuid)
+			}
 			appName = generator.PrefixedRandomName("SMOKES", "APP")
+			Eventually(cf.Cf("target", "-s", isoSpaceName), testConfig.GetDefaultTimeout()).Should(Exit(0))
 			Eventually(cf.Cf(
 				"push", appName,
 				"-p", BINARY_APP_BITS_PATH,
@@ -130,13 +141,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				testConfig.GetPushTimeout()).Should(Exit(0))
 			smoke.SetBackend(appName)
 			Eventually(cf.Cf("start", appName), testConfig.GetDefaultTimeout()).Should(Exit(0))
-		})
-
-		AfterEach(func() {
-			workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-				UnassignIsolationSegmentFromSpace(spaceGuid)
-				RevokeOrgEntitlementForIsolationSegment(orgGuid, isoSegGuid)
-			})
 		})
 
 		It("the app is reachable from the isolated router", func() {

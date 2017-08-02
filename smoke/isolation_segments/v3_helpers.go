@@ -124,6 +124,22 @@ func OrgEntitledToIsolationSegment(orgGuid string, isoSegName string) bool {
 	return len(GetResponse.Resources) > 0
 }
 
+func IsolationSegmentAssignedToSpace(isoSegName string, spaceGuid string) bool {
+	session := cf.Cf("curl", fmt.Sprintf("/v2/spaces/%s", spaceGuid))
+	response := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
+	type entity struct {
+		Guid string `json:"isolation_segment_guid"`
+	}
+	var SpaceResponse struct {
+		Entity entity `json:"entity"`
+	}
+
+	err := json.Unmarshal(response, &SpaceResponse)
+	Expect(err).ToNot(HaveOccurred())
+
+	return SpaceResponse.Entity.Guid != ""
+}
+
 func RevokeOrgEntitlementForIsolationSegment(orgGuid, isoSegGuid string) {
 	Eventually(cf.Cf("curl",
 		fmt.Sprintf("/v3/isolation_segments/%s/relationships/organizations/%s", isoSegGuid, orgGuid),
@@ -143,6 +159,12 @@ func SendRequestWithSpoofedHeader(host, domain string) *http.Response {
 
 func GetSpaceGuidFromName(spaceName string) string {
 	session := cf.Cf("space", spaceName, "--guid")
+	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
+	return strings.TrimSpace(string(bytes))
+}
+
+func GetOrgGuidFromName(orgName string) string {
+	session := cf.Cf("org", orgName, "--guid")
 	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
 	return strings.TrimSpace(string(bytes))
 }
