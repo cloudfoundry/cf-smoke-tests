@@ -4,13 +4,7 @@ memo = "9d963989b50faec0d3ff53d589c0cdf60d1cd5d5382666da0e6bdd7f6198e4c0"
   branch = "master"
   name = "github.com/cloudfoundry-incubator/cf-test-helpers"
   packages = ["cf","commandreporter","commandstarter","generator","helpers","helpers/internal","internal","workflowhelpers","workflowhelpers/internal"]
-  revision = "473573daddfa74cde9779ac421e120f1020aa775"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/nu7hatch/gouuid"
-  packages = ["."]
-  revision = "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
+  revision = "2c7deda19c83f1c2cfde730712b1f36aefc6bf33"
 
 [[projects]]
   name = "github.com/onsi/ginkgo"
