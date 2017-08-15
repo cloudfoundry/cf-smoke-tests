@@ -75,11 +75,11 @@ Below is an example `integration_config.json`:
 }
 ```
 **NOTE** Unless you supply an admin user, you _must_ use an existing space and org.
-Additionally, if you are running the isolation_segment tests without an admin user,
-you must entitle the org to the isolation segment, have a space assigned to the shared segment,
-and provide an isolated space as well.
-If you provide an admin user, you can omit the existing spaces and org,
-and the test setup will create those resources for you before running the test. 
+The tests will only pass if you have configured your environment in a way that allows isolation segments to be tested properly:
+- If you do not provide an admin user, the smoke-tests `org` must be entitled to use the isolation segment and contain two spaces
+    - The space that is referred to as `space` in the smoke-tests config must be assigned to the shared (i.e. not isolated) segment
+    - The space that is referred to as `isolation_segment_space` in the smoke-tests-config must be assigned to the isolation segment
+- Alternatively, you may provide an admin user and omit configuration of the existing spaces to allow smoke-tests to create the testing resources automatically.
 
 
 If you are running the tests against bosh-lite or any other environment using
