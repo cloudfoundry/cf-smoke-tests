@@ -66,6 +66,7 @@ Below is an example `integration_config.json`:
   "logging_app"                     : "",
   "runtime_app"                     : "",
   "enable_windows_tests"            : false,
+  "windows_stack"                   : "windows2012R2",
   "enable_etcd_cluster_check_tests" : false,
   "etcd_ip_address"                 : "",
   "backend"                         : "diego",
@@ -101,6 +102,13 @@ If you have deployed Windows cells, add
 ```
   "enable_windows_tests" : true
 ```
+
+```
+  "windows_stack" : "windows2012R2"
+```
+
+The valid options for `windows_stack` are `windows2012R2` and `windows2016`
+
 
 If you like to validate the security of your etcd cluster, set `enable_etcd_cluster_check_tests` to true and provide the `etcd_ip_address` to be the least restrictive IP that your etcd cluster has (private if that is the only IP etcd has, public otherwise)
 
