@@ -37,9 +37,10 @@ type Config struct {
 
 	Cleanup bool `json:"cleanup"`
 
-	EnableWindowsTests          bool `json:"enable_windows_tests"`
-	EnableEtcdClusterCheckTests bool `json:"enable_etcd_cluster_check_tests"`
-	EnableIsolationSegmentTests bool `json:"enable_isolation_segment_tests"`
+	EnableWindowsTests          bool   `json:"enable_windows_tests"`
+	WindowsStack                string `json:"windows_stack"`
+	EnableEtcdClusterCheckTests bool   `json:"enable_etcd_cluster_check_tests"`
+	EnableIsolationSegmentTests bool   `json:"enable_isolation_segment_tests"`
 
 	EtcdIpAddress string `json:"etcd_ip_address"`
 
@@ -151,6 +152,10 @@ func (c *Config) GetBackend() string {
 	return c.Backend
 }
 
+func (c *Config) GetWindowsStack() string {
+	return c.WindowsStack
+}
+
 // singleton cache
 var cachedConfig *Config
 
@@ -177,6 +182,7 @@ func newDefaultConfig() *Config {
 		UseExistingSpace:            false,
 		Cleanup:                     true,
 		EnableWindowsTests:          false,
+		WindowsStack:                "windows2012R2",
 		EnableEtcdClusterCheckTests: false,
 		EtcdIpAddress:               "",
 	}
