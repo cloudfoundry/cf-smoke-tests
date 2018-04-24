@@ -75,7 +75,7 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 	}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring("It just needed to be restarted!"))
 
 	instances := 2
-	maxAttempts := 30
+	maxAttempts := 120
 
 	ExpectAppToScale(appName, instances)
 
