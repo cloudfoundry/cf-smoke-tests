@@ -26,6 +26,8 @@ type Config struct {
 	UseExistingOrg   bool `json:"use_existing_org"`
 	UseExistingSpace bool `json:"use_existing_space"`
 
+	UseLogCache bool `json:"use_log_cache"`
+
 	// existing app names - if empty the space will be managed and a random app name will be used
 	LoggingApp string `json:"logging_app"`
 	RuntimeApp string `json:"runtime_app"`
