@@ -36,8 +36,9 @@ var _ = Describe("Loggregator:", func() {
 
 			It("can see app messages in the logs", func() {
 				Eventually(func() *Session {
-					appLogsSession := cf.Cf("logs", "--recent", appName)
+					appLogsSession := smoke.Logs(testConfig.UseLogCache, appName)
 					Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+
 					return appLogsSession
 				}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[(App|APP).*/0\]`))
 			})

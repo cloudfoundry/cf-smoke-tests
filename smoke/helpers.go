@@ -55,3 +55,10 @@ func TestResourcesSummary(testConfig *Config) {
 	Expect(cf.Cf("org", testConfig.Org, "--guid").Wait(DEFAULT_TIMEOUT)).To(Exit(0))
 	Expect(cf.Cf("space", testConfig.Space, "--guid").Wait(DEFAULT_TIMEOUT)).To(Exit(0))
 }
+
+func Logs(useLogCache bool, appName string) *Session {
+	if useLogCache {
+		return cf.Cf("tail", appName, "--lines", "125")
+	}
+	return cf.Cf("logs", "--recent", appName)
+}
