@@ -8,8 +8,7 @@ reveal fundamental problems with the system.
 There are four tests in this suite, all of which are pretty simple:
 1. `runtime`: Pushes an app and validates that HTTP requests are properly routed to the app.
 2. `logging`: Pushes an app and validates that logs can be fetched for the app.
-3. `etcd_cluster_check`: Pushes an app and validates that app instances cannot reach the IP addresses of the etcd cluster.
-4. `isolation_segments`: Entitles an org to an isolation segment and pushes two apps,
+3. `isolation_segments`: Entitles an org to an isolation segment and pushes two apps,
   one to the isolation segment, and one to the shared segment.
   The test validates that isolated apps are only accessed via the isolated router,
   and that apps on the shared segment are only accessed via the shared router.
@@ -62,8 +61,6 @@ Below is an example `integration_config.json`:
   "runtime_app"                     : "",
   "enable_windows_tests"            : false,
   "windows_stack"                   : "windows2012R2",
-  "enable_etcd_cluster_check_tests" : false,
-  "etcd_ip_address"                 : "",
   "isolation_segment_name"          : "is1",
   "isolation_segment_domain"        : "is1.bosh-lite.com",
   "enable_isolation_segment_tests"  : true
@@ -103,8 +100,6 @@ If you have deployed Windows cells, add
 
 The valid options for `windows_stack` are `windows2012R2` and `windows2016`
 
-
-If you like to validate the security of your etcd cluster, set `enable_etcd_cluster_check_tests` to true and provide the `etcd_ip_address` to be the least restrictive IP that your etcd cluster has (private if that is the only IP etcd has, public otherwise)
 
 If you like to run isolation segment test, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain` and set `backend` to `diego`. Test setup assumes that isolation segment API resource with `isolation_segment_name` already exists. For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html)
 

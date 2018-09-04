@@ -41,10 +41,7 @@ type Config struct {
 
 	EnableWindowsTests          bool   `json:"enable_windows_tests"`
 	WindowsStack                string `json:"windows_stack"`
-	EnableEtcdClusterCheckTests bool   `json:"enable_etcd_cluster_check_tests"`
 	EnableIsolationSegmentTests bool   `json:"enable_isolation_segment_tests"`
-
-	EtcdIpAddress string `json:"etcd_ip_address"`
 
 	Backend string `json:"backend"`
 
@@ -172,21 +169,18 @@ func loadConfig() *Config {
 	config := newDefaultConfig()
 	loadConfigFromJson(config)
 	validateRequiredFields(config)
-	validateEtcdClusterCheckTests(config)
 	validateIsolationSegments(config)
 	return config
 }
 
 func newDefaultConfig() *Config {
 	return &Config{
-		ArtifactsDirectory:          filepath.Join("..", "results"),
-		UseExistingOrg:              false,
-		UseExistingSpace:            false,
-		Cleanup:                     true,
-		EnableWindowsTests:          false,
-		WindowsStack:                "windows2012R2",
-		EnableEtcdClusterCheckTests: false,
-		EtcdIpAddress:               "",
+		ArtifactsDirectory: filepath.Join("..", "results"),
+		UseExistingOrg:     false,
+		UseExistingSpace:   false,
+		Cleanup:            true,
+		EnableWindowsTests: false,
+		WindowsStack:       "windows2012R2",
 	}
 }
 
@@ -221,12 +215,6 @@ func validateRequiredFields(config *Config) {
 
 	if config.UseExistingSpace && !config.UseExistingOrg {
 		panic("'UseExistingOrg' must be set if 'UseExistingSpace' is set")
-	}
-}
-
-func validateEtcdClusterCheckTests(config *Config) {
-	if config.EnableEtcdClusterCheckTests == true && config.EtcdIpAddress == "" {
-		panic("when etcd_cluster_check_tests is true, etcd_ip_address must be provided but it was not")
 	}
 }
 
