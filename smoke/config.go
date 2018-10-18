@@ -3,7 +3,6 @@ package smoke
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -175,7 +174,6 @@ func loadConfig() *Config {
 
 func newDefaultConfig() *Config {
 	return &Config{
-		ArtifactsDirectory: filepath.Join("..", "results"),
 		UseExistingOrg:     false,
 		UseExistingSpace:   false,
 		Cleanup:            true,
