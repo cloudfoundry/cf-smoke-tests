@@ -33,9 +33,6 @@ type Config struct {
 
 	ArtifactsDirectory string `json:"artifacts_directory"`
 
-	SyslogDrainPort int    `json:"syslog_drain_port"`
-	SyslogIpAddress string `json:"syslog_ip_address"`
-
 	Cleanup bool `json:"cleanup"`
 
 	EnableWindowsTests          bool   `json:"enable_windows_tests"`
