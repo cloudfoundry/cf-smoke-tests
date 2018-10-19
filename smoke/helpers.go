@@ -11,6 +11,11 @@ import (
 
 var DEFAULT_TIMEOUT = 30 * time.Second
 
+const (
+	SimpleRubyAppBitsPath   = "../../assets/ruby_simple"
+	SimpleDotnetAppBitsPath = "../../assets/dotnet_simple/Published"
+)
+
 func SkipIfNotWindows(testConfig *Config) {
 	if !testConfig.EnableWindowsTests {
 		Skip("Windows tests are disabled")

@@ -2,29 +2,15 @@ package isolation_segments
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"testing"
-	"time"
-
 	. "github.com/onsi/ginkgo"
 	ginkgoconfig "github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
+	"os"
+	"path/filepath"
+	"testing"
 
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
-)
-
-const (
-	SIMPLE_RUBY_APP_BITS_PATH = "../../assets/ruby_simple"
-
-	CF_API_TIMEOUT = 1 * time.Minute
-
-	// timeout for cf scale cli calls
-	CF_SCALE_TIMEOUT_IN_SECONDS = 120
-
-	// timeout for cf app cli calls
-	CF_APP_STATUS_TIMEOUT_IN_SECONDS = 120
 )
 
 func TestSmokeTests(t *testing.T) {
@@ -55,8 +41,4 @@ func jUnitReportFilePath(testConfig *smoke.Config) string {
 
 func ginkgoNode() int {
 	return ginkgoconfig.GinkgoConfig.ParallelNode
-}
-
-func quotaName(prefix string) string {
-	return prefix + "_QUOTA"
 }

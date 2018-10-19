@@ -17,7 +17,6 @@ import (
 const (
 	SHARED_ISOLATION_SEGMENT_GUID = "933b4c58-120b-499a-b85d-4b6fc9e2903b"
 	binaryHi                      = "Hello from a binary"
-	SHARED_ISOLATION_SEGMENT_NAME = "shared"
 	BINARY_APP_BITS_PATH          = "../../assets/binary"
 )
 
