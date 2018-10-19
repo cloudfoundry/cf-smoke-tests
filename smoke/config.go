@@ -133,12 +133,12 @@ func (c *Config) GetNamePrefix() string {
 	return "SMOKE"
 }
 
-func (c *Config) GetDefaultTimeout() int {
-	return 30
+func (c *Config) GetDefaultTimeout() time.Duration {
+	return 30 * time.Second
 }
 
-func (c *Config) GetPushTimeout() int {
-	return 300
+func (c *Config) GetPushTimeout() time.Duration {
+	return 300 * time.Second
 }
 
 func (c *Config) GetWindowsStack() string {

@@ -15,9 +15,6 @@ import (
 )
 
 const (
-	// timeout for most cf cli calls
-	CF_TIMEOUT_IN_SECONDS = 30
-
 	// timeout for cf push cli calls
 	CF_PUSH_TIMEOUT_IN_SECONDS = 300
 )

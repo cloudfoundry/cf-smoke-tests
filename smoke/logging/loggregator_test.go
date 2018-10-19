@@ -13,14 +13,14 @@ import (
 
 var _ = Describe("Loggregator:", func() {
 	var testConfig = smoke.GetConfig()
-	var useExistingApp = (testConfig.LoggingApp != "")
+	var useExistingApp = testConfig.LoggingApp != ""
 	var appName string
 
 	Describe("cf logs", func() {
 		AfterEach(func() {
-			smoke.AppReport(appName, CF_TIMEOUT_IN_SECONDS)
+			smoke.AppReport(appName, testConfig.GetDefaultTimeout())
 			if testConfig.Cleanup && !useExistingApp {
-				Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+				Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 			}
 		})
 
@@ -35,10 +35,10 @@ var _ = Describe("Loggregator:", func() {
 			It("can see app messages in the logs", func() {
 				Eventually(func() *Session {
 					appLogsSession := smoke.Logs(testConfig.UseLogCache, appName)
-					Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+					Expect(appLogsSession.Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 
 					return appLogsSession
-				}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[(App|APP).*/0\]`))
+				}, testConfig.GetDefaultTimeout()*5).Should(Say(`\[(App|APP).*/0\]`))
 			})
 		})
 
@@ -53,9 +53,9 @@ var _ = Describe("Loggregator:", func() {
 			It("can see app messages in the logs", func() {
 				Eventually(func() *Session {
 					appLogsSession := cf.Cf("logs", "--recent", appName)
-					Expect(appLogsSession.Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+					Expect(appLogsSession.Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 					return appLogsSession
-				}, CF_TIMEOUT_IN_SECONDS*5).Should(Say(`\[(App|APP).*/0\]`))
+				}, testConfig.GetDefaultTimeout()*5).Should(Say(`\[(App|APP).*/0\]`))
 			})
 		})
 	})

@@ -36,13 +36,13 @@ var _ = Describe("Runtime:", func() {
 			var err error
 			expectedNullResponse, err = getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
 			return err
-		}, CF_TIMEOUT_IN_SECONDS).Should(BeNil())
+		}, testConfig.GetDefaultTimeout()).Should(BeNil())
 	})
 
 	AfterEach(func() {
-		smoke.AppReport(appName, CF_TIMEOUT_IN_SECONDS)
+		smoke.AppReport(appName, testConfig.GetDefaultTimeout())
 		if testConfig.Cleanup {
-			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 		}
 	})
 
@@ -68,7 +68,7 @@ var _ = Describe("Runtime:", func() {
 func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smoke.Config) {
 	Eventually(func() (string, error) {
 		return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
-	}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring("It just needed to be restarted!"))
+	}, testConfig.GetDefaultTimeout()).Should(ContainSubstring("It just needed to be restarted!"))
 
 	instances := 2
 	maxAttempts := 120
@@ -80,11 +80,11 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 	ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
 
 	if testConfig.Cleanup {
-		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(CF_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 
 		Eventually(func() (string, error) {
 			return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
-		}, CF_TIMEOUT_IN_SECONDS).Should(ContainSubstring(string(expectedNullResponse)))
+		}, testConfig.GetDefaultTimeout()).Should(ContainSubstring(string(expectedNullResponse)))
 	}
 }
 
@@ -141,7 +141,7 @@ func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempt
 			var err error
 			output, err = getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
 			return err
-		}, CF_TIMEOUT_IN_SECONDS).Should(BeNil())
+		}, testConfig.GetDefaultTimeout()).Should(BeNil())
 
 		matches := matcher.FindStringSubmatch(output)
 		if matches == nil {
