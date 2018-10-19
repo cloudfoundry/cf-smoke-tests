@@ -23,8 +23,8 @@ func SkipIfNotWindows(testConfig *Config) {
 }
 
 func AppReport(appName string, timeout time.Duration) {
-	Eventually(cf.Cf("app", appName, "--guid"), timeout*time.Second).Should(Exit())
-	Eventually(cf.Cf("logs", appName, "--recent"), timeout*time.Second).Should(Exit())
+	Eventually(cf.Cf("app", appName, "--guid"), timeout).Should(Exit())
+	Eventually(cf.Cf("logs", appName, "--recent"), timeout).Should(Exit())
 }
 
 func Logs(useLogCache bool, appName string) *Session {

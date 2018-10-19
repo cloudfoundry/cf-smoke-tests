@@ -14,11 +14,6 @@ import (
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
 )
 
-const (
-	// timeout for cf push cli calls
-	CF_PUSH_TIMEOUT_IN_SECONDS = 300
-)
-
 func TestSmokeTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 

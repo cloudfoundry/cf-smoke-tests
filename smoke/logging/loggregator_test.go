@@ -28,7 +28,7 @@ var _ = Describe("Loggregator:", func() {
 			BeforeEach(func() {
 				if !useExistingApp {
 					appName = generator.PrefixedRandomName("SMOKES", "APP")
-					Expect(cf.Cf("push", appName, "-b", "ruby_buildpack", "-p", smoke.SimpleRubyAppBitsPath, "-d", testConfig.AppsDomain).Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+					Expect(cf.Cf("push", appName, "-b", "ruby_buildpack", "-p", smoke.SimpleRubyAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 				}
 			})
 
@@ -47,7 +47,7 @@ var _ = Describe("Loggregator:", func() {
 				smoke.SkipIfNotWindows(testConfig)
 
 				appName = generator.PrefixedRandomName("SMOKES", "APP")
-				Expect(cf.Cf("push", appName, "-p", smoke.SimpleDotnetAppBitsPath, "-d", testConfig.AppsDomain, "-s", testConfig.GetWindowsStack(), "-b", "hwc_buildpack").Wait(CF_PUSH_TIMEOUT_IN_SECONDS)).To(Exit(0))
+				Expect(cf.Cf("push", appName, "-p", smoke.SimpleDotnetAppBitsPath, "-d", testConfig.AppsDomain, "-s", testConfig.GetWindowsStack(), "-b", "hwc_buildpack").Wait(testConfig.GetPushTimeout())).To(Exit(0))
 			})
 
 			It("can see app messages in the logs", func() {
