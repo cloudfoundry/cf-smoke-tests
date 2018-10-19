@@ -88,14 +88,10 @@ var _ = Describe("RoutingIsolationSegments", func() {
 			Eventually(cf.Cf(
 				"push", appName,
 				"-p", BINARY_APP_BITS_PATH,
-				"--no-start",
 				"-b", "binary_buildpack",
 				"-d", appsDomain,
 				"-c", "./app"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
-
-			smoke.SetBackend(appName)
-			Eventually(cf.Cf("start", appName), testConfig.GetDefaultTimeout()).Should(Exit(0))
 		})
 
 		It("is reachable from the shared router", func() {
@@ -134,13 +130,10 @@ var _ = Describe("RoutingIsolationSegments", func() {
 			Eventually(cf.Cf(
 				"push", appName,
 				"-p", BINARY_APP_BITS_PATH,
-				"--no-start",
 				"-b", "binary_buildpack",
 				"-d", isoSegDomain,
 				"-c", "./app"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
-			smoke.SetBackend(appName)
-			Eventually(cf.Cf("start", appName), testConfig.GetDefaultTimeout()).Should(Exit(0))
 		})
 
 		It("the app is reachable from the isolated router", func() {

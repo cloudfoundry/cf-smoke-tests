@@ -42,8 +42,6 @@ type Config struct {
 	WindowsStack                string `json:"windows_stack"`
 	EnableIsolationSegmentTests bool   `json:"enable_isolation_segment_tests"`
 
-	Backend string `json:"backend"`
-
 	TimeoutScale           *float64 `json:"timeout_scale"`
 	IsolationSegmentName   string   `json:"isolation_segment_name"`
 	IsolationSegmentDomain string   `json:"isolation_segment_domain"`
@@ -146,10 +144,6 @@ func (c *Config) GetPushTimeout() int {
 	return 300
 }
 
-func (c *Config) GetBackend() string {
-	return c.Backend
-}
-
 func (c *Config) GetWindowsStack() string {
 	return c.WindowsStack
 }
@@ -219,9 +213,6 @@ func validateRequiredFields(config *Config) {
 func validateIsolationSegments(config *Config) {
 	if !config.EnableIsolationSegmentTests {
 		return
-	}
-	if config.Backend != "diego" {
-		panic("* Invalid Configuration: 'backend' must be set to 'diego' if 'enable_isolation_segment_tests' is true")
 	}
 	if config.IsolationSegmentName == "" {
 		panic("* Invalid configuration: 'isolation_segment_name' must be provided if 'enable_isolation_segment_tests' is true")
