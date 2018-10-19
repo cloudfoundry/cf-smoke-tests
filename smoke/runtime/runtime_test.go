@@ -73,9 +73,9 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 	instances := 2
 	maxAttempts := 120
 
-	ExpectAppToScale(appName, instances)
+	ExpectAppToScale(appName, instances, testConfig.GetScaleTimeout())
 
-	ExpectAllAppInstancesToStart(appName, instances, maxAttempts)
+	ExpectAllAppInstancesToStart(appName, instances, maxAttempts, testConfig.GetAppStatusTimeout())
 
 	ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
 
@@ -88,12 +88,12 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 	}
 }
 
-func ExpectAppToScale(appName string, instances int) {
-	Expect(cf.Cf("scale", appName, "-i", strconv.Itoa(instances)).Wait(CF_SCALE_TIMEOUT_IN_SECONDS)).To(Exit(0))
+func ExpectAppToScale(appName string, instances int, timeout time.Duration) {
+	Expect(cf.Cf("scale", appName, "-i", strconv.Itoa(instances)).Wait(timeout)).To(Exit(0))
 }
 
 // Gets app status (up to maxAttempts) until all instances are up
-func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int) {
+func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int, timeout time.Duration) {
 	var found bool
 	expectedOutput := regexp.MustCompile(fmt.Sprintf(`instances:\s+%d/%d`, instances, instances))
 
@@ -104,7 +104,7 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 
 	for i := 0; i < maxAttempts; i++ {
 		session := cf.Cf("app", appName)
-		Expect(session.Wait(CF_APP_STATUS_TIMEOUT_IN_SECONDS)).To(Exit(0))
+		Expect(session.Wait(timeout)).To(Exit(0))
 
 		output := string(session.Out.Contents())
 		found = expectedOutput.MatchString(output)

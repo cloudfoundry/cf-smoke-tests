@@ -141,6 +141,14 @@ func (c *Config) GetPushTimeout() time.Duration {
 	return 300 * time.Second
 }
 
+func (c *Config) GetScaleTimeout() time.Duration {
+	return 120 * time.Second
+}
+
+func (c *Config) GetAppStatusTimeout() time.Duration {
+	return 120 * time.Second
+}
+
 func (c *Config) GetWindowsStack() string {
 	return c.WindowsStack
 }
