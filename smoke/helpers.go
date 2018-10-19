@@ -11,7 +11,7 @@ import (
 
 var DEFAULT_TIMEOUT = 30 * time.Second
 
-func SkipIfWindows(testConfig *Config) {
+func SkipIfNotWindows(testConfig *Config) {
 	if !testConfig.EnableWindowsTests {
 		Skip("Windows tests are disabled")
 	}
