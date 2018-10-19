@@ -9,8 +9,6 @@ import (
 	. "github.com/onsi/gomega/gexec"
 )
 
-var DEFAULT_TIMEOUT = 30 * time.Second
-
 const (
 	SimpleRubyAppBitsPath   = "../../assets/ruby_simple"
 	SimpleDotnetAppBitsPath = "../../assets/dotnet_simple/Published"

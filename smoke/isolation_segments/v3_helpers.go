@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 
@@ -13,45 +14,28 @@ import (
 	. "github.com/onsi/gomega/gexec"
 )
 
-const (
-	CF_TIMEOUT_IN_SECONDS   = 30
-)
-
-func AssignIsolationSegmentToSpace(spaceGuid, isoSegGuid string) {
-	Eventually(cf.Cf("curl", fmt.Sprintf("/v3/spaces/%s/relationships/isolation_segment", spaceGuid),
+func AssignIsolationSegmentToSpace(spaceGUID, isoSegGUID string, timeout time.Duration) {
+	Eventually(cf.Cf("curl", fmt.Sprintf("/v3/spaces/%s/relationships/isolation_segment", spaceGUID),
 		"-X",
 		"PATCH",
 		"-d",
-		fmt.Sprintf(`{"data":{"guid":"%s"}}`, isoSegGuid)),
-		CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		fmt.Sprintf(`{"data":{"guid":"%s"}}`, isoSegGUID)),
+		timeout).Should(Exit(0))
 }
 
-func CreateIsolationSegment(name string) string {
-	session := cf.Cf("curl", "/v3/isolation_segments", "-X", "POST", "-d", fmt.Sprintf(`{"name":"%s"}`, name))
-	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
-
-	var isolation_segment struct {
-		Guid string `json:"guid"`
-	}
-	err := json.Unmarshal(bytes, &isolation_segment)
-	Expect(err).ToNot(HaveOccurred())
-
-	return isolation_segment.Guid
-}
-
-func EntitleOrgToIsolationSegment(orgGuid, isoSegGuid string) {
+func EntitleOrgToIsolationSegment(orgGUID, isoSegGUID string, timeout time.Duration) {
 	Eventually(cf.Cf("curl",
-		fmt.Sprintf("/v3/isolation_segments/%s/relationships/organizations", isoSegGuid),
+		fmt.Sprintf("/v3/isolation_segments/%s/relationships/organizations", isoSegGUID),
 		"-X",
 		"POST",
 		"-d",
-		fmt.Sprintf(`{"data":[{ "guid":"%s" }]}`, orgGuid)),
-		CF_TIMEOUT_IN_SECONDS).Should(Exit(0))
+		fmt.Sprintf(`{"data":[{ "guid":"%s" }]}`, orgGUID)),
+		timeout).Should(Exit(0))
 }
 
-func GetGuidFromResponse(response []byte) string {
+func GetGUIDFromResponse(response []byte) string {
 	type resource struct {
-		Guid string `json:"guid"`
+		GUID string `json:"guid"`
 	}
 	var GetResponse struct {
 		Resources []resource `json:"resources"`
@@ -64,21 +48,21 @@ func GetGuidFromResponse(response []byte) string {
 		Fail("No guid found for response")
 	}
 
-	return GetResponse.Resources[0].Guid
+	return GetResponse.Resources[0].GUID
 }
 
-func GetIsolationSegmentGuid(name string) string {
+func GetIsolationSegmentGUID(name string, timeout time.Duration) string {
 	session := cf.Cf("curl", fmt.Sprintf("/v3/isolation_segments?names=%s", name))
-	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
-	return GetGuidFromResponse(bytes)
+	bytes := session.Wait(timeout).Out.Contents()
+	return GetGUIDFromResponse(bytes)
 }
 
-func OrgEntitledToIsolationSegment(orgGuid string, isoSegName string) bool {
-	session := cf.Cf("curl", fmt.Sprintf("/v3/isolation_segments?names=%s&organization_guids=%s", isoSegName, orgGuid))
-	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
+func OrgEntitledToIsolationSegment(orgGUID string, isoSegName string, timeout time.Duration) bool {
+	session := cf.Cf("curl", fmt.Sprintf("/v3/isolation_segments?names=%s&organization_guids=%s", isoSegName, orgGUID))
+	bytes := session.Wait(timeout).Out.Contents()
 
 	type resource struct {
-		Guid string `json:"guid"`
+		GUID string `json:"guid"`
 	}
 	var GetResponse struct {
 		Resources []resource `json:"resources"`
@@ -89,11 +73,11 @@ func OrgEntitledToIsolationSegment(orgGuid string, isoSegName string) bool {
 	return len(GetResponse.Resources) > 0
 }
 
-func IsolationSegmentAssignedToSpace(isoSegName string, spaceGuid string) bool {
-	session := cf.Cf("curl", fmt.Sprintf("/v2/spaces/%s", spaceGuid))
-	response := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
+func IsolationSegmentAssignedToSpace(spaceGUID string, timeout time.Duration) bool {
+	session := cf.Cf("curl", fmt.Sprintf("/v2/spaces/%s", spaceGUID))
+	response := session.Wait(timeout).Out.Contents()
 	type entity struct {
-		Guid string `json:"isolation_segment_guid"`
+		GUID string `json:"isolation_segment_guid"`
 	}
 	var SpaceResponse struct {
 		Entity entity `json:"entity"`
@@ -102,7 +86,7 @@ func IsolationSegmentAssignedToSpace(isoSegName string, spaceGuid string) bool {
 	err := json.Unmarshal(response, &SpaceResponse)
 	Expect(err).ToNot(HaveOccurred())
 
-	return SpaceResponse.Entity.Guid != ""
+	return SpaceResponse.Entity.GUID != ""
 }
 
 func SendRequestWithSpoofedHeader(host, domain string) *http.Response {
@@ -114,14 +98,14 @@ func SendRequestWithSpoofedHeader(host, domain string) *http.Response {
 	return resp
 }
 
-func GetSpaceGuidFromName(spaceName string) string {
+func GetSpaceGUIDFromName(spaceName string, timeout time.Duration) string {
 	session := cf.Cf("space", spaceName, "--guid")
-	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
+	bytes := session.Wait(timeout).Out.Contents()
 	return strings.TrimSpace(string(bytes))
 }
 
-func GetOrgGuidFromName(orgName string) string {
+func GetOrgGUIDFromName(orgName string, timeout time.Duration) string {
 	session := cf.Cf("org", orgName, "--guid")
-	bytes := session.Wait(CF_TIMEOUT_IN_SECONDS).Out.Contents()
+	bytes := session.Wait(timeout).Out.Contents()
 	return strings.TrimSpace(string(bytes))
 }

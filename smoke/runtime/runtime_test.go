@@ -21,7 +21,7 @@ import (
 var _ = Describe("Runtime:", func() {
 	var testConfig = smoke.GetConfig()
 	var appName string
-	var appUrl string
+	var appURL string
 	var expectedNullResponse string
 
 	BeforeEach(func() {
@@ -30,11 +30,11 @@ var _ = Describe("Runtime:", func() {
 			appName = generator.PrefixedRandomName("SMOKES", "APP")
 		}
 
-		appUrl = "https://" + appName + "." + testConfig.AppsDomain
+		appURL = "https://" + appName + "." + testConfig.AppsDomain
 
 		Eventually(func() error {
 			var err error
-			expectedNullResponse, err = getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
+			expectedNullResponse, err = getBodySkipSSL(testConfig.SkipSSLValidation, appURL)
 			return err
 		}, testConfig.GetDefaultTimeout()).Should(BeNil())
 	})
@@ -50,7 +50,7 @@ var _ = Describe("Runtime:", func() {
 		It("can be pushed, scaled and deleted", func() {
 			Expect(cf.Cf("push", "-b", "ruby_buildpack", appName, "-p", smoke.SimpleRubyAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 
-			runPushTests(appName, appUrl, expectedNullResponse, testConfig)
+			runPushTests(appName, appURL, expectedNullResponse, testConfig)
 		})
 	})
 
@@ -60,14 +60,14 @@ var _ = Describe("Runtime:", func() {
 
 			Expect(cf.Cf("push", appName, "-p", smoke.SimpleDotnetAppBitsPath, "-d", testConfig.AppsDomain, "-s", testConfig.GetWindowsStack(), "-b", "hwc_buildpack").Wait(testConfig.GetPushTimeout())).To(Exit(0))
 
-			runPushTests(appName, appUrl, expectedNullResponse, testConfig)
+			runPushTests(appName, appURL, expectedNullResponse, testConfig)
 		})
 	})
 })
 
-func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smoke.Config) {
+func runPushTests(appName, appURL, expectedNullResponse string, testConfig *smoke.Config) {
 	Eventually(func() (string, error) {
-		return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
+		return getBodySkipSSL(testConfig.SkipSSLValidation, appURL)
 	}, testConfig.GetDefaultTimeout()).Should(ContainSubstring("It just needed to be restarted!"))
 
 	instances := 2
@@ -77,13 +77,13 @@ func runPushTests(appName, appUrl, expectedNullResponse string, testConfig *smok
 
 	ExpectAllAppInstancesToStart(appName, instances, maxAttempts, testConfig.GetAppStatusTimeout())
 
-	ExpectAllAppInstancesToBeReachable(appUrl, instances, maxAttempts)
+	ExpectAllAppInstancesToBeReachable(appURL, instances, maxAttempts)
 
 	if testConfig.Cleanup {
 		Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 
 		Eventually(func() (string, error) {
-			return getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
+			return getBodySkipSSL(testConfig.SkipSSLValidation, appURL)
 		}, testConfig.GetDefaultTimeout()).Should(ContainSubstring(string(expectedNullResponse)))
 	}
 }
@@ -128,8 +128,8 @@ func ExpectAllAppInstancesToStart(appName string, instances int, maxAttempts int
 	Expect(found).To(BeTrue(), fmt.Sprintf("Wanted to see '%s' (all instances running) in %d attempts, but didn't", expectedOutput, maxAttempts))
 }
 
-// Curls the appUrl (up to maxAttempts) until all instances have been seen
-func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempts int) {
+// Curls the appURL (up to maxAttempts) until all instances have been seen
+func ExpectAllAppInstancesToBeReachable(appURL string, instances int, maxAttempts int) {
 	matcher := regexp.MustCompile(`instance[ _]index["]{0,1}:[ ]{0,1}(\d+)`)
 
 	branchesSeen := make([]bool, instances)
@@ -139,7 +139,7 @@ func ExpectAllAppInstancesToBeReachable(appUrl string, instances int, maxAttempt
 		var output string
 		Eventually(func() error {
 			var err error
-			output, err = getBodySkipSSL(testConfig.SkipSSLValidation, appUrl)
+			output, err = getBodySkipSSL(testConfig.SkipSSLValidation, appURL)
 			return err
 		}, testConfig.GetDefaultTimeout()).Should(BeNil())
 

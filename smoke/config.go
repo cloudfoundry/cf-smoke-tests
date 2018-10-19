@@ -11,7 +11,7 @@ type Config struct {
 
 	Reporter string `json:"reporter"`
 
-	ApiEndpoint string `json:"api"`
+	APIEndpoint string `json:"api"`
 	AppsDomain  string `json:"apps_domain"`
 
 	SkipSSLValidation bool `json:"skip_ssl_validation"`
@@ -58,7 +58,7 @@ func (c *Config) GetIsolationSegmentSpace() string {
 }
 
 func (c *Config) GetApiEndpoint() string {
-	return c.ApiEndpoint
+	return c.APIEndpoint
 }
 
 func (c *Config) GetConfigurableTestPassword() string {
@@ -165,7 +165,7 @@ func GetConfig() *Config {
 
 func loadConfig() *Config {
 	config := newDefaultConfig()
-	loadConfigFromJson(config)
+	loadConfigFromJSON(config)
 	validateRequiredFields(config)
 	validateIsolationSegments(config)
 	return config
@@ -186,7 +186,7 @@ func validateRequiredFields(config *Config) {
 		panic("missing configuration 'suite_name'")
 	}
 
-	if config.ApiEndpoint == "" {
+	if config.APIEndpoint == "" {
 		panic("missing configuration 'api'")
 	}
 
@@ -231,7 +231,7 @@ func validateIsolationSegments(config *Config) {
 }
 
 // Loads the config from json into the supplied config object
-func loadConfigFromJson(config *Config) {
+func loadConfigFromJSON(config *Config) {
 	path := configPath()
 
 	configFile, err := os.Open(path)
