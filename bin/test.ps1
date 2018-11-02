@@ -23,4 +23,4 @@ if ($LASTEXITCODE -ne 0) {
 $env:CF_DIAL_TIMEOUT=11
 
 ginkgo.exe -r --succinct -slowSpecThreshold=300 $args
-
+exit $LASTEXITCODE
