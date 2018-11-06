@@ -5,7 +5,7 @@ Smoke tests are a suite of basic core functionality tests for Cloud Foundry.
 They are suitable as an initial test against a new or updated deployment to
 reveal fundamental problems with the system.
 
-There are four tests in this suite, all of which are pretty simple:
+There are three tests in this suite, all of which are pretty simple:
 1. `runtime`: Pushes an app and validates that HTTP requests are properly routed to the app.
 2. `logging`: Pushes an app and validates that logs can be fetched for the app.
 3. `isolation_segments`: Entitles an org to an isolation segment and pushes two apps,
