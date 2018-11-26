@@ -1,41 +1,52 @@
 package internal
 
 import (
-	"github.com/cloudfoundry-incubator/cf-test-helpers/internal"
-	"github.com/onsi/gomega/gexec"
+	"fmt"
+	"os"
 	"time"
+
+	"github.com/cloudfoundry-incubator/cf-test-helpers/internal"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gexec"
 )
 
-func CfAuth(cmdStarter internal.Starter, reporter internal.Reporter, user string, password string, ) *gexec.Session {
+const VerboseAuth = "RELINT_VERBOSE_AUTH"
+const CFAuthRetries = 2
+
+func CfAuth(cmdStarter internal.Starter, reporter internal.Reporter, user string, password string, timeout time.Duration) error {
 	var auth *gexec.Session
 	var err error
+	var failures []string
 
-	retries := 2
-	for i := 1; i <= retries; i++ {
-		auth, err = cmdStarter.Start(reporter, "cf", "auth", user, password)
+	args := []string{"auth", user, password}
+	if os.Getenv(VerboseAuth) == "true" {
+		args = append(args, "-v")
+	}
+
+	for i := 0; i < CFAuthRetries; i++ {
+		auth, err = cmdStarter.Start(reporter, "cf", args...)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
-		if i < retries {
-			// retry timeouts if not final retry
-			failures := InterceptGomegaFailures(func() {
-				auth.Wait(5)
-			})
-			if len(failures) != 0 {
-				continue
-			}
-		} else {
-			auth.Wait(5)
+		failures = InterceptGomegaFailures(func() {
+			auth.Wait(timeout)
+		})
+
+		if len(failures) == 0 && auth.ExitCode() == 0 {
+			return nil
 		}
 
-		returnVal := auth.ExitCode()
-		if returnVal == 0 {
-			return auth
-		}
 		time.Sleep(1 * time.Second)
 	}
 
-	return auth
+	if len(failures) != 0  {
+		return fmt.Errorf("cf auth command timed out: %s", failures)
+	}
+
+	if auth.ExitCode() != 0 {
+		return fmt.Errorf("cf auth command exited with %d", auth.ExitCode())
+	}
+
+	return nil
 }

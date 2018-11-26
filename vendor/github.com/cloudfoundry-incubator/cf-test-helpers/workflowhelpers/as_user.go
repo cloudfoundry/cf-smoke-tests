@@ -12,13 +12,11 @@ type userContext interface {
 	TargetSpace()
 }
 
-var AsUser = func(uc userContext, timeout time.Duration, actions func()) {
+func AsUser(uc userContext, timeout time.Duration, actions func()) {
 	originalCfHomeDir, currentCfHomeDir := uc.SetCfHomeDir()
 	uc.Login()
-	defer func() {
-		uc.Logout()
-		uc.UnsetCfHomeDir(originalCfHomeDir, currentCfHomeDir)
-	}()
+	defer uc.Logout()
+	defer uc.UnsetCfHomeDir(originalCfHomeDir, currentCfHomeDir)
 
 	uc.TargetSpace()
 	actions()
