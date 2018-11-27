@@ -2,21 +2,29 @@ package isolation_segments
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo"
-	ginkgoconfig "github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/reporters"
-	. "github.com/onsi/gomega"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers"
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
+	ginkgoconfig "github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/reporters"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+var (
+	testSetup  *workflowhelpers.ReproducibleTestSuiteSetup
+	testConfig *smoke.Config
 )
 
 func TestSmokeTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	testConfig := smoke.GetConfig()
+	testConfig = smoke.GetConfig()
+	testSetup = workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
 	rs := []Reporter{}
 
 	if testConfig.ArtifactsDirectory != "" {
@@ -30,6 +38,16 @@ func TestSmokeTests(t *testing.T) {
 
 	RunSpecsWithDefaultAndCustomReporters(t, "CF-Isolation-Segment-Smoke-Tests", rs)
 }
+
+var _ = SynchronizedBeforeSuite(func() []byte {
+	testSetup.Setup()
+	return nil
+}, func(data []byte) {})
+
+var _ = SynchronizedAfterSuite(func() {
+}, func() {
+	testSetup.Teardown()
+})
 
 func traceLogFilePath(testConfig *smoke.Config) string {
 	return filepath.Join(testConfig.ArtifactsDirectory, fmt.Sprintf("CF-TRACE-%s-%d.txt", testConfig.SuiteName, ginkgoNode()))

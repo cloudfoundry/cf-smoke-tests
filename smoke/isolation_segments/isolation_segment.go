@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/cloudfoundry/cf-smoke-tests/smoke"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gexec"
@@ -21,25 +20,22 @@ const (
 )
 
 var _ = Describe("RoutingIsolationSegments", func() {
-	var appsDomain string
-	var orgGUID, orgName string
-	var spaceGUID, spaceName string
-	var isoSpaceGUID, isoSpaceName string
-	var isoSegGUID string
-	var isoSegName, isoSegDomain string
-	var testSetup *workflowhelpers.ReproducibleTestSuiteSetup
-	var testConfig *smoke.Config
-	var appName string
+	var (
+		appsDomain                 string
+		orgGUID, orgName           string
+		spaceGUID, spaceName       string
+		isoSpaceGUID, isoSpaceName string
+		isoSegGUID                 string
+		isoSegName, isoSegDomain   string
+		appName                    string
+	)
 
 	BeforeEach(func() {
 		// New up a organization since we will be assigning isolation segments.
 		// This has a potential to cause other tests to fail if running in parallel mode.
-		testConfig = smoke.GetConfig()
 		if testConfig.EnableIsolationSegmentTests != true {
 			Skip("Skipping because EnableIsolationSegmentTests flag is set to false")
 		}
-		testSetup = workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
-		testSetup.Setup()
 
 		appsDomain = testConfig.GetAppsDomains()
 		orgName = testSetup.RegularUserContext().Org
@@ -73,7 +69,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		if testConfig.Cleanup {
 			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 		}
-		testSetup.Teardown()
 	})
 
 	Context("When an app is pushed to a space assigned the shared isolation segment", func() {
@@ -83,7 +78,11 @@ var _ = Describe("RoutingIsolationSegments", func() {
 					EntitleOrgToIsolationSegment(orgGUID, sharedIsolationSegmentGUID, testConfig.GetDefaultTimeout())
 					AssignIsolationSegmentToSpace(spaceGUID, sharedIsolationSegmentGUID, testConfig.GetDefaultTimeout())
 				})
+
+				testSetup.RegularUserContext().Login()
+				testSetup.RegularUserContext().TargetSpace()
 			}
+
 			Eventually(cf.Cf(
 				"push", appName,
 				"-p", binaryAppBitsPath,
