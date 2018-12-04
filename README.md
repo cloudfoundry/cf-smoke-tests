@@ -1,6 +1,16 @@
 CF Smoke Tests
 ==============
+## Overview
 
+1. [Purpose](#purpose)
+1. [Test Setup](#test-setup)
+  1. [Dependencies](#dependencies)
+  1. [Config](#config)
+1. [Running Tests](#running-tests)
+1. [Contribution To Smoke Tests](#contributing-to-smoke-tests)
+
+
+## Purpose
 Smoke tests are a suite of basic core functionality tests for Cloud Foundry.
 They are suitable as an initial test against a new or updated deployment to
 reveal fundamental problems with the system.
@@ -19,10 +29,9 @@ Tests](https://github.com/cloudfoundry/cf-acceptance-tests) do perform this
 more extensive testing, although they are designed to be run as part of a
 development pipeline and not against production environments.
 
+## Test Setup
 
-## Running the tests
-
-### Set up your `go` environment
+### Dependencies
 
 Set up your golang development environment, [per golang.org](http://golang.org/doc/install).
 
@@ -41,12 +50,12 @@ code in the package.
 (Alternatively, you can simply `cd` into the directory
 and run `git pull`.)
 
-### Test Setup
-
 To run the CF Smoke tests, you will need:
 - a running CF instance
 - an environment variable `$CONFIG` which points to a `.json` file that
 contains the application domain
+
+### Config
 
 Below is an example `integration_config.json`:
 ```json
@@ -66,44 +75,73 @@ Below is an example `integration_config.json`:
   "enable_isolation_segment_tests"  : true
 }
 ```
-**NOTE** Unless you supply an admin user, you _must_ use an existing space and org.
+The following are special case configurations.
+
+#### Credentials
+Must supply one of the following login credentials.
+
+- User credentials
+```json
+  "user":     "username",
+  "password": "password"
+```
+- Client credentials
+```json
+  "client":        "client-name",
+  "client_secret": "client-secret"
+```
+
+**NOTE** Unless you supply admin credentials, you _must_ use an existing space and org.
 The tests will only pass if you have configured your environment in a way that allows isolation segments to be tested properly:
-- If you do not provide an admin user, the smoke-tests `org` must be entitled to use the isolation segment and contain two spaces
+- If you do not provide admin credentials, the smoke-tests `org` must be entitled to use the isolation segment and contain two spaces
     - The space that is referred to as `space` in the smoke-tests config must be assigned to the shared (i.e. not isolated) segment
     - The space that is referred to as `isolation_segment_space` in the smoke-tests-config must be assigned to the isolation segment
 - Alternatively, you may provide an admin user and omit configuration of the existing spaces to allow smoke-tests to create the testing resources automatically.
 
-
+#### Skip SSL validation
 If you are running the tests against bosh-lite or any other environment using
 self-signed certificates, add
 
-```
+```json
   "skip_ssl_validation": true
 ```
-
+#### Org and space cleanup
 If you would like to preserve the organization, space, and app created during the
 tests for debugging, add
 
-```
+```json
   "cleanup": false
 ```
+#### Windows
 
 If you have deployed Windows cells, add
 
-```
-  "enable_windows_tests" : true
-```
-
-```
-  "windows_stack" : "windows2012R2"
+```json
+  "enable_windows_tests": true,
+  "windows_stack":        "windows2012R2"
 ```
 
-The valid options for `windows_stack` are `windows2012R2` and `windows2016`
+The valid options for `windows_stack` are `windows2012R2` and `windows2016`.
 
 
-If you like to run isolation segment test, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain` and set `backend` to `diego`. Test setup assumes that isolation segment API resource with `isolation_segment_name` already exists. For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html)
+If you like to run isolation segment test, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain` and set `backend` to `diego`. Test setup assumes that isolation segment API resource with `isolation_segment_name` already exists. For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html).
 
-### Test Execution
+#### Artifacts directory
+To store cf cli trace output, set
+```
+  "artifacts_directory": "/tmp/smoke-artifacts"
+```
+
+The following files may be created:
+
+```bash
+CF-TRACE-Smoke-1.txt
+CF-TRACE-Smoke-2.txt
+junit-Applications-1.xml
+...
+```
+
+## Running Tests
 
 To execute the tests, run:
 
@@ -121,7 +159,7 @@ For example, to execute tests in parallel across two processes one would run:
 ./bin/test -nodes=2
 ```
 
-#### Seeing command-line output
+### Seeing command-line output
 
 To see verbose output from `cf`, use [ginkgo](https://github.com/onsi/ginkgo)'s `-v` flag.
 
@@ -129,24 +167,13 @@ To see verbose output from `cf`, use [ginkgo](https://github.com/onsi/ginkgo)'s 
 ./bin/test -v
 ```
 
-#### Capturing CF CLI output
+### Capturing CF CLI output
 
-Set '`artifacts_directory`' in your `integration_config.json` (as shown below)
-to store cf cli trace output. The output files will be saved inside the given
-directory.
+Set '`artifacts_directory`' in your `integration_config.json`.
+to store cf cli trace output.
+The output files will be saved inside the given
+directory. See: [artifacts directory](#artifacts-directory)
 
-```
-  "artifacts_directory": "/tmp/smoke-artifacts"
-```
-
-The following files may be created:
-
-```bash
-CF-TRACE-Smoke-1.txt
-CF-TRACE-Smoke-2.txt
-junit-Applications-1.xml
-...
-```
 
 ## Contributing to Smoke Tests
 
