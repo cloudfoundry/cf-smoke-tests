@@ -16,8 +16,10 @@ type Config struct {
 
 	SkipSSLValidation bool `json:"skip_ssl_validation"`
 
-	User     string `json:"user"`
-	Password string `json:"password"`
+	User         string `json:"user"`
+	Password     string `json:"password"`
+	Client       string `json:"client"`
+	ClientSecret string `json:"client_secret"`
 
 	Org   string `json:"org"`
 	Space string `json:"space"`
@@ -81,16 +83,20 @@ func (c *Config) GetScaledTimeout(timeout time.Duration) time.Duration {
 	return time.Duration(float64(timeout) * *c.TimeoutScale)
 }
 
-func (c *Config) GetAdminPassword() string {
-	return c.Password
-}
-
 func (c *Config) GetExistingUser() string {
 	return c.User
 }
 
 func (c *Config) GetExistingUserPassword() string {
 	return c.Password
+}
+
+func (c *Config) GetExistingClient() string {
+	return c.Client
+}
+
+func (c *Config) GetExistingClientSecret() string {
+	return c.ClientSecret
 }
 
 func (c *Config) GetShouldKeepUser() bool {
@@ -103,6 +109,18 @@ func (c *Config) GetUseExistingUser() bool {
 
 func (c *Config) GetAdminUser() string {
 	return c.User
+}
+
+func (c *Config) GetAdminPassword() string {
+	return c.Password
+}
+
+func (c *Config) GetAdminClient() string {
+	return c.Client
+}
+
+func (c *Config) GetAdminClientSecret() string {
+	return c.ClientSecret
 }
 
 func (c *Config) GetAppsDomains() string {
@@ -194,12 +212,16 @@ func validateRequiredFields(config *Config) {
 		panic("missing configuration 'apps_domain'")
 	}
 
-	if config.User == "" {
-		panic("missing configuration 'user'")
+	if (config.User != "" && config.Password == "") || (config.User == "" && config.Password != "") {
+		panic("missing configuration 'user' with 'password'")
 	}
 
-	if config.Password == "" {
-		panic("missing configuration 'password'")
+	if (config.Client != "" && config.ClientSecret == "") || (config.Client == "" && config.ClientSecret != "") {
+		panic("missing configuration 'client' with 'client_secret'")
+	}
+
+	if (config.User == "") || (config.Client == "") {
+		panic("missing configurations 'user'/'password' or 'client'/'client_secret'")
 	}
 
 	if config.UseExistingOrg && config.Org == "" {
