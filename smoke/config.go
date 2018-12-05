@@ -212,28 +212,23 @@ func validateRequiredFields(config *Config) {
 		panic("missing configuration 'apps_domain'")
 	}
 
-	if (config.User != "" && config.Password == "") || (config.User == "" && config.Password != "") {
-		panic("missing configuration 'user' with 'password'")
-	}
+	missingUserCredentials := config.User == "" || config.Password == ""
+	missingClientCredentials := config.Client == "" || config.ClientSecret == ""
 
-	if (config.Client != "" && config.ClientSecret == "") || (config.Client == "" && config.ClientSecret != "") {
-		panic("missing configuration 'client' with 'client_secret'")
-	}
-
-	if (config.User == "") || (config.Client == "") {
-		panic("missing configurations 'user'/'password' or 'client'/'client_secret'")
+	if missingUserCredentials && missingClientCredentials {
+		panic("missing configuration: you must provide either 'user'/'password' or 'client'/'client_secret'")
 	}
 
 	if config.UseExistingOrg && config.Org == "" {
-		panic("missing configuration 'org'")
+		panic("missing configuration: you must provide 'org' if 'use_existing_org' is true")
 	}
 
 	if config.UseExistingSpace && config.Space == "" {
-		panic("missing configuration 'space'")
+		panic("missing configuration: you must provide 'space' if 'use_existing_space' is true")
 	}
 
 	if config.UseExistingSpace && !config.UseExistingOrg {
-		panic("'UseExistingOrg' must be set if 'UseExistingSpace' is set")
+		panic("missing configuration: 'use_existing_org' must be set if 'use_existing_space' is set")
 	}
 }
 
