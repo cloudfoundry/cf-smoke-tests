@@ -4,8 +4,8 @@ CF Smoke Tests
 
 1. [Purpose](#purpose)
 1. [Test Setup](#test-setup)
-  1. [Dependencies](#dependencies)
-  1. [Config](#config)
+    1. [Dependencies](#dependencies)
+    1. [Config](#config)
 1. [Running Tests](#running-tests)
 1. [Contribution To Smoke Tests](#contributing-to-smoke-tests)
 
