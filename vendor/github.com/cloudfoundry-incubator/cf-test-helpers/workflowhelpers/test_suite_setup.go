@@ -131,7 +131,9 @@ func (testSetup *ReproducibleTestSuiteSetup) Setup() {
 		if !testSetup.SkipUserCreation {
 			testSetup.TestUser.Create()
 		}
-		testSetup.regularUserContext.AddUserToSpace()
+		if !testSetup.RegularUserContext().UseClientCredentials {
+			testSetup.regularUserContext.AddUserToSpace()
+		}
 	})
 	testSetup.originalCfHomeDir, testSetup.currentCfHomeDir = testSetup.regularUserContext.SetCfHomeDir()
 	testSetup.regularUserContext.Login()
