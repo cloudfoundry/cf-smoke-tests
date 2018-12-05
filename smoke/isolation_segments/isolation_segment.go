@@ -28,6 +28,7 @@ var (
 var _ = Describe("RoutingIsolationSegments", func() {
 	var appsDomain string
 	var orgGUID, orgName string
+	var spaceGUID, spaceName string
 	var isoSpaceGUID, isoSpaceName string
 	var isoSegGUID string
 	var isoSegName, isoSegDomain string
@@ -39,13 +40,12 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		}
 
 		appsDomain = testConfig.GetAppsDomains()
-
 		orgName = testSetup.RegularUserContext().Org
 		orgGUID = GetOrgGUIDFromName(orgName, testConfig.GetDefaultTimeout())
-
-		isoSpaceName = testSetup.RegularUserContext().Space
-		isoSpaceGUID = GetSpaceGUIDFromName(isoSpaceName, testConfig.GetDefaultTimeout())
-
+		spaceName = testSetup.RegularUserContext().Space
+		spaceGUID = GetSpaceGUIDFromName(spaceName, testConfig.GetDefaultTimeout())
+		isoSpaceName = spaceName
+		isoSpaceGUID = spaceGUID
 		appName = generator.PrefixedRandomName("SMOKES", "APP")
 
 		isoSegName = testConfig.GetIsolationSegmentName()
@@ -78,7 +78,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 			if !testConfig.GetUseExistingOrganization() && !testConfig.GetUseExistingSpace() {
 				workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
 					EntitleOrgToIsolationSegment(orgGUID, sharedIsolationSegmentGUID, testConfig.GetDefaultTimeout())
-					AssignIsolationSegmentToSpace(isoSpaceGUID, sharedIsolationSegmentGUID, testConfig.GetDefaultTimeout())
+					AssignIsolationSegmentToSpace(spaceGUID, sharedIsolationSegmentGUID, testConfig.GetDefaultTimeout())
 				})
 			}
 			Eventually(cf.Cf(
