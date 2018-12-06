@@ -20,11 +20,6 @@ const (
 	binaryAppBitsPath          = "../../assets/binary"
 )
 
-var (
-	testConfig *smoke.Config
-	testSetup  *workflowhelpers.ReproducibleTestSuiteSetup
-)
-
 var _ = Describe("RoutingIsolationSegments", func() {
 	var appsDomain string
 	var orgGUID, orgName string
@@ -32,12 +27,19 @@ var _ = Describe("RoutingIsolationSegments", func() {
 	var isoSpaceGUID, isoSpaceName string
 	var isoSegGUID string
 	var isoSegName, isoSegDomain string
+	var testSetup *workflowhelpers.ReproducibleTestSuiteSetup
+	var testConfig *smoke.Config
 	var appName string
 
 	BeforeEach(func() {
+		// New up a organization since we will be assigning isolation segments.
+		// This has a potential to cause other tests to fail if running in parallel mode.
+		testConfig = smoke.GetConfig()
 		if testConfig.EnableIsolationSegmentTests != true {
 			Skip("Skipping because EnableIsolationSegmentTests flag is set to false")
 		}
+		testSetup = workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
+		testSetup.Setup()
 
 		appsDomain = testConfig.GetAppsDomains()
 		orgName = testSetup.RegularUserContext().Org
@@ -71,6 +73,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		if testConfig.Cleanup {
 			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
 		}
+		testSetup.Teardown()
 	})
 
 	Context("When an app is pushed to a space assigned the shared isolation segment", func() {
