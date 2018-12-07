@@ -33,6 +33,14 @@ func EntitleOrgToIsolationSegment(orgGUID, isoSegGUID string, timeout time.Durat
 		timeout).Should(Exit(0))
 }
 
+func ResetSpaceIsolationSegment(spaceName, isoSegName string, timeout time.Duration) {
+	Eventually(cf.Cf("reset-space-isolation-segment", spaceName, isoSegName), timeout).Should(Exit(0))
+}
+
+func DisableOrgIsolationSegment(orgName, isoSegName string, timeout time.Duration) {
+	Eventually(cf.Cf("disable-org-isolation", orgName, isoSegName), timeout).Should(Exit(0))
+}
+
 func GetGUIDFromResponse(response []byte) string {
 	type resource struct {
 		GUID string `json:"guid"`
@@ -51,10 +59,20 @@ func GetGUIDFromResponse(response []byte) string {
 	return GetResponse.Resources[0].GUID
 }
 
+func CreateIsolationSegment(name string, timeout time.Duration) {
+	session := cf.Cf("create-isolation-segment", name)
+	Eventually(session, timeout).Should(Exit(0))
+}
+
 func GetIsolationSegmentGUID(name string, timeout time.Duration) string {
 	session := cf.Cf("curl", fmt.Sprintf("/v3/isolation_segments?names=%s", name))
 	bytes := session.Wait(timeout).Out.Contents()
 	return GetGUIDFromResponse(bytes)
+}
+
+func DeleteIsolationSegment(name string, timeout time.Duration) {
+	session := cf.Cf("delete-isolation-segment", name, "-f")
+	Eventually(session, timeout).Should(Exit(0))
 }
 
 func OrgEntitledToIsolationSegment(orgGUID string, isoSegName string, timeout time.Duration) bool {

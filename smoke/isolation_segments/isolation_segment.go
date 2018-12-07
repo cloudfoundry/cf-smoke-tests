@@ -28,6 +28,7 @@ var (
 var _ = Describe("RoutingIsolationSegments", func() {
 	var appsDomain string
 	var orgGUID, orgName string
+	var spaceName string
 	var isoSpaceGUID, isoSpaceName string
 	var isoSegGUID string
 	var isoSegName, isoSegDomain string
@@ -41,6 +42,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		appsDomain = testConfig.GetAppsDomains()
 
 		orgName = testSetup.RegularUserContext().Org
+		spaceName = testSetup.RegularUserContext().Space
 		orgGUID = GetOrgGUIDFromName(orgName, testConfig.GetDefaultTimeout())
 
 		isoSpaceName = testSetup.RegularUserContext().Space
@@ -73,7 +75,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		}
 	})
 
-	Context("When an app is pushed to a space assigned the shared isolation segment", func() {
+	Context("When an app is pushed to a space that has been assigned the shared isolation segment", func() {
 		BeforeEach(func() {
 			if !testConfig.GetUseExistingOrganization() && !testConfig.GetUseExistingSpace() {
 				workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
@@ -113,6 +115,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		var appName string
 
 		BeforeEach(func() {
+			CreateIsolationSegment(isoSegName, testConfig.GetDefaultTimeout())
 			isoSegGUID = GetIsolationSegmentGUID(isoSegName, testConfig.GetDefaultTimeout())
 			if !testConfig.GetUseExistingOrganization() {
 				EntitleOrgToIsolationSegment(orgGUID, isoSegGUID, testConfig.GetDefaultTimeout())
@@ -130,6 +133,12 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				"-d", isoSegDomain,
 				"-c", "./app"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
+		})
+
+		AfterEach(func() {
+			ResetSpaceIsolationSegment(spaceName, isoSegName, testConfig.GetDefaultTimeout())
+			DisableOrgIsolationSegment(orgName, isoSegName, testConfig.GetDefaultTimeout())
+			DeleteIsolationSegment(isoSegName, testConfig.GetDefaultTimeout())
 		})
 
 		It("the app is reachable from the isolated router", func() {
