@@ -37,8 +37,6 @@ Set up your golang development environment, [per golang.org](http://golang.org/d
 
 Make sure you have the following installed:
 * [git](http://git-scm.com/)
-* [mercurial](http://mercurial.selenic.com/) (for `go get`)
-* [bazaar](http://bazaar.canonical.com/) ( for `go get`)
 * [`cf` CLI](https://github.com/cloudfoundry/cli)
 * [curl](http://curl.haxx.se/)
 
@@ -91,13 +89,6 @@ Must supply one of the following login credentials.
   "client_secret": "client-secret"
 ```
 
-**NOTE** Unless you supply admin credentials, you _must_ use an existing space and org.
-The tests will only pass if you have configured your environment in a way that allows isolation segments to be tested properly:
-- If you do not provide admin credentials, the smoke-tests `org` must be entitled to use the isolation segment and contain two spaces
-    - The space that is referred to as `space` in the smoke-tests config must be assigned to the shared (i.e. not isolated) segment
-    - The space that is referred to as `isolation_segment_space` in the smoke-tests-config must be assigned to the isolation segment
-- Alternatively, you may provide an admin user and omit configuration of the existing spaces to allow smoke-tests to create the testing resources automatically.
-
 #### Skip SSL validation
 If you are running the tests against bosh-lite or any other environment using
 self-signed certificates, add
@@ -124,7 +115,8 @@ If you have deployed Windows cells, add
 The valid options for `windows_stack` are `windows2012R2` and `windows2016`.
 
 
-If you like to run isolation segment test, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain` and set `backend` to `diego`. Test setup assumes that isolation segment API resource with `isolation_segment_name` already exists. For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html).
+If you'd like to run isolation segment tests, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain`.
+For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html).
 
 #### Artifacts directory
 To store cf cli trace output, set
@@ -140,6 +132,46 @@ CF-TRACE-Smoke-2.txt
 junit-Applications-1.xml
 ...
 ```
+
+#### Admin vs. Regular User
+Smoke tests can be configured with
+two types of users.
+
+1. **Regular user**:
+Smoke tests can be configured to run with a non-admin user.
+If you'd like to use a non-admin user, it must be able to
+assign user roles (either `OrgManager` or `SpaceManager`
+roles). Please refer to the [Roles and Permissions for Active Orgs](https://docs.cloudfoundry.org/concepts/roles.html#roles-and-permissions-for-active-orgs)
+documentation for more information.  In this configuration,
+organization and space must be created ahead of time and
+provided as `org` and `space` configuration properties,
+respectively.  Also, `use_existing_org` and
+`use_existing_space` must be set to `true`.  This
+configuration is recommended for tests run against
+environments run by humans, in particular, production
+deployments.
+
+2. **Admin user:**
+Smoke tests can be configured to run using admin credentials.
+Given this configuration,
+the tests may or may not use existing resources like orgs and spaces,
+because an admin user can easily create them.
+This configuration is recommended for tests run against environments created using automation tools,
+for example, CI (continuous integration) environments on development teams.
+
+**NOTE:**
+If you are enabling isolation segments tests and would like
+to use a non-admin user, the existing organization provided
+as `org` configuration property must be entitled to the
+isolation segment provided by `isolation_segment_name`.
+In addition, you need to create a space inside
+`org` and provide it as `isolation_segment_space`.
+`isolation_segment_space` must be assigned the isolation segment
+`isolation_segment_name`.
+
+have the following set up:
+- The smoke-tests `org` must be entitled to use the isolation segment.
+- The space that is referred to as `isolation_segment_space` in the smoke-tests config must be assigned to the isolation segment
 
 ## Running Tests
 
@@ -184,7 +216,7 @@ to verify basic deployment configuration.
 As such, we have some guidelines
 for contributing new tests to this suite.
 
-#### 1. Creating API resources in the test
+#### Creating API resources in the test
 One basic rule for good test design is not to mock the object under test.
 We can translate that idea to a suite like smoke tests in the following way:
 If smoke tests exist to validate deployment configuration,
@@ -204,27 +236,9 @@ Other API resources, like orgs and spaces
 that exist simply to be able to push an app,
 can absolutely be created as part of a test.
 
-#### 2. Admin vs. Regular User workflows
-There are two common user workflows
-that can be validated in smoke tests.
-
-1. **Regular user**:
-Smoke tests are run with a configuration
-that provides a non-admin user.
-In this configuration,
-tests should also expect
-that the org and space used for the tests
-have already been created.
-This workflow is recommended for tests run against environments run by humans
--- in particular, production deployments.
-
-2. **Admin user:**
-Smoke tests are configured to run using admin credentials.
-Given this configuration,
-the tests may or may not use existing resources like orgs and spaces,
-because an admin user can easily create them.
-This configuration is recommended for tests run against environments created using automation tools,
-for example, CI (continuous integration) environments on development teams.
+#### Admin vs. Regular User workflows
+Please refer to the [Regular vs admin user section](#admin-vs.-regular-user)
+to understand the difference between these two workflows.
 
 ### Dependency Management
 

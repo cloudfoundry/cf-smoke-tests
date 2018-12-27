@@ -59,9 +59,14 @@ func GetGUIDFromResponse(response []byte) string {
 	return GetResponse.Resources[0].GUID
 }
 
-func CreateIsolationSegment(name string, timeout time.Duration) {
-	session := cf.Cf("create-isolation-segment", name)
-	Eventually(session, timeout).Should(Exit(0))
+func CreateOrGetIsolationSegment(name string, timeout time.Duration) {
+	isolationSegments := cf.Cf("isolation-segments").Wait(timeout)
+	isolationSegmentsOutput := string(isolationSegments.Out.Contents())
+
+	if !strings.Contains(isolationSegmentsOutput, name) {
+		session := cf.Cf("create-isolation-segment", name)
+		Eventually(session, timeout).Should(Exit(0))
+	}
 }
 
 func GetIsolationSegmentGUID(name string, timeout time.Duration) string {

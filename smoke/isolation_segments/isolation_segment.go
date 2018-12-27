@@ -115,7 +115,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		var appName string
 
 		BeforeEach(func() {
-			CreateIsolationSegment(isoSegName, testConfig.GetDefaultTimeout())
+			CreateOrGetIsolationSegment(isoSegName, testConfig.GetDefaultTimeout())
 			isoSegGUID = GetIsolationSegmentGUID(isoSegName, testConfig.GetDefaultTimeout())
 			if !testConfig.GetUseExistingOrganization() {
 				EntitleOrgToIsolationSegment(orgGUID, isoSegGUID, testConfig.GetDefaultTimeout())
@@ -136,9 +136,12 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		})
 
 		AfterEach(func() {
-			ResetSpaceIsolationSegment(spaceName, isoSegName, testConfig.GetDefaultTimeout())
-			DisableOrgIsolationSegment(orgName, isoSegName, testConfig.GetDefaultTimeout())
-			DeleteIsolationSegment(isoSegName, testConfig.GetDefaultTimeout())
+			if !testConfig.GetUseExistingSpace() {
+				ResetSpaceIsolationSegment(spaceName, isoSegName, testConfig.GetDefaultTimeout())
+			}
+			if !testConfig.GetUseExistingOrganization() {
+				DisableOrgIsolationSegment(orgName, isoSegName, testConfig.GetDefaultTimeout())
+			}
 		})
 
 		It("the app is reachable from the isolated router", func() {
