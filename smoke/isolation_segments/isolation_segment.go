@@ -7,6 +7,7 @@ import (
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
@@ -15,9 +16,8 @@ import (
 )
 
 const (
-	sharedIsolationSegmentGUID = "933b4c58-120b-499a-b85d-4b6fc9e2903b"
-	binaryHi                   = "Hello from a binary"
-	binaryAppBitsPath          = "../../assets/binary"
+	binaryHi          = "Hello from a binary"
+	binaryAppBitsPath = "../../assets/binary"
 )
 
 var (
@@ -77,12 +77,15 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 	Context("When an app is pushed to a space that has been assigned the shared isolation segment", func() {
 		BeforeEach(func() {
-			if !testConfig.GetUseExistingOrganization() && !testConfig.GetUseExistingSpace() {
-				workflowhelpers.AsUser(testSetup.AdminUserContext(), testSetup.ShortTimeout(), func() {
-					EntitleOrgToIsolationSegment(orgGUID, sharedIsolationSegmentGUID, testConfig.GetDefaultTimeout())
-					AssignIsolationSegmentToSpace(isoSpaceGUID, sharedIsolationSegmentGUID, testConfig.GetDefaultTimeout())
-				})
+			if testConfig.GetUseExistingOrganization() {
+				Expect(orgDefaultIsolationSegmentIsShared(orgGUID, testConfig.GetDefaultTimeout())).To(BeTrue(), "Org's default isolation segment is not the shared isolation segment")
 			}
+
+			if testConfig.GetUseExistingSpace() {
+				spaceSession := cf.Cf("space", testConfig.GetExistingSpace()).Wait(testConfig.GetDefaultTimeout())
+				Expect(spaceSession).NotTo(Say(testConfig.GetIsolationSegmentName()), "Space should be assigned to the shared isolation segment")
+			}
+
 			Eventually(cf.Cf(
 				"push", appName,
 				"-p", binaryAppBitsPath,

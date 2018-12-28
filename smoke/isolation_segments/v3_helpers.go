@@ -14,6 +14,8 @@ import (
 	. "github.com/onsi/gomega/gexec"
 )
 
+const sharedIsolationSegmentGUID = "933b4c58-120b-499a-b85d-4b6fc9e2903b"
+
 func AssignIsolationSegmentToSpace(spaceGUID, isoSegGUID string, timeout time.Duration) {
 	Eventually(cf.Cf("curl", fmt.Sprintf("/v3/spaces/%s/relationships/isolation_segment", spaceGUID),
 		"-X",
@@ -131,4 +133,27 @@ func GetOrgGUIDFromName(orgName string, timeout time.Duration) string {
 	session := cf.Cf("org", orgName, "--guid")
 	bytes := session.Wait(timeout).Out.Contents()
 	return strings.TrimSpace(string(bytes))
+}
+
+func orgDefaultIsolationSegmentIsShared(orgGuid string, timeout time.Duration) bool {
+	defaultIsolationSegmentsResponse := cf.Cf("curl", fmt.Sprintf("/v3/organizations/%s/relationships/default_isolation_segment", orgGuid)).Wait(timeout)
+
+	var response struct {
+		Data *struct{
+			GUID string
+		}
+	}
+
+	err := json.Unmarshal(defaultIsolationSegmentsResponse.Out.Contents(), &response)
+	Expect(err).ToNot(HaveOccurred())
+
+	if response.Data == nil {
+		return true
+	}
+
+	if response.Data.GUID == sharedIsolationSegmentGUID {
+		return true
+	}
+
+	return false
 }
