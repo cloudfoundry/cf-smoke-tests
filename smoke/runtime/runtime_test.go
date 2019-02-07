@@ -40,10 +40,12 @@ var _ = Describe("Runtime:", func() {
 	})
 
 	AfterEach(func() {
+		defer func() {
+			if testConfig.Cleanup {
+				Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
+			}
+		}()
 		smoke.AppReport(appName, testConfig.GetDefaultTimeout())
-		if testConfig.Cleanup {
-			Expect(cf.Cf("delete", appName, "-f", "-r").Wait(testConfig.GetDefaultTimeout())).To(Exit(0))
-		}
 	})
 
 	Context("linux apps", func() {
