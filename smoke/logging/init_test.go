@@ -21,14 +21,14 @@ func TestSmokeTests(t *testing.T) {
 	testSetup := workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
 
 	SynchronizedBeforeSuite(func() []byte {
-		testSetup.Setup()
 		return nil
-	}, func(data []byte) {})
+	}, func(data []byte) {
+		testSetup.Setup()
+	})
 
-	SynchronizedAfterSuite(func() {},
-		func() {
-			testSetup.Teardown()
-		})
+	SynchronizedAfterSuite(func() {
+		testSetup.Teardown()
+	}, func() {})
 
 	rs := []Reporter{}
 

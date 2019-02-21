@@ -21,16 +21,21 @@ func TestSmokeTests(t *testing.T) {
 	testConfig = smoke.GetConfig()
 	testSetup = workflowhelpers.NewSmokeTestSuiteSetup(testConfig)
 
-	SynchronizedBeforeSuite(func() []byte {
-		return nil
-	}, func(data []byte) {
-		testSetup.Setup()
-	})
+	SynchronizedBeforeSuite(
+		func() []byte {
+			return nil
+		},
+		func(data []byte) {
+			testSetup.Setup()
+		},
+	)
 
-	SynchronizedAfterSuite(func() {},
+	SynchronizedAfterSuite(
 		func() {
 			testSetup.Teardown()
-		})
+		},
+		func() {},
+	)
 	rs := []Reporter{}
 
 	if testConfig.ArtifactsDirectory != "" {
