@@ -3,100 +3,37 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:234b814a36d03c7a336816855bc7172843b1d63b71bc690ac05ebc024d8fa3ef"
   name = "github.com/cloudfoundry-incubator/cf-test-helpers"
-  packages = [
-    "cf",
-    "commandreporter",
-    "commandstarter",
-    "generator",
-    "internal",
-    "silentcommandstarter",
-    "workflowhelpers",
-    "workflowhelpers/internal",
-  ]
-  pruneopts = ""
-  revision = "a89c343eccaf463a482c8ec4d54174e9809800db"
+  packages = ["cf","commandreporter","commandstarter","generator","internal","silentcommandstarter","workflowhelpers","workflowhelpers/internal"]
+  revision = "53275963d9f746bc324c17814d10f1d8a56ea7ef"
 
 [[projects]]
-  digest = "1:9ef1e277f5abd99e7112270a7093b0d87a2c608a85fc84392d52098bd1a74b27"
   name = "github.com/onsi/ginkgo"
-  packages = [
-    ".",
-    "config",
-    "internal/codelocation",
-    "internal/containernode",
-    "internal/failer",
-    "internal/leafnodes",
-    "internal/remote",
-    "internal/spec",
-    "internal/spec_iterator",
-    "internal/specrunner",
-    "internal/suite",
-    "internal/testingtproxy",
-    "internal/writer",
-    "reporters",
-    "reporters/stenographer",
-    "reporters/stenographer/support/go-colorable",
-    "reporters/stenographer/support/go-isatty",
-    "types",
-  ]
-  pruneopts = ""
+  packages = [".","config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
   revision = "77a8c1e5c40d6bb6c5eb4dd4bdce9763564f6298"
   version = "v1.3.1"
 
 [[projects]]
-  digest = "1:e3f109462222373fe841df74272fc1f7e3f4a011d4575394ebc36336cbf9fe85"
   name = "github.com/onsi/gomega"
-  packages = [
-    ".",
-    "format",
-    "gbytes",
-    "gexec",
-    "internal/assertion",
-    "internal/asyncassertion",
-    "internal/oraclematcher",
-    "internal/testingtsupport",
-    "matchers",
-    "matchers/support/goraph/bipartitegraph",
-    "matchers/support/goraph/edge",
-    "matchers/support/goraph/node",
-    "matchers/support/goraph/util",
-    "types",
-  ]
-  pruneopts = ""
+  packages = [".","format","gbytes","gexec","internal/assertion","internal/asyncassertion","internal/oraclematcher","internal/testingtsupport","matchers","matchers/support/goraph/bipartitegraph","matchers/support/goraph/edge","matchers/support/goraph/node","matchers/support/goraph/util","types"]
   revision = "334b8f472b3af5d541c5642701c1e29e2126f486"
   version = "v1.1.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:b78daec10cf61db3be8d7121bdaf68f8b181aba5ac1c958f239fbbb5c75daa4f"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  pruneopts = ""
   revision = "abf9c25f54453410d0c6668e519582a9e1115027"
 
 [[projects]]
   branch = "v2"
-  digest = "1:a3a9e86d4cd7b56a405875f475a6bb29f4614692fddf33e10eca5c839250b49e"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  pruneopts = ""
   revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = [
-    "github.com/cloudfoundry-incubator/cf-test-helpers/cf",
-    "github.com/cloudfoundry-incubator/cf-test-helpers/generator",
-    "github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers",
-    "github.com/onsi/ginkgo",
-    "github.com/onsi/ginkgo/config",
-    "github.com/onsi/ginkgo/reporters",
-    "github.com/onsi/gomega",
-    "github.com/onsi/gomega/gbytes",
-    "github.com/onsi/gomega/gexec",
-  ]
+  inputs-digest = "d226f8980932584f0bc38640ce7016be39c122e6fff47208d0a9b036f574cee6"
   solver-name = "gps-cdcl"
   solver-version = 1
