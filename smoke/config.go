@@ -107,7 +107,7 @@ func (c *Config) GetUseExistingUser() bool {
 	return true
 }
 
-func (c *config) GetAddExistingUserToExistingSpace() bool {
+func (c *Config) GetAddExistingUserToExistingSpace() bool {
 	return false
 }
 
