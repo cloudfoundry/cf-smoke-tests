@@ -107,6 +107,10 @@ func (c *Config) GetUseExistingUser() bool {
 	return true
 }
 
+func (c *config) GetAddExistingUserToExistingSpace() bool {
+	return false
+}
+
 func (c *Config) GetAdminUser() string {
 	return c.User
 }
