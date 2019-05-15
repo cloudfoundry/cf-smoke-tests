@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/cloudfoundry-incubator/cf-test-helpers"
   packages = ["cf","commandreporter","commandstarter","generator","internal","silentcommandstarter","workflowhelpers","workflowhelpers/internal"]
-  revision = "53275963d9f746bc324c17814d10f1d8a56ea7ef"
+  revision = "ff434af77d370917e8129d00a34a6381e135a653"
 
 [[projects]]
   name = "github.com/onsi/ginkgo"
