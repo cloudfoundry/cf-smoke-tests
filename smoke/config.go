@@ -156,19 +156,19 @@ func (c *Config) GetNamePrefix() string {
 }
 
 func (c *Config) GetDefaultTimeout() time.Duration {
-	return 30 * time.Second
+	return c.GetScaledTimeout(30 * time.Second)
 }
 
 func (c *Config) GetPushTimeout() time.Duration {
-	return 300 * time.Second
+	return c.GetScaledTimeout(300 * time.Second)
 }
 
 func (c *Config) GetScaleTimeout() time.Duration {
-	return 120 * time.Second
+	return c.GetScaledTimeout(120 * time.Second)
 }
 
 func (c *Config) GetAppStatusTimeout() time.Duration {
-	return 120 * time.Second
+	return c.GetScaledTimeout(120 * time.Second)
 }
 
 func (c *Config) GetWindowsStack() string {
