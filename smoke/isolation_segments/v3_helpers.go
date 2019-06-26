@@ -115,7 +115,7 @@ func IsolationSegmentAssignedToSpace(spaceGUID string, timeout time.Duration) bo
 }
 
 func SendRequestWithSpoofedHeader(host, domain string) *http.Response {
-	req, _ := http.NewRequest("GET", fmt.Sprintf("http://wildcard-path.%s", domain), nil)
+	req, _ := http.NewRequest("GET", fmt.Sprintf("https://wildcard-path.%s", domain), nil)
 	req.Host = host
 
 	resp, err := http.DefaultClient.Do(req)
