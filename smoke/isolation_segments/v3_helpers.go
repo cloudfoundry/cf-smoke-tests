@@ -1,6 +1,7 @@
 package isolation_segments
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -114,11 +115,15 @@ func IsolationSegmentAssignedToSpace(spaceGUID string, timeout time.Duration) bo
 	return SpaceResponse.Entity.GUID != ""
 }
 
-func SendRequestWithSpoofedHeader(host, domain string) *http.Response {
+func SendRequestWithSpoofedHeader(host, domain string, skipSSLValidation bool) *http.Response {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipSSLValidation},
+	}
+	client := &http.Client{Transport: tr}
 	req, _ := http.NewRequest("GET", fmt.Sprintf("https://wildcard-path.%s", domain), nil)
 	req.Host = host
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := client.Do(req)
 	Expect(err).NotTo(HaveOccurred())
 	return resp
 }

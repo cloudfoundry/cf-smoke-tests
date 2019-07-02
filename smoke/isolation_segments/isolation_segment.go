@@ -96,7 +96,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		})
 
 		It("is reachable from the shared router", func() {
-			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, appsDomain), appsDomain)
+			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, appsDomain), appsDomain, testConfig.GetSkipSSLValidation())
 			defer resp.Body.Close()
 
 			Expect(resp.StatusCode).To(Equal(200))
@@ -107,7 +107,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 		It("is not reachable from the isolation segment router", func() {
 			//send a request to app in the shared domain, but through the isolation segment router
-			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, appsDomain), isoSegDomain)
+			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, appsDomain), isoSegDomain, testConfig.GetSkipSSLValidation())
 			defer resp.Body.Close()
 
 			Expect(resp.StatusCode).To(Equal(404))
@@ -148,7 +148,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		})
 
 		It("the app is reachable from the isolated router", func() {
-			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), isoSegDomain)
+			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), isoSegDomain, testConfig.GetSkipSSLValidation())
 			defer resp.Body.Close()
 
 			Expect(resp.StatusCode).To(Equal(200))
@@ -159,7 +159,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 		It("the app is not reachable from the shared router", func() {
 
-			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), appsDomain)
+			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), appsDomain, testConfig.GetSkipSSLValidation())
 			defer resp.Body.Close()
 
 			Expect(resp.StatusCode).To(Equal(404))
