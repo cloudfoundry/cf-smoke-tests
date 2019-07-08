@@ -1,6 +1,7 @@
 package isolation_segments
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -114,11 +115,16 @@ func IsolationSegmentAssignedToSpace(spaceGUID string, timeout time.Duration) bo
 	return SpaceResponse.Entity.GUID != ""
 }
 
-func SendRequestWithSpoofedHeader(host, domain string) *http.Response {
+func SendRequestWithSpoofedHeader(host, domain string, skipSslValidation bool) *http.Response {
 	req, _ := http.NewRequest("GET", fmt.Sprintf("https://wildcard-path.%s", domain), nil)
 	req.Host = host
 
-	resp, err := http.DefaultClient.Do(req)
+	transport := &http.Transport{
+		Proxy:           http.ProxyFromEnvironment,
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipSslValidation},
+	}
+	client := &http.Client{Transport: transport}
+	resp, err := client.Do(req)
 	Expect(err).NotTo(HaveOccurred())
 	return resp
 }
@@ -139,7 +145,7 @@ func orgDefaultIsolationSegmentIsShared(orgGuid string, timeout time.Duration) b
 	defaultIsolationSegmentsResponse := cf.Cf("curl", fmt.Sprintf("/v3/organizations/%s/relationships/default_isolation_segment", orgGuid)).Wait(timeout)
 
 	var response struct {
-		Data *struct{
+		Data *struct {
 			GUID string
 		}
 	}
