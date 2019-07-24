@@ -115,8 +115,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 	})
 
 	Context("When an app is pushed to a space that has been assigned an Isolation Segment", func() {
-		var appName string
-
 		BeforeEach(func() {
 			CreateOrGetIsolationSegment(isoSegName, testConfig.GetDefaultTimeout())
 			isoSegGUID = GetIsolationSegmentGUID(isoSegName, testConfig.GetDefaultTimeout())
@@ -127,7 +125,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 			if !testConfig.GetUseExistingSpace() {
 				AssignIsolationSegmentToSpace(isoSpaceGUID, isoSegGUID, testConfig.GetDefaultTimeout())
 			}
-			appName = generator.PrefixedRandomName("SMOKES", "APP")
 			Eventually(cf.Cf("target", "-s", isoSpaceName), testConfig.GetDefaultTimeout()).Should(Exit(0))
 			Eventually(cf.Cf(
 				"push", appName,
