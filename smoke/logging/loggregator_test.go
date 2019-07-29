@@ -30,8 +30,10 @@ var _ = Describe("Loggregator:", func() {
 			BeforeEach(func() {
 				if !useExistingApp {
 					appName = generator.PrefixedRandomName("SMOKES", "APP")
-					Expect(cf.Cf("push", appName, "-b", "ruby_buildpack", "-p", smoke.SimpleRubyAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
+				} else {
+					appName = testConfig.LoggingApp
 				}
+				Expect(cf.Cf("push", appName, "-b", "ruby_buildpack", "-p", smoke.SimpleRubyAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 			})
 
 			It("can see app messages in the logs", func() {
