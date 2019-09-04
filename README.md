@@ -112,7 +112,7 @@ If you have deployed Windows cells, add
   "windows_stack":        "windows2012R2"
 ```
 
-The valid options for `windows_stack` are `windows2012R2` and `windows2016`.
+The valid options for `windows_stack` are `windows2012R2` and `windows`.
 
 
 If you'd like to run isolation segment tests, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain`.
