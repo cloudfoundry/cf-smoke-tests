@@ -16,7 +16,7 @@ export PATH=$GOPATH/bin:$PATH
 
 if ! command -v ginkgo >/dev/null 2>&1; then
   mkdir -p $GOPATH/src/github.com/onsi
-  cp -R vendor/github.com/onsi/ginkgo $GOPATH/src/github.com/onsi/ginkgo
+  cp -R vendor/* $GOPATH/src/
   go install -v github.com/onsi/ginkgo/ginkgo
 fi
 
