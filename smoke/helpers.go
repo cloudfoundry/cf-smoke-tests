@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	SimpleRubyAppBitsPath   = "../../assets/ruby_simple"
+	SimpleBinaryAppBitsPath = "../../assets/binary"
 	SimpleDotnetAppBitsPath = "../../assets/dotnet_simple/Published"
 )
 

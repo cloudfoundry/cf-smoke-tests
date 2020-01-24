@@ -50,7 +50,7 @@ var _ = Describe("Runtime:", func() {
 
 	Context("linux apps", func() {
 		It("can be pushed, scaled and deleted", func() {
-			Expect(cf.Cf("push", "-b", "ruby_buildpack", appName, "-p", smoke.SimpleRubyAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
+			Expect(cf.Cf("push", "-b", "binary_buildpack", "-m", "16M", "-k", "16M", appName, "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 
 			runPushTests(appName, appURL, expectedNullResponse, testConfig)
 		})
@@ -70,7 +70,7 @@ var _ = Describe("Runtime:", func() {
 func runPushTests(appName, appURL, expectedNullResponse string, testConfig *smoke.Config) {
 	Eventually(func() (string, error) {
 		return getBodySkipSSL(testConfig.SkipSSLValidation, appURL)
-	}, testConfig.GetDefaultTimeout()).Should(ContainSubstring("It just needed to be restarted!"))
+	}, testConfig.GetDefaultTimeout()).Should(ContainSubstring("Hello from a binary"))
 
 	instances := 2
 	maxAttempts := 120

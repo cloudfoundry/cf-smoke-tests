@@ -1,11 +1,22 @@
 #!/usr/bin/env ruby
 
 require 'webrick'
+require 'json'
 
 server = WEBrick::HTTPServer.new :Port => ENV['PORT']
 
 server.mount_proc '/' do |request, response|
-  response.body = 'Hello from a binary'
+  response.body = <<-RESPONSE
+Healthy
+Hello from a binary
+My application metadata: #{ENV['VCAP_APPLICATION']}
+My port: #{ENV['PORT']}
+My custom env variable: #{ENV['CUSTOM_VAR']}
+RESPONSE
+end
+
+server.mount_proc '/env' do |request, response|
+  response.body = JSON.dump(ENV.to_hash)
 end
 
 trap 'INT' do server.shutdown end

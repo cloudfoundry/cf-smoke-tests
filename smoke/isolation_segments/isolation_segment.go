@@ -90,6 +90,8 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				"push", appName,
 				"-p", binaryAppBitsPath,
 				"-b", "binary_buildpack",
+				"-m", "16M",
+				"-k", "16M",
 				"-d", appsDomain,
 				"-c", "./app"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
@@ -130,6 +132,8 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				"push", appName,
 				"-p", binaryAppBitsPath,
 				"-b", "binary_buildpack",
+				"-m", "16M",
+				"-k", "16M",
 				"-d", isoSegDomain,
 				"-c", "./app"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
@@ -155,7 +159,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		})
 
 		It("the app is not reachable from the shared router", func() {
-
 			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), appsDomain, testConfig.SkipSSLValidation)
 			defer resp.Body.Close()
 
