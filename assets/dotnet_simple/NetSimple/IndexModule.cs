@@ -13,7 +13,7 @@ namespace NetSimple
 
                 var response = (Response)string.Format(
 @"Healthy
-It just needed to be restarted!
+It's alive!
 My application metadata: {0}
 My port: {1}
 My instance index: {2}

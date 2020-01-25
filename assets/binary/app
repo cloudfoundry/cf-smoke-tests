@@ -8,7 +8,7 @@ server = WEBrick::HTTPServer.new :Port => ENV['PORT']
 server.mount_proc '/' do |request, response|
   response.body = <<-RESPONSE
 Healthy
-Hello from a binary
+It's alive!
 My application metadata: #{ENV['VCAP_APPLICATION']}
 My port: #{ENV['PORT']}
 My custom env variable: #{ENV['CUSTOM_VAR']}

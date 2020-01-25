@@ -70,7 +70,7 @@ var _ = Describe("Runtime:", func() {
 func runPushTests(appName, appURL, expectedNullResponse string, testConfig *smoke.Config) {
 	Eventually(func() (string, error) {
 		return getBodySkipSSL(testConfig.SkipSSLValidation, appURL)
-	}, testConfig.GetDefaultTimeout()).Should(ContainSubstring("Hello from a binary"))
+	}, testConfig.GetDefaultTimeout()).Should(ContainSubstring("It's alive!"))
 
 	instances := 2
 	maxAttempts := 120
