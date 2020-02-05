@@ -11,7 +11,7 @@ import (
 
 const (
 	SimpleBinaryAppBitsPath = "../../assets/binary"
-	SimpleDotnetAppBitsPath = "../../assets/dotnet_simple/Published"
+	SimpleDotnetAppBitsPath = "../../assets/dotnet_simple/NetSimple"
 )
 
 func SkipIfNotWindows(testConfig *Config) {
