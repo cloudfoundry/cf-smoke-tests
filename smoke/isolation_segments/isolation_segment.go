@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	binaryHi          = "It's alive!"
+	binaryHi          = "It just needed to be restarted!"
 	binaryAppBitsPath = "../../assets/binary"
 )
 
