@@ -50,7 +50,7 @@ var _ = Describe("Runtime:", func() {
 
 	Context("linux apps", func() {
 		It("can be pushed, scaled and deleted", func() {
-			Expect(cf.Cf("push", "-b", "binary_buildpack", "-m", "16M", "-k", "16M", appName, "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
+			Expect(cf.Cf("push", "-b", "binary_buildpack", "-m", "30M", "-k", "16M", appName, "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 
 			runPushTests(appName, appURL, expectedNullResponse, testConfig)
 		})

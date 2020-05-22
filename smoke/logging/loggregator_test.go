@@ -33,7 +33,7 @@ var _ = Describe("Loggregator:", func() {
 				} else {
 					appName = testConfig.LoggingApp
 				}
-				Expect(cf.Cf("push", appName, "-b", "binary_buildpack", "-m", "16M", "-k", "16M", "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
+				Expect(cf.Cf("push", appName, "-b", "binary_buildpack", "-m", "30M", "-k", "16M", "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 			})
 
 			It("can see app messages in the logs", func() {
