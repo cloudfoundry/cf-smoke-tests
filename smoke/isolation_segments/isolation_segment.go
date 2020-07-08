@@ -86,7 +86,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				Expect(spaceSession).NotTo(Say(testConfig.GetIsolationSegmentName()), "Space should be assigned to the shared isolation segment")
 			}
 
-			Eventually(cf.Cf(
+			Eventually(smoke.Cf(
 				"push", appName,
 				"-p", binaryAppBitsPath,
 				"-b", "binary_buildpack",
@@ -128,7 +128,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				AssignIsolationSegmentToSpace(isoSpaceGUID, isoSegGUID, testConfig.GetDefaultTimeout())
 			}
 			Eventually(cf.Cf("target", "-s", isoSpaceName), testConfig.GetDefaultTimeout()).Should(Exit(0))
-			Eventually(cf.Cf(
+			Eventually(smoke.Cf(
 				"push", appName,
 				"-p", binaryAppBitsPath,
 				"-b", "binary_buildpack",
