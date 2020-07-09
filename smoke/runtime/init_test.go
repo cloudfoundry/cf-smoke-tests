@@ -2,12 +2,10 @@ package runtime
 
 import (
 	"fmt"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	. "github.com/onsi/ginkgo"
 	ginkgoconfig "github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
-	"github.com/onsi/gomega/gexec"
 	"os"
 	"path/filepath"
 	"testing"
@@ -42,8 +40,6 @@ func TestSmokeTests(t *testing.T) {
 	if testConfig.Reporter == "TeamCity" {
 		rs = append(rs, reporters.NewTeamCityReporter(GinkgoWriter))
 	}
-
-	Eventually(cf.Cf("version").Wait(testConfig.GetPushTimeout())).Should(gexec.Exit())
 
 	RunSpecsWithDefaultAndCustomReporters(t, "CF-Runtime-Smoke-Tests", rs)
 }

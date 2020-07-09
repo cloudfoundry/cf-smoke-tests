@@ -50,7 +50,7 @@ var _ = Describe("Runtime:", func() {
 
 	Context("linux apps", func() {
 		It("can be pushed, scaled and deleted", func() {
-			Expect(smoke.Cf("push", "-b", "binary_buildpack", "-m", "30M", "-k", "16M", appName, "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
+			Expect(cf.Cf("push", "-b", "binary_buildpack", "-m", "30M", "-k", "16M", appName, "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 
 			runPushTests(appName, appURL, expectedNullResponse, testConfig)
 		})
@@ -60,7 +60,7 @@ var _ = Describe("Runtime:", func() {
 		It("can be pushed, scaled and deleted", func() {
 			smoke.SkipIfNotWindows(testConfig)
 
-			Expect(smoke.Cf("push", appName, "-p", smoke.SimpleDotnetAppBitsPath, "-d", testConfig.AppsDomain, "-s", testConfig.GetWindowsStack(), "-b", "hwc_buildpack").Wait(testConfig.GetPushTimeout())).To(Exit(0))
+			Expect(cf.Cf("push", appName, "-p", smoke.SimpleDotnetAppBitsPath, "-d", testConfig.AppsDomain, "-s", testConfig.GetWindowsStack(), "-b", "hwc_buildpack").Wait(testConfig.GetPushTimeout())).To(Exit(0))
 
 			runPushTests(appName, appURL, expectedNullResponse, testConfig)
 		})
