@@ -4,7 +4,6 @@ import (
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
@@ -33,7 +32,7 @@ var _ = Describe("Loggregator:", func() {
 				} else {
 					appName = testConfig.LoggingApp
 				}
-				Expect(cf.Cf("push", appName, "-b", "binary_buildpack", "-m", "30M", "-k", "16M", "-p", smoke.SimpleBinaryAppBitsPath, "-d", testConfig.AppsDomain).Wait(testConfig.GetPushTimeout())).To(Exit(0))
+				Expect(cf.Cf("push", appName, "-b", "binary_buildpack", "-m", "30M", "-k", "16M", "-p", smoke.SimpleBinaryAppBitsPath).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 			})
 
 			It("can see app messages in the logs", func() {
@@ -51,7 +50,7 @@ var _ = Describe("Loggregator:", func() {
 				smoke.SkipIfNotWindows(testConfig)
 
 				appName = generator.PrefixedRandomName("SMOKES", "APP")
-				Expect(cf.Cf("push", appName, "-p", smoke.SimpleDotnetAppBitsPath, "-d", testConfig.AppsDomain, "-s", testConfig.GetWindowsStack(), "-b", "hwc_buildpack").Wait(testConfig.GetPushTimeout())).To(Exit(0))
+				Expect(cf.Cf("push", appName, "-p", smoke.SimpleDotnetAppBitsPath, "-s", testConfig.GetWindowsStack(), "-b", "hwc_buildpack").Wait(testConfig.GetPushTimeout())).To(Exit(0))
 			})
 
 			It("can see app messages in the logs", func() {
