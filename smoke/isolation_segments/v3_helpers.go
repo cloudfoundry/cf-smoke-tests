@@ -37,7 +37,7 @@ func EntitleOrgToIsolationSegment(orgGUID, isoSegGUID string, timeout time.Durat
 }
 
 func ResetSpaceIsolationSegment(spaceName, isoSegName string, timeout time.Duration) {
-	Eventually(cf.Cf("reset-space-isolation-segment", spaceName, isoSegName), timeout).Should(Exit(0))
+	Eventually(cf.Cf("reset-space-isolation-segment", spaceName), timeout).Should(Exit(0))
 }
 
 func DisableOrgIsolationSegment(orgName, isoSegName string, timeout time.Duration) {
