@@ -31,4 +31,3 @@ func Logs(useLogCache bool, appName string) *Session {
 	}
 	return cf.Cf("logs", "--recent", appName)
 }
-

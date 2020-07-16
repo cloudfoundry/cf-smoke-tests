@@ -3,7 +3,6 @@ package isolation_segments
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
 	. "github.com/onsi/ginkgo"
@@ -93,6 +92,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				"-b", "binary_buildpack",
 				"-m", "30M",
 				"-k", "16M",
+				"-d", appsDomain,
 				"-c", "./app"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
 		})
@@ -118,8 +118,6 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 	Context("When an app is pushed to a space that has been assigned an Isolation Segment", func() {
 		BeforeEach(func() {
-			manifestPath := CreateManifestWithRoute(appName, isoSegDomain)
-
 			CreateOrGetIsolationSegment(isoSegName, testConfig.GetDefaultTimeout())
 			isoSegGUID = GetIsolationSegmentGUID(isoSegName, testConfig.GetDefaultTimeout())
 			if !testConfig.GetUseExistingOrganization() {
@@ -136,7 +134,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				"-b", "binary_buildpack",
 				"-m", "30M",
 				"-k", "16M",
-				"-f", manifestPath,
+				"-d", isoSegDomain,
 				"-c", "./app"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
 		})
@@ -168,23 +166,3 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		})
 	})
 })
-
-func CreateManifestWithRoute(name string, domain string) string {
-	file, err := ioutil.TempFile(os.TempDir(), "iso-segment-manifest-*.yml")
-	Expect(err).NotTo(HaveOccurred())
-
-	filePath := file.Name()
-
-	_, err = file.Write([]byte(fmt.Sprintf("---\n" +
-		"applications:\n" +
-		"- name: %s\n" +
-		"  routes:\n" +
-		"  - route: %s.%s",
-		name, name, domain)))
-	Expect(err).NotTo(HaveOccurred())
-
-	err = file.Close()
-	Expect(err).NotTo(HaveOccurred())
-
-	return filePath
-}
