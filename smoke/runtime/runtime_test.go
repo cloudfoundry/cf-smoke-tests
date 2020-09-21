@@ -3,9 +3,9 @@ package runtime
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/cloudfoundry/cf-smoke-tests/smoke/isolation_segments"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"time"
@@ -40,7 +40,7 @@ var _ = Describe("Runtime:", func() {
 			return err
 		}, testConfig.GetDefaultTimeout()).Should(BeNil())
 
-		manifestPath = isolation_segments.CreateManifestWithRoute(appName, testConfig.AppsDomain)
+		manifestPath = createManifestWithRoute(appName, testConfig.AppsDomain)
 	})
 
 	AfterEach(func() {
@@ -211,4 +211,24 @@ func getBodySkipSSL(skip bool, url string) (string, error) {
 		return "", err
 	}
 	return string(body), nil
+}
+
+func createManifestWithRoute(name string, domain string) string {
+	file, err := ioutil.TempFile(os.TempDir(), "runtime-manifest-*.yml")
+	Expect(err).NotTo(HaveOccurred())
+
+	filePath := file.Name()
+
+	_, err = file.Write([]byte(fmt.Sprintf("---\n" +
+		"applications:\n" +
+		"- name: %s\n" +
+		"  routes:\n" +
+		"  - route: %s.%s",
+		name, name, domain)))
+	Expect(err).NotTo(HaveOccurred())
+
+	err = file.Close()
+	Expect(err).NotTo(HaveOccurred())
+
+	return filePath
 }
