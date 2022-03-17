@@ -33,6 +33,6 @@
   version = "1.6.0"
 
 [[constraint]]
-  branch = "master"
+  branch = "main"
   name = "github.com/cloudfoundry-incubator/cf-test-helpers"
 

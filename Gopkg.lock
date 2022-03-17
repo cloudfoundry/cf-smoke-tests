@@ -2,69 +2,174 @@
 
 
 [[projects]]
-  branch = "master"
+  branch = "main"
+  digest = "1:77cafc86c986782b8e4e3bcdff672b9c03fbd43fa123d14f01c451f1603c6f13"
   name = "github.com/cloudfoundry-incubator/cf-test-helpers"
-  packages = ["cf","commandreporter","commandstarter","generator","internal","silentcommandstarter","workflowhelpers","workflowhelpers/internal"]
+  packages = [
+    "cf",
+    "commandreporter",
+    "commandstarter",
+    "generator",
+    "internal",
+    "silentcommandstarter",
+    "workflowhelpers",
+    "workflowhelpers/internal",
+  ]
+  pruneopts = ""
   revision = "cf8305784c9363f4352d56c857b3aa9ba435d8d2"
 
 [[projects]]
-  name = "github.com/hpcloud/tail"
-  packages = [".","ratelimiter","util","watch","winfile"]
-  revision = "a30252cb686a21eb2d0b98132633053ec2f7f1e5"
-  version = "v1.0.0"
-
-[[projects]]
-  name = "github.com/onsi/ginkgo"
-  packages = [".","config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
-  revision = "7e8b50db0c6d0a15ac0eb015d4ca64e7e7e2c88c"
-  version = "v1.9.0"
-
-[[projects]]
-  name = "github.com/onsi/gomega"
-  packages = [".","format","gbytes","gexec","internal/assertion","internal/asyncassertion","internal/oraclematcher","internal/testingtsupport","matchers","matchers/support/goraph/bipartitegraph","matchers/support/goraph/edge","matchers/support/goraph/node","matchers/support/goraph/util","types"]
-  revision = "27d50ea6455b212cf516609fa58b2b5dce1abc81"
-  version = "v1.6.0"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = ["html","html/atom","html/charset"]
-  revision = "74dc4d7220e7acc4e100824340f3e66577424772"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/sys"
-  packages = ["unix"]
-  revision = "fde4db37ae7ad8191b03d30d27f258b5291ae4e3"
-
-[[projects]]
-  name = "golang.org/x/text"
-  packages = ["encoding","encoding/charmap","encoding/htmlindex","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","encoding/unicode","internal/gen","internal/language","internal/language/compact","internal/tag","internal/utf8internal","language","runes","transform","unicode/cldr"]
-  revision = "342b2e1fbaa52c93f31447ad2c6abc048c63e475"
-  version = "v0.3.2"
-
-[[projects]]
-  name = "gopkg.in/fsnotify.v1"
+  digest = "1:9fb095f14261afd303b25b678132c406f794c9687af51801658581138316247c"
+  name = "github.com/fsnotify/fsnotify"
   packages = ["."]
-  revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
-  source = "https://github.com/fsnotify/fsnotify.git"
-  version = "v1.4.7"
+  pruneopts = ""
+  revision = "466b39d216616549a37ee93c7c47775f6a010790"
+  version = "v1.5.1"
+
+[[projects]]
+  digest = "1:cbd3641747c1a4d9d2d2232267cd8b514fa5dba8c15d2f245d699daffd3e9d1c"
+  name = "github.com/nxadm/tail"
+  packages = [
+    ".",
+    "ratelimiter",
+    "util",
+    "watch",
+    "winfile",
+  ]
+  pruneopts = ""
+  revision = "abad231d8d07ef91e09cd4c4c457cac35ed3bbb9"
+  version = "v1.4.8"
+
+[[projects]]
+  digest = "1:c029584bda74e7be0dfed53013f88eb5f36a2fb506deb42dd5cc268bcd3b5b46"
+  name = "github.com/onsi/ginkgo"
+  packages = [
+    ".",
+    "config",
+    "formatter",
+    "internal/codelocation",
+    "internal/containernode",
+    "internal/failer",
+    "internal/global",
+    "internal/leafnodes",
+    "internal/remote",
+    "internal/spec",
+    "internal/spec_iterator",
+    "internal/specrunner",
+    "internal/suite",
+    "internal/testingtproxy",
+    "internal/writer",
+    "reporters",
+    "reporters/stenographer",
+    "reporters/stenographer/support/go-colorable",
+    "reporters/stenographer/support/go-isatty",
+    "types",
+  ]
+  pruneopts = ""
+  revision = "d38b9d946d52cd175495d30143fbecc5aff98f13"
+  version = "v1.16.5"
+
+[[projects]]
+  digest = "1:1db0c95280938d95737fa766b8f05bb93bab311c158aaca19a27f355d3ccf406"
+  name = "github.com/onsi/gomega"
+  packages = [
+    ".",
+    "format",
+    "gbytes",
+    "gexec",
+    "internal",
+    "internal/gutil",
+    "matchers",
+    "matchers/support/goraph/bipartitegraph",
+    "matchers/support/goraph/edge",
+    "matchers/support/goraph/node",
+    "matchers/support/goraph/util",
+    "types",
+  ]
+  pruneopts = ""
+  revision = "d01bc22577e88a1c7afa2448e81ee8e43a598d28"
+  version = "v1.18.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:4c2f349c641fed49f66a680a33c5763b6981b22e39446f2be9aa93584551cb52"
+  name = "golang.org/x/net"
+  packages = [
+    "html",
+    "html/atom",
+    "html/charset",
+  ]
+  pruneopts = ""
+  revision = "27dd8689420fcde088514397d015e4fea5174e0e"
+
+[[projects]]
+  branch = "master"
+  digest = "1:ccee519e18614f483c297a7554fa361f4c7f73edbe067d6037cb0f2c6de94f78"
+  name = "golang.org/x/sys"
+  packages = [
+    "internal/unsafeheader",
+    "unix",
+  ]
+  pruneopts = ""
+  revision = "51cd9980dadf015f085fdaa735da31d7242adc6d"
+
+[[projects]]
+  digest = "1:b9d5d15946537023d2ecb25955519ac7f055f459d48dc5876262d4859789bfb3"
+  name = "golang.org/x/text"
+  packages = [
+    "encoding",
+    "encoding/charmap",
+    "encoding/htmlindex",
+    "encoding/internal",
+    "encoding/internal/identifier",
+    "encoding/japanese",
+    "encoding/korean",
+    "encoding/simplifiedchinese",
+    "encoding/traditionalchinese",
+    "encoding/unicode",
+    "internal/gen",
+    "internal/language",
+    "internal/language/compact",
+    "internal/tag",
+    "internal/utf8internal",
+    "language",
+    "runes",
+    "transform",
+    "unicode/cldr",
+  ]
+  pruneopts = ""
+  revision = "383b2e75a7a4198c42f8f87833eefb772868a56f"
+  version = "v0.3.7"
 
 [[projects]]
   branch = "v1"
+  digest = "1:a96d16bd088460f2e0685d46c39bcf1208ba46e0a977be2df49864ec7da447dd"
   name = "gopkg.in/tomb.v1"
   packages = ["."]
+  pruneopts = ""
   revision = "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
 
 [[projects]]
+  digest = "1:ee05f739e27c55032bf797e28915dd209b07f5b46d098cdf115cacfd3b179fe4"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
+  pruneopts = ""
+  revision = "7649d4548cb53a614db133b2a8ac1f31859dda8c"
+  version = "v2.4.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "62a24d15350fc0e485d62d7e567b299c633bac73589b510ae910a3f9adb1bb29"
+  input-imports = [
+    "github.com/cloudfoundry-incubator/cf-test-helpers/cf",
+    "github.com/cloudfoundry-incubator/cf-test-helpers/generator",
+    "github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers",
+    "github.com/onsi/ginkgo",
+    "github.com/onsi/ginkgo/config",
+    "github.com/onsi/ginkgo/reporters",
+    "github.com/onsi/gomega",
+    "github.com/onsi/gomega/gbytes",
+    "github.com/onsi/gomega/gexec",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

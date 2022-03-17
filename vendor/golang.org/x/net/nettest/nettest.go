@@ -20,11 +20,11 @@ import (
 )
 
 var (
-	stackOnce     sync.Once
-	ipv4Enabled   bool
-	ipv6Enabled   bool
-	rawSocketSess bool
-	aixTechLvl    int
+	stackOnce          sync.Once
+	ipv4Enabled        bool
+	ipv6Enabled        bool
+	unStrmDgramEnabled bool
+	rawSocketSess      bool
 
 	aLongTimeAgo = time.Unix(233431200, 0)
 	neverTimeout = time.Time{}
@@ -43,17 +43,24 @@ func probeStack() {
 		ipv6Enabled = true
 	}
 	rawSocketSess = supportsRawSocket()
-	if runtime.GOOS == "aix" {
-		out, err := exec.Command("oslevel", "-s").Output()
-		if err == nil {
-			aixTechLvl, _ = strconv.Atoi(string(out[5:7]))
+	switch runtime.GOOS {
+	case "aix":
+		// Unix network isn't properly working on AIX 7.2 with
+		// Technical Level < 2.
+		out, _ := exec.Command("oslevel", "-s").Output()
+		if len(out) >= len("7200-XX-ZZ-YYMM") { // AIX 7.2, Tech Level XX, Service Pack ZZ, date YYMM
+			ver := string(out[:4])
+			tl, _ := strconv.Atoi(string(out[5:7]))
+			unStrmDgramEnabled = ver > "7200" || (ver == "7200" && tl >= 2)
 		}
+	default:
+		unStrmDgramEnabled = true
 	}
 }
 
-func aixTechLevel() int {
+func unixStrmDgramEnabled() bool {
 	stackOnce.Do(probeStack)
-	return aixTechLvl
+	return unStrmDgramEnabled
 }
 
 // SupportsIPv4 reports whether the platform supports IPv4 networking
@@ -88,13 +95,8 @@ func TestableNetwork(network string) bool {
 		// This is an internal network name for testing on the
 		// package net of the standard library.
 		switch runtime.GOOS {
-		case "android", "fuchsia", "hurd", "js", "nacl", "plan9", "windows":
+		case "android", "fuchsia", "hurd", "ios", "js", "nacl", "plan9", "windows":
 			return false
-		case "darwin":
-			// iOS doesn't support it.
-			if runtime.GOARCH == "arm" || runtime.GOARCH == "arm64" {
-				return false
-			}
 		}
 	case "ip", "ip4", "ip6":
 		switch runtime.GOOS {
@@ -107,24 +109,14 @@ func TestableNetwork(network string) bool {
 		}
 	case "unix", "unixgram":
 		switch runtime.GOOS {
-		case "android", "fuchsia", "hurd", "js", "nacl", "plan9", "windows":
+		case "android", "fuchsia", "hurd", "ios", "js", "nacl", "plan9", "windows":
 			return false
 		case "aix":
-			// Unix network isn't properly working on AIX
-			// 7.2 with Technical Level < 2.
-			if aixTechLevel() < 2 {
-				return false
-			}
-			return true
-		case "darwin":
-			// iOS does not support unix, unixgram.
-			if runtime.GOARCH == "arm" || runtime.GOARCH == "arm64" {
-				return false
-			}
+			return unixStrmDgramEnabled()
 		}
 	case "unixpacket":
 		switch runtime.GOOS {
-		case "aix", "android", "fuchsia", "hurd", "darwin", "js", "nacl", "plan9", "windows":
+		case "aix", "android", "fuchsia", "hurd", "darwin", "ios", "js", "nacl", "plan9", "windows", "zos":
 			return false
 		case "netbsd":
 			// It passes on amd64 at least. 386 fails

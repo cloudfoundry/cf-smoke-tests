@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build darwin || dragonfly || freebsd || netbsd || openbsd
 // +build darwin dragonfly freebsd netbsd openbsd
 
 package route
@@ -11,6 +12,7 @@ import "unsafe"
 var (
 	nativeEndian binaryByteOrder
 	kernelAlign  int
+	rtmVersion   byte
 	wireFormats  map[int]*wireFormat
 )
 
@@ -22,6 +24,8 @@ func init() {
 	} else {
 		nativeEndian = bigEndian
 	}
+	// might get overridden in probeRoutingStack
+	rtmVersion = sysRTM_VERSION
 	kernelAlign, wireFormats = probeRoutingStack()
 }
 

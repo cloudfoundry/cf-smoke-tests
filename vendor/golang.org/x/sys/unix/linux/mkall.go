@@ -10,6 +10,7 @@
 // the appropriate sources are ready, the program is run as:
 //     go run linux/mkall.go <linux_dir> <glibc_dir>
 
+//go:build ignore
 // +build ignore
 
 package main
@@ -21,6 +22,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"go/build/constraint"
 	"io"
 	"io/ioutil"
 	"os"
@@ -52,9 +54,9 @@ type target struct {
 	Bits       int
 }
 
-// List of all Linux targets supported by the go compiler. Currently, riscv64
-// and sparc64 are not fully supported, but there is enough support already to
-// generate Go type and error definitions.
+// List of all Linux targets supported by the go compiler. Currently, sparc64 is
+// not fully supported, but there is enough support already to generate Go type
+// and error definitions.
 var targets = []target{
 	{
 		GoArch:    "386",
@@ -108,6 +110,13 @@ var targets = []target{
 		Bits:      64,
 	},
 	{
+		GoArch:    "ppc",
+		LinuxArch: "powerpc",
+		GNUArch:   "powerpc-linux-gnu",
+		BigEndian: true,
+		Bits:      32,
+	},
+	{
 		GoArch:    "ppc64",
 		LinuxArch: "powerpc",
 		GNUArch:   "powerpc64-linux-gnu",
@@ -144,12 +153,16 @@ var targets = []target{
 }
 
 // ptracePairs is a list of pairs of targets that can, in some cases,
-// run each other's binaries.
-var ptracePairs = []struct{ a1, a2 string }{
-	{"386", "amd64"},
-	{"arm", "arm64"},
-	{"mips", "mips64"},
-	{"mipsle", "mips64le"},
+// run each other's binaries. 'archName' is the combined name of 'a1'
+// and 'a2', which is used in the file name. Generally we use an 'x'
+// suffix in the file name to indicate that the file works for both
+// big-endian and little-endian, here we use 'nn' to indicate that this
+// file is suitable for 32-bit and 64-bit.
+var ptracePairs = []struct{ a1, a2, archName string }{
+	{"386", "amd64", "x86"},
+	{"arm", "arm64", "armnn"},
+	{"mips", "mips64", "mipsnn"},
+	{"mipsle", "mips64le", "mipsnnle"},
 }
 
 func main() {
@@ -183,13 +196,25 @@ func main() {
 		}
 	}
 
+	fmt.Printf("----- GENERATING: merging generated files -----\n")
+	if err := mergeFiles(); err != nil {
+		fmt.Printf("%v\n***** FAILURE:    merging generated files *****\n\n", err)
+	} else {
+		fmt.Printf("----- SUCCESS:    merging generated files -----\n\n")
+	}
+
 	fmt.Printf("----- GENERATING ptrace pairs -----\n")
 	ok := true
 	for _, p := range ptracePairs {
-		if err := generatePtracePair(p.a1, p.a2); err != nil {
+		if err := generatePtracePair(p.a1, p.a2, p.archName); err != nil {
 			fmt.Printf("%v\n***** FAILURE: %s/%s *****\n\n", err, p.a1, p.a2)
 			ok = false
 		}
+	}
+	// generate functions PtraceGetRegSetArm64 and PtraceSetRegSetArm64.
+	if err := generatePtraceRegSet("arm64"); err != nil {
+		fmt.Printf("%v\n***** FAILURE: generatePtraceRegSet(%q) *****\n\n", err, "arm64")
+		ok = false
 	}
 	if ok {
 		fmt.Printf("----- SUCCESS ptrace pairs    -----\n\n")
@@ -486,8 +511,90 @@ func (t *target) makeZSyscallFile() error {
 	}
 
 	args := append(t.mksyscallFlags(), "-tags", "linux,"+t.GoArch,
-		"syscall_linux.go", archSyscallFile)
+		"syscall_linux.go",
+		archSyscallFile,
+	)
+
+	files, err := t.archMksyscallFiles()
+	if err != nil {
+		return fmt.Errorf("failed to check GOARCH-specific mksyscall files: %v", err)
+	}
+	args = append(args, files...)
+
 	return t.commandFormatOutput("gofmt", zsyscallFile, "mksyscall", args...)
+}
+
+// archMksyscallFiles produces additional file arguments to mksyscall if the
+// build constraints in those files match those defined for target.
+func (t *target) archMksyscallFiles() ([]string, error) {
+	// These input files don't fit the typical GOOS/GOARCH file name conventions
+	// but are included conditionally in the arguments to mksyscall based on
+	// whether or not the target matches the build constraints defined in each
+	// file.
+	//
+	// TODO(mdlayher): it should be possible to generalize this approach to work
+	// over all of syscall_linux_* rather than hard-coding a few special files.
+	// Investigate this.
+	inputs := []string{
+		// GOARCH: all except arm* and riscv.
+		"syscall_linux_alarm.go",
+	}
+
+	var outputs []string
+	for _, in := range inputs {
+		ok, err := t.matchesMksyscallFile(in)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse file %q: %v", in, err)
+		}
+		if ok {
+			// Constraints match, use for this target's code generation.
+			outputs = append(outputs, in)
+		}
+	}
+
+	return outputs, nil
+}
+
+// matchesMksyscallFile reports whether the input file contains constraints
+// which match those defined for target.
+func (t *target) matchesMksyscallFile(file string) (bool, error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	var (
+		expr  constraint.Expr
+		found bool
+	)
+
+	s := bufio.NewScanner(f)
+	for s.Scan() {
+		// Keep scanning until a valid constraint is found or we hit EOF.
+		//
+		// This only supports single-line constraints such as the //go:build
+		// convention used in Go 1.17+. Because the old //+build convention
+		// (which may have multiple lines of build tags) is being deprecated,
+		// we don't bother looking for multi-line constraints.
+		if expr, err = constraint.Parse(s.Text()); err == nil {
+			found = true
+			break
+		}
+	}
+	if err := s.Err(); err != nil {
+		return false, err
+	}
+	if !found {
+		return false, errors.New("no build constraints found")
+	}
+
+	// Do the defined constraints match target's GOOS/GOARCH?
+	ok := expr.Eval(func(tag string) bool {
+		return tag == GOOS || tag == t.GoArch
+	})
+
+	return ok, nil
 }
 
 // makes the zerrors_linux_$GOARCH.go file
@@ -540,13 +647,33 @@ func (t *target) mksyscallFlags() (flags []string) {
 	return
 }
 
+// Merge all the generated files for Linux targets
+func mergeFiles() error {
+	// Setup environment variables
+	os.Setenv("GOOS", runtime.GOOS)
+	os.Setenv("GOARCH", runtime.GOARCH)
+
+	// Merge each of the four type of files
+	for _, ztyp := range []string{"zerrors", "zsyscall", "zsysnum", "ztypes"} {
+		cmd := makeCommand("go", "run", "./internal/mkmerge", "-out", fmt.Sprintf("%s_%s.go", ztyp, GOOS), fmt.Sprintf("%s_%s_*.go", ztyp, GOOS))
+		err := cmd.Run()
+		if err != nil {
+			return fmt.Errorf("could not merge %s files: %w", ztyp, err)
+		}
+		fmt.Printf("%s files merged\n", ztyp)
+	}
+
+	return nil
+}
+
 // generatePtracePair takes a pair of GOARCH values that can run each
 // other's binaries, such as 386 and amd64. It extracts the PtraceRegs
 // type for each one. It writes a new file defining the types
 // PtraceRegsArch1 and PtraceRegsArch2 and the corresponding functions
 // Ptrace{Get,Set}Regs{arch1,arch2}. This permits debugging the other
-// binary on a native system.
-func generatePtracePair(arch1, arch2 string) error {
+// binary on a native system. 'archName' is the combined name of 'arch1'
+// and 'arch2', which is used in the file name.
+func generatePtracePair(arch1, arch2, archName string) error {
 	def1, err := ptraceDef(arch1)
 	if err != nil {
 		return err
@@ -555,13 +682,14 @@ func generatePtracePair(arch1, arch2 string) error {
 	if err != nil {
 		return err
 	}
-	f, err := os.Create(fmt.Sprintf("zptrace%s_linux.go", arch1))
+	f, err := os.Create(fmt.Sprintf("zptrace_%s_linux.go", archName))
 	if err != nil {
 		return err
 	}
 	buf := bufio.NewWriter(f)
-	fmt.Fprintf(buf, "// Code generated by linux/mkall.go generatePtracePair(%s, %s). DO NOT EDIT.\n", arch1, arch2)
+	fmt.Fprintf(buf, "// Code generated by linux/mkall.go generatePtracePair(%q, %q). DO NOT EDIT.\n", arch1, arch2)
 	fmt.Fprintf(buf, "\n")
+	fmt.Fprintf(buf, "//go:build linux && (%s || %s)\n", arch1, arch2)
 	fmt.Fprintf(buf, "// +build linux\n")
 	fmt.Fprintf(buf, "// +build %s %s\n", arch1, arch2)
 	fmt.Fprintf(buf, "\n")
@@ -572,6 +700,41 @@ func generatePtracePair(arch1, arch2 string) error {
 	writeOnePtrace(buf, arch1, def1)
 	fmt.Fprintf(buf, "\n")
 	writeOnePtrace(buf, arch2, def2)
+	if err := buf.Flush(); err != nil {
+		return err
+	}
+	if err := f.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// generatePtraceRegSet takes a GOARCH value to generate a file zptrace_linux_{arch}.go
+// containing functions PtraceGetRegSet{arch} and PtraceSetRegSet{arch}.
+func generatePtraceRegSet(arch string) error {
+	f, err := os.Create(fmt.Sprintf("zptrace_linux_%s.go", arch))
+	if err != nil {
+		return err
+	}
+	buf := bufio.NewWriter(f)
+	fmt.Fprintf(buf, "// Code generated by linux/mkall.go generatePtraceRegSet(%q). DO NOT EDIT.\n", arch)
+	fmt.Fprintf(buf, "\n")
+	fmt.Fprintf(buf, "package unix\n")
+	fmt.Fprintf(buf, "\n")
+	fmt.Fprintf(buf, "%s\n", `import "unsafe"`)
+	fmt.Fprintf(buf, "\n")
+	uarch := string(unicode.ToUpper(rune(arch[0]))) + arch[1:]
+	fmt.Fprintf(buf, "// PtraceGetRegSet%s fetches the registers used by %s binaries.\n", uarch, arch)
+	fmt.Fprintf(buf, "func PtraceGetRegSet%s(pid, addr int, regsout *PtraceRegs%s) error {\n", uarch, uarch)
+	fmt.Fprintf(buf, "\tiovec := Iovec{(*byte)(unsafe.Pointer(regsout)), uint64(unsafe.Sizeof(*regsout))}\n")
+	fmt.Fprintf(buf, "\treturn ptrace(PTRACE_GETREGSET, pid, uintptr(addr), uintptr(unsafe.Pointer(&iovec)))\n")
+	fmt.Fprintf(buf, "}\n")
+	fmt.Fprintf(buf, "\n")
+	fmt.Fprintf(buf, "// PtraceSetRegSet%s sets the registers used by %s binaries.\n", uarch, arch)
+	fmt.Fprintf(buf, "func PtraceSetRegSet%s(pid, addr int, regs *PtraceRegs%s) error {\n", uarch, uarch)
+	fmt.Fprintf(buf, "\tiovec := Iovec{(*byte)(unsafe.Pointer(regs)), uint64(unsafe.Sizeof(*regs))}\n")
+	fmt.Fprintf(buf, "\treturn ptrace(PTRACE_SETREGSET, pid, uintptr(addr), uintptr(unsafe.Pointer(&iovec)))\n")
+	fmt.Fprintf(buf, "}\n")
 	if err := buf.Flush(); err != nil {
 		return err
 	}

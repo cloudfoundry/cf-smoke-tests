@@ -1,0 +1,17 @@
+Name,Text,Start,End,Spec,Focused,Pending
+Describe,unfocused,115,623,false,false,false
+FDescribe,focused,147,244,false,true,false
+It,focused,179,240,true,true,false
+By,focused,205,218,false,true,false
+By,focused,222,235,false,true,false
+FContext,focused,247,310,false,true,false
+It,focused,278,306,true,true,false
+FWhen,focused,313,373,false,true,false
+It,focused,341,369,true,true,false
+FIt,focused,376,404,true,true,false
+FSpecify,focused,407,440,true,true,false
+FMeasure,focused,443,492,true,true,false
+FDescribeTable,focused,495,556,false,true,false
+Entry,focused,536,552,true,true,false
+DescribeTable,focused,559,620,false,false,false
+FEntry,focused,599,616,true,true,false
