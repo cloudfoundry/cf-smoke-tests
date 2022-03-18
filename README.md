@@ -242,6 +242,6 @@ to understand the difference between these two workflows.
 
 ### Dependency Management
 
-Smoke Tests use [dep](https://github.com/golang/dep) to manage `go` dependencies.
+Smoke Tests use modules to manage `go` dependencies.
 
 All `go` packages required to run smoke tests are vendored into the `vendor/` directory.
