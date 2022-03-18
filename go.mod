@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/cloudfoundry-incubator/cf-test-helpers v1.0.1-0.20191216200933-cf8305784c93
 	github.com/cloudfoundry/cf-smoke-tests v0.0.0-20200921182851-bc7c19c52112
-	github.com/onsi/ginkgo v1.16.4
+	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.18.1
 )
 
