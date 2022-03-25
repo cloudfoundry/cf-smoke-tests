@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
+	"github.com/cloudfoundry/cf-test-helpers/cf"
+	"github.com/cloudfoundry/cf-test-helpers/generator"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -219,10 +219,10 @@ func createManifestWithRoute(name string, domain string) string {
 
 	filePath := file.Name()
 
-	_, err = file.Write([]byte(fmt.Sprintf("---\n" +
-		"applications:\n" +
-		"- name: %s\n" +
-		"  routes:\n" +
+	_, err = file.Write([]byte(fmt.Sprintf("---\n"+
+		"applications:\n"+
+		"- name: %s\n"+
+		"  routes:\n"+
 		"  - route: %s.%s",
 		name, name, domain)))
 	Expect(err).NotTo(HaveOccurred())

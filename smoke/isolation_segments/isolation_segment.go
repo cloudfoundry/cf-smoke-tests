@@ -6,14 +6,14 @@ import (
 	"os"
 
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
+	"github.com/cloudfoundry/cf-test-helpers/cf"
+	"github.com/cloudfoundry/cf-test-helpers/generator"
+	"github.com/cloudfoundry/cf-test-helpers/workflowhelpers"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
-
-	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/workflowhelpers"
 )
 
 const (
@@ -175,10 +175,10 @@ func CreateManifestWithRoute(name string, domain string) string {
 
 	filePath := file.Name()
 
-	_, err = file.Write([]byte(fmt.Sprintf("---\n" +
-		"applications:\n" +
-		"- name: %s\n" +
-		"  routes:\n" +
+	_, err = file.Write([]byte(fmt.Sprintf("---\n"+
+		"applications:\n"+
+		"- name: %s\n"+
+		"  routes:\n"+
 		"  - route: %s.%s",
 		name, name, domain)))
 	Expect(err).NotTo(HaveOccurred())

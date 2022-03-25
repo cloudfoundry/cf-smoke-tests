@@ -1,9 +1,10 @@
 package logging
 
 import (
-	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
-	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
+	"github.com/cloudfoundry/cf-test-helpers/cf"
+	"github.com/cloudfoundry/cf-test-helpers/generator"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
