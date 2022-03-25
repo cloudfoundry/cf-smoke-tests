@@ -1,6 +1,6 @@
 module github.com/cloudfoundry/cf-smoke-tests-release/src/smoke_tests
 
-go 1.18
+go 1.17
 
 require (
 	github.com/cloudfoundry-incubator/cf-test-helpers v1.0.1-0.20191216200933-cf8305784c93
@@ -18,5 +18,3 @@ require (
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace gopkg.in/fsnotify.v1 v1.4.7 => github.com/fsnotify/fsnotify v1.4.7
