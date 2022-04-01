@@ -32,6 +32,9 @@ type Config struct {
 	// existing app names - if empty the space will be managed and a random app name will be used
 	LoggingApp string `json:"logging_app"`
 	RuntimeApp string `json:"runtime_app"`
+	
+	LinuxBuildpackName string `json:"linux_buildpack_name"`
+	WindowsBuildpackName string `json:"windows_buildpack_name"`
 
 	ArtifactsDirectory string `json:"artifacts_directory"`
 
@@ -171,6 +174,14 @@ func (c *Config) GetAppStatusTimeout() time.Duration {
 	return c.GetScaledTimeout(120 * time.Second)
 }
 
+func (c *Config) GetLinuxBuildpackName() string {
+	return c.LinuxBuildpackName
+}
+
+func (c *Config) GetWindowsBuildpackName() string {
+	return c.WindowsBuildpackName
+}
+
 func (c *Config) GetWindowsStack() string {
 	return c.WindowsStack
 }
@@ -195,11 +206,13 @@ func loadConfig() *Config {
 
 func newDefaultConfig() *Config {
 	return &Config{
-		UseExistingOrg:     false,
-		UseExistingSpace:   false,
-		Cleanup:            true,
-		EnableWindowsTests: false,
-		WindowsStack:       "windows2012R2",
+		UseExistingOrg:       false,
+		UseExistingSpace:     false,
+		Cleanup:              true,
+		EnableWindowsTests:   false,
+		LinuxBuildpackName:   "binary_buildpack",
+		WindowsBuildpackName: "hwc_buildpack",
+		WindowsStack:         "windows2012R2",
 	}
 }
 
