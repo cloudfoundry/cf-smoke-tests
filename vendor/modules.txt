@@ -1,5 +1,5 @@
-# github.com/cloudfoundry/cf-test-helpers v1.0.1-0.20220322121736-90798e88756a
-## explicit
+# github.com/cloudfoundry/cf-test-helpers v1.0.1-0.20220329060630-a1956dba8c6c
+## explicit; go 1.17
 github.com/cloudfoundry/cf-test-helpers/cf
 github.com/cloudfoundry/cf-test-helpers/commandreporter
 github.com/cloudfoundry/cf-test-helpers/commandstarter
