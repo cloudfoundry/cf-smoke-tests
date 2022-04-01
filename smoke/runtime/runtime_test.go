@@ -57,7 +57,7 @@ var _ = Describe("Runtime:", func() {
 
 			Expect(cf.Cf("push",
 				appName,
-				"-b", "binary_buildpack",
+				"-b", testConfig.GetLinuxBuildpackName(),
 				"-m", "30M",
 				"-k", "16M",
 				"-f", manifestPath,
@@ -76,7 +76,7 @@ var _ = Describe("Runtime:", func() {
 				"-f", manifestPath,
 				"-p", smoke.SimpleDotnetAppBitsPath,
 				"-s", testConfig.GetWindowsStack(),
-				"-b", "hwc_buildpack").Wait(testConfig.GetPushTimeout())).To(Exit(0))
+				"-b", testConfig.GetWindowsBuildpackName()).Wait(testConfig.GetPushTimeout())).To(Exit(0))
 
 			runPushTests(appName, appURL, expectedNullResponse, testConfig)
 		})
