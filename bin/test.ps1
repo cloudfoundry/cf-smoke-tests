@@ -13,14 +13,10 @@ if (-not (Test-Path env:GOPATH)) {
 }
 
 $env:PATH="$env:GOPATH\bin;$env:PATH"
-where.exe ginkgo
-if ($LASTEXITCODE -ne 0) {
-  New-Item -Path "$env:GOPATH\src\github.com\onsi" -ItemType Directory -Force
-  Copy-Item -Recurse -Force vendor\github.com\onsi\ginkgo "$env:GOPATH\src\github.com\onsi"
-  go.exe install -v github.com\onsi\ginkgo\ginkgo
-}
+
+go.exe install github.com\onsi\ginkgo\v2\ginkgo
 
 $env:CF_DIAL_TIMEOUT=11
 
-ginkgo.exe -r --succinct -slowSpecThreshold=300 $args
+ginkgo.exe -r --succinct --slow-spec-threshold=300s $args
 exit $LASTEXITCODE
