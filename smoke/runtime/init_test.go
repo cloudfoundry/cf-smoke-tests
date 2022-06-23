@@ -10,8 +10,6 @@ import (
 	"github.com/cloudfoundry/cf-test-helpers/workflowhelpers"
 
 	. "github.com/onsi/ginkgo/v2"
-	ginkgoconfig "github.com/onsi/ginkgo/v2/config"
-	"github.com/onsi/ginkgo/v2/reporters"
 	. "github.com/onsi/gomega"
 )
 
@@ -31,28 +29,20 @@ func TestSmokeTests(t *testing.T) {
 		testSetup.Teardown()
 	}, func() {})
 
-	rs := []Reporter{}
+	_, rc := GinkgoConfiguration()
 
 	if testConfig.ArtifactsDirectory != "" {
 		os.Setenv("CF_TRACE", traceLogFilePath(testConfig))
-		rs = append(rs, reporters.NewJUnitReporter(jUnitReportFilePath(testConfig)))
+		rc.JUnitReport = jUnitReportFilePath(testConfig)
 	}
 
-	if testConfig.Reporter == "TeamCity" {
-		rs = append(rs, reporters.NewTeamCityReporter(GinkgoWriter))
-	}
-
-	RunSpecsWithDefaultAndCustomReporters(t, "CF-Runtime-Smoke-Tests", rs)
+	RunSpecs(t, "CF-Runtime-Smoke-Tests", rc)
 }
 
 func traceLogFilePath(testConfig *smoke.Config) string {
-	return filepath.Join(testConfig.ArtifactsDirectory, fmt.Sprintf("CF-TRACE-%s-%d.txt", testConfig.SuiteName, ginkgoNode()))
+	return filepath.Join(testConfig.ArtifactsDirectory, fmt.Sprintf("CF-TRACE-%s-%d.txt", testConfig.SuiteName, GinkgoParallelProcess()))
 }
 
 func jUnitReportFilePath(testConfig *smoke.Config) string {
-	return filepath.Join(testConfig.ArtifactsDirectory, fmt.Sprintf("junit-%s-%d.xml", testConfig.SuiteName, ginkgoNode()))
-}
-
-func ginkgoNode() int {
-	return ginkgoconfig.GinkgoConfig.ParallelNode
+	return filepath.Join(testConfig.ArtifactsDirectory, fmt.Sprintf("junit-%s-%d.xml", testConfig.SuiteName, GinkgoParallelProcess()))
 }
