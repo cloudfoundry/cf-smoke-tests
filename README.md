@@ -70,7 +70,9 @@ Below is an example `integration_config.json`:
   "windows_stack"                   : "windows2012R2",
   "isolation_segment_name"          : "is1",
   "isolation_segment_domain"        : "is1.bosh-lite.com",
-  "enable_isolation_segment_tests"  : true
+  "enable_isolation_segment_tests"  : true,
+  "linux_buildpack_name"            : "binary_buildpack",
+  "windows_buildpack_name"          : "hwc_buildpack"
 }
 ```
 The following are special case configurations.
