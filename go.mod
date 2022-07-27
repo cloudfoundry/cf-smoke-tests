@@ -3,7 +3,7 @@ module github.com/cloudfoundry/cf-smoke-tests
 go 1.18
 
 require (
-	github.com/cloudfoundry/cf-test-helpers v1.0.1-0.20220721195514-36ed5ab41b8f
+	github.com/cloudfoundry/cf-test-helpers v1.0.1-0.20220727214429-5596fb6f989b
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.20.0
 )
