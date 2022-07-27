@@ -242,6 +242,6 @@ to understand the difference between these two workflows.
 
 ### Dependency Management
 
-Smoke Tests use modules to manage `go` dependencies.
+Smoke Tests use modules to manage `go` dependencies. These dependencies, together with the version of `go` itself, are automatically bumped by the CI pipeline defied in the [cf-smoke-tests-release](https://github.com/cloudfoundry/cf-smoke-tests-release/tree/main/ci) repo.
 
 All `go` packages required to run smoke tests are vendored into the `vendor/` directory.
