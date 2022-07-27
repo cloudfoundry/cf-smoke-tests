@@ -36,7 +36,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 	var appName string
 
 	BeforeEach(func() {
-		if testConfig.EnableIsolationSegmentTests != true {
+		if !testConfig.EnableIsolationSegmentTests {
 			Skip("Skipping because EnableIsolationSegmentTests flag is set to false")
 		}
 
