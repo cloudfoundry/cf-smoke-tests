@@ -1,13 +1,13 @@
-# github.com/cloudfoundry/cf-test-helpers v1.0.1-0.20220727214429-5596fb6f989b
+# github.com/cloudfoundry/cf-test-helpers/v2 v2.0.0
 ## explicit; go 1.17
-github.com/cloudfoundry/cf-test-helpers/cf
-github.com/cloudfoundry/cf-test-helpers/commandreporter
-github.com/cloudfoundry/cf-test-helpers/commandstarter
-github.com/cloudfoundry/cf-test-helpers/generator
-github.com/cloudfoundry/cf-test-helpers/internal
-github.com/cloudfoundry/cf-test-helpers/silentcommandstarter
-github.com/cloudfoundry/cf-test-helpers/workflowhelpers
-github.com/cloudfoundry/cf-test-helpers/workflowhelpers/internal
+github.com/cloudfoundry/cf-test-helpers/v2/cf
+github.com/cloudfoundry/cf-test-helpers/v2/commandreporter
+github.com/cloudfoundry/cf-test-helpers/v2/commandstarter
+github.com/cloudfoundry/cf-test-helpers/v2/generator
+github.com/cloudfoundry/cf-test-helpers/v2/internal
+github.com/cloudfoundry/cf-test-helpers/v2/silentcommandstarter
+github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers
+github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers/internal
 # github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0
 ## explicit; go 1.13
 github.com/go-task/slim-sprig

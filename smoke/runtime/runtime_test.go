@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
-	"github.com/cloudfoundry/cf-test-helpers/cf"
-	"github.com/cloudfoundry/cf-test-helpers/generator"
+	"github.com/cloudfoundry/cf-test-helpers/v2/cf"
+	"github.com/cloudfoundry/cf-test-helpers/v2/generator"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
