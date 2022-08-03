@@ -57,7 +57,7 @@ github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
-# golang.org/x/net v0.0.0-20220728211354-c7608f3a8462
+# golang.org/x/net v0.0.0-20220802222814-0bcc04d9c69b
 ## explicit; go 1.17
 golang.org/x/net/html
 golang.org/x/net/html/atom
