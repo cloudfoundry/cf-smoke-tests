@@ -3,7 +3,7 @@ package runtime
 import (
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"regexp"
@@ -206,7 +206,7 @@ func getBodySkipSSL(skip bool, url string) (string, error) {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -214,7 +214,7 @@ func getBodySkipSSL(skip bool, url string) (string, error) {
 }
 
 func createManifestWithRoute(name string, domain string) string {
-	file, err := ioutil.TempFile(os.TempDir(), "runtime-manifest-*.yml")
+	file, err := os.CreateTemp(os.TempDir(), "runtime-manifest-*.yml")
 	Expect(err).NotTo(HaveOccurred())
 
 	filePath := file.Name()
