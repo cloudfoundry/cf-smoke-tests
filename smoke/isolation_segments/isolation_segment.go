@@ -2,7 +2,7 @@ package isolation_segments
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/cloudfoundry/cf-smoke-tests/smoke"
@@ -102,7 +102,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 			defer resp.Body.Close()
 
 			Expect(resp.StatusCode).To(Equal(200))
-			htmlData, err := ioutil.ReadAll(resp.Body)
+			htmlData, err := io.ReadAll(resp.Body)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(htmlData)).To(ContainSubstring(binaryHi))
 		})
@@ -155,7 +155,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 			defer resp.Body.Close()
 
 			Expect(resp.StatusCode).To(Equal(200))
-			htmlData, err := ioutil.ReadAll(resp.Body)
+			htmlData, err := io.ReadAll(resp.Body)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(htmlData)).To(ContainSubstring(binaryHi))
 		})
@@ -170,7 +170,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 })
 
 func CreateManifestWithRoute(name string, domain string) string {
-	file, err := ioutil.TempFile(os.TempDir(), "iso-segment-manifest-*.yml")
+	file, err := os.CreateTemp(os.TempDir(), "iso-segment-manifest-*.yml")
 	Expect(err).NotTo(HaveOccurred())
 
 	filePath := file.Name()
