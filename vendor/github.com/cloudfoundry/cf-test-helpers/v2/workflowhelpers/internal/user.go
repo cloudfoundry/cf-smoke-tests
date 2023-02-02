@@ -17,7 +17,6 @@ import (
 type TestUser struct {
 	username       string
 	password       string
-	origin         string
 	cmdStarter     internal.Starter
 	timeout        time.Duration
 	shouldKeepUser bool
@@ -27,7 +26,6 @@ type UserConfig interface {
 	GetUseExistingUser() bool
 	GetExistingUser() string
 	GetExistingUserPassword() string
-	GetUserOrigin() string
 	GetShouldKeepUser() bool
 	GetConfigurableTestPassword() string
 }
@@ -42,7 +40,6 @@ type userConfig interface {
 type AdminUserConfig interface {
 	GetAdminUser() string
 	GetAdminPassword() string
-	GetAdminOrigin() string
 }
 
 type ClientConfig interface {
@@ -56,16 +53,14 @@ type AdminClientConfig interface {
 }
 
 func NewTestUser(config userConfig, cmdStarter internal.Starter) *TestUser {
-	var regUser, regUserPass, regUserOrigin string
+	var regUser, regUserPass string
 
 	if config.GetUseExistingUser() {
 		regUser = config.GetExistingUser()
 		regUserPass = config.GetExistingUserPassword()
-		regUserOrigin = config.GetUserOrigin()
 	} else {
 		regUser = generator.PrefixedRandomName(config.GetNamePrefix(), "USER")
 		regUserPass = generatePassword()
-		regUserOrigin = config.GetUserOrigin()
 	}
 
 	if config.GetConfigurableTestPassword() != "" {
@@ -75,7 +70,6 @@ func NewTestUser(config userConfig, cmdStarter internal.Starter) *TestUser {
 	return &TestUser{
 		username:       regUser,
 		password:       regUserPass,
-		origin:         regUserOrigin,
 		cmdStarter:     cmdStarter,
 		timeout:        config.GetScaledTimeout(1 * time.Minute),
 		shouldKeepUser: config.GetShouldKeepUser(),
@@ -86,7 +80,6 @@ func NewAdminUser(config AdminUserConfig, cmdStarter internal.Starter) *TestUser
 	return &TestUser{
 		username:   config.GetAdminUser(),
 		password:   config.GetAdminPassword(),
-		origin:     config.GetAdminOrigin(),
 		cmdStarter: cmdStarter,
 	}
 }
@@ -130,10 +123,6 @@ func (user *TestUser) Username() string {
 
 func (user *TestUser) Password() string {
 	return user.password
-}
-
-func (user *TestUser) Origin() string {
-	return user.origin
 }
 
 func (user *TestUser) ShouldRemain() bool {
