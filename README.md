@@ -175,6 +175,11 @@ have the following set up:
 - The smoke-tests `org` must be entitled to use the isolation segment.
 - The space that is referred to as `isolation_segment_space` in the smoke-tests config must be assigned to the isolation segment
 
+**NOTE:**
+If the default identity provider for your deployment is not UAA, it is
+recommended that you set the `origin` configuration property to UAA, and ensure
+the user credentials that you provide are registered with UAA.
+
 ## Running Tests
 
 To execute the tests, run:
