@@ -18,6 +18,7 @@ type Config struct {
 
 	User         string `json:"user"`
 	Password     string `json:"password"`
+	Origin       string `json:"origin"`
 	Client       string `json:"client"`
 	ClientSecret string `json:"client_secret"`
 
@@ -32,8 +33,8 @@ type Config struct {
 	// existing app names - if empty the space will be managed and a random app name will be used
 	LoggingApp string `json:"logging_app"`
 	RuntimeApp string `json:"runtime_app"`
-	
-	LinuxBuildpackName string `json:"linux_buildpack_name"`
+
+	LinuxBuildpackName   string `json:"linux_buildpack_name"`
 	WindowsBuildpackName string `json:"windows_buildpack_name"`
 
 	ArtifactsDirectory string `json:"artifacts_directory"`
@@ -94,6 +95,10 @@ func (c *Config) GetExistingUserPassword() string {
 	return c.Password
 }
 
+func (c *Config) GetUserOrigin() string {
+	return c.Origin
+}
+
 func (c *Config) GetExistingClient() string {
 	return c.Client
 }
@@ -120,6 +125,10 @@ func (c *Config) GetAdminUser() string {
 
 func (c *Config) GetAdminPassword() string {
 	return c.Password
+}
+
+func (c *Config) GetAdminOrigin() string {
+	return c.Origin
 }
 
 func (c *Config) GetAdminClient() string {
