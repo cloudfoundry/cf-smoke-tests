@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.4.0
-	github.com/onsi/ginkgo/v2 v2.8.1
+	github.com/onsi/ginkgo/v2 v2.8.3
 	github.com/onsi/gomega v1.27.1
 )
 
