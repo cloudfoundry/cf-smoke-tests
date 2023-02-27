@@ -18,5 +18,5 @@ go install github.com/onsi/ginkgo/v2/ginkgo
 
 export CF_DIAL_TIMEOUT=11
 
-ginkgo -r --succinct --slow-spec-threshold=300s "$@"
+ginkgo -r --succinct --poll-progress-after=300s "$@"
 
