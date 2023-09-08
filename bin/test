@@ -1,22 +1,17 @@
 #!/bin/bash
 
-set -e -x
+set -e
 
+# pre-requisites
 if ! command -v go >/dev/null 2>&1 ; then
   echo "Go is not installed."
   exit 1
 fi
 
-if [[ -z "$GOPATH" ]]; then
-  echo "GOPATH not specified"
-  exit 1
-fi
+# variables
+SMOKE_TESTS_ROOT="$(dirname "${BASH_SOURCE[0]}")/.."
 
-export PATH=$GOPATH/bin:$PATH
-
-go install github.com/onsi/ginkgo/v2/ginkgo
-
-export CF_DIAL_TIMEOUT=11
-
-ginkgo -r --succinct --poll-progress-after=300s "$@"
-
+# run smoke tests
+pushd "${SMOKE_TESTS_ROOT}" > /dev/null
+  go run github.com/onsi/ginkgo/v2/ginkgo -r --succinct --poll-progress-after=300s "$@"
+popd > /dev/null
