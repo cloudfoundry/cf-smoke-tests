@@ -16,7 +16,5 @@ $env:PATH="$env:GOPATH\bin;$env:PATH"
 
 go.exe install github.com\onsi\ginkgo\v2\ginkgo
 
-$env:CF_DIAL_TIMEOUT=11
-
 ginkgo.exe -r --succinct --poll-progress-after=300s $args
 exit $LASTEXITCODE
