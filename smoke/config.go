@@ -221,7 +221,7 @@ func newDefaultConfig() *Config {
 		EnableWindowsTests:   false,
 		LinuxBuildpackName:   "binary_buildpack",
 		WindowsBuildpackName: "hwc_buildpack",
-		WindowsStack:         "windows2012R2",
+		WindowsStack:         "windows",
 	}
 }
 
