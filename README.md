@@ -33,25 +33,21 @@ development pipeline and not against production environments.
 
 ### Dependencies
 
-Set up your golang development environment, [per golang.org](http://golang.org/doc/install).
-
 Make sure you have the following installed:
+* [go](https://go.dev/doc/install)
 * [git](http://git-scm.com/)
 * [`cf` CLI](https://github.com/cloudfoundry/cli)
 * [curl](http://curl.haxx.se/)
 
-Check out a copy of `cf-smoke-tests` and make sure that it is added to your
-`$GOPATH`.  The recommended way to do this is to run `go get -u -d
-github.com/cloudfoundry/cf-smoke-tests`. You will receive a warning "no
-buildable Go source files"; this can be ignored as there is no compilable go
-code in the package.
-(Alternatively, you can simply `cd` into the directory
-and run `git pull`.)
+Check out a copy of `cf-smoke-tests`. The recommended way to do this is to clone
+the repo, if you don't have it: `git clone
+git@github.com:cloudfoundry/cf-smoke-tests.git`. Alternatively, you can simply
+`cd` into a pre-existing `cf-smoke-tests` directory and run `git pull`.
 
 To run the CF Smoke tests, you will need:
 - a running CF instance
-- an environment variable `$CONFIG` which points to a `.json` file that
-contains the application domain
+- an environment variable `$CONFIG` which points to a `.json` file that contains
+  the relevant configuration information.
 
 ### Config
 
@@ -67,7 +63,7 @@ Below is an example `integration_config.json`:
   "logging_app"                     : "",
   "runtime_app"                     : "",
   "enable_windows_tests"            : false,
-  "windows_stack"                   : "windows2012R2",
+  "windows_stack"                   : "windows",
   "isolation_segment_name"          : "is1",
   "isolation_segment_domain"        : "is1.bosh-lite.com",
   "enable_isolation_segment_tests"  : true,
@@ -81,53 +77,56 @@ The following are special case configurations.
 Must supply one of the following login credentials.
 
 - User credentials
-```json
-  "user":     "username",
-  "password": "password"
-```
+  ```json
+    "user":     "username",
+    "password": "password"
+  ```
 - Client credentials
-```json
-  "client":        "client-name",
-  "client_secret": "client-secret"
-```
+  ```json
+    "client":        "client-name",
+    "client_secret": "client-secret"
+  ```
 
 #### Skip SSL validation
 If you are running the tests against bosh-lite or any other environment using
-self-signed certificates, add
-
+self-signed certificates, add:
 ```json
   "skip_ssl_validation": true
 ```
+
 #### Org and space cleanup
 If you would like to preserve the organization, space, and app created during the
-tests for debugging, add
-
+tests for debugging, add:
 ```json
   "cleanup": false
 ```
+
 #### Windows
 
-If you have deployed Windows cells, add
-
+If you have deployed Windows cells, add:
 ```json
   "enable_windows_tests": true,
-  "windows_stack":        "windows2012R2"
+  "windows_stack":        "windows"
 ```
+The valid options for `windows_stack` are `windows2016` and `windows`.
 
-The valid options for `windows_stack` are `windows2012R2` and `windows`.
+#### Isolation segments
 
-
-If you'd like to run isolation segment tests, set `enable_isolation_segment_tests` to true and provide values for `isolation_segment_name`, `isolation_segment_domain`.
-For more details on how to setup routing isolation segments, read this [document](https://docs.cloudfoundry.org/adminguide/routing-is.html).
+If you'd like to run isolation segment tests, add:
+```json
+  "enable_isolation_segment_tests": true,
+  "isolation_segment_name": "name",
+  "isolation_segment_domain": "domain"
+```
+For more details on how to setup routing for isolation segments, read [this
+document](https://docs.cloudfoundry.org/adminguide/routing-is.html).
 
 #### Artifacts directory
 To store cf cli trace output, set
-```
+```json
   "artifacts_directory": "/tmp/smoke-artifacts"
 ```
-
 The following files may be created:
-
 ```bash
 CF-TRACE-Smoke-1.txt
 CF-TRACE-Smoke-2.txt
@@ -136,44 +135,34 @@ junit-Applications-1.xml
 ```
 
 #### Admin vs. Regular User
-Smoke tests can be configured with
-two types of users.
+Smoke tests can be configured with two types of users.
 
 1. **Regular user**:
-Smoke tests can be configured to run with a non-admin user.
-If you'd like to use a non-admin user, it must be able to
-assign user roles (either `OrgManager` or `SpaceManager`
-roles). Please refer to the [Roles and Permissions for Active Orgs](https://docs.cloudfoundry.org/concepts/roles.html#roles-and-permissions-for-active-orgs)
-documentation for more information.  In this configuration,
-organization and space must be created ahead of time and
-provided as `org` and `space` configuration properties,
-respectively.  Also, `use_existing_org` and
-`use_existing_space` must be set to `true`.  This
-configuration is recommended for tests run against
-environments run by humans, in particular, production
+Smoke tests can be configured to run with a non-admin user. If you'd like to use
+a non-admin user, it must be able to assign user roles (either `OrgManager` or
+`SpaceManager` roles). Please refer to the [Roles and Permissions for Active
+Orgs](https://docs.cloudfoundry.org/concepts/roles.html#roles-and-permissions-for-active-orgs)
+documentation for more information.  In this configuration, organization and
+space must be created ahead of time and provided as `org` and `space`
+configuration properties, respectively.  Also, `use_existing_org` and
+`use_existing_space` must be set to `true`.  This configuration is recommended
+for tests run against environments run by humans, in particular, production
 deployments.
 
 2. **Admin user:**
-Smoke tests can be configured to run using admin credentials.
-Given this configuration,
-the tests may or may not use existing resources like orgs and spaces,
-because an admin user can easily create them.
-This configuration is recommended for tests run against environments created using automation tools,
+Smoke tests can be configured to run using admin credentials. Given this
+configuration, the tests may or may not use existing resources like orgs and
+spaces, because an admin user can easily create them. This configuration is
+recommended for tests run against environments created using automation tools,
 for example, CI (continuous integration) environments on development teams.
 
 **NOTE:**
-If you are enabling isolation segments tests and would like
-to use a non-admin user, the existing organization provided
-as `org` configuration property must be entitled to the
-isolation segment provided by `isolation_segment_name`.
-In addition, you need to create a space inside
-`org` and provide it as `isolation_segment_space`.
-`isolation_segment_space` must be assigned the isolation segment
-`isolation_segment_name`.
-
-have the following set up:
-- The smoke-tests `org` must be entitled to use the isolation segment.
-- The space that is referred to as `isolation_segment_space` in the smoke-tests config must be assigned to the isolation segment
+If you are enabling isolation segments tests and would like to use a non-admin
+user, the existing organization provided as `org` configuration property must be
+entitled to the isolation segment provided by `isolation_segment_name`. In
+addition, you need to create a space inside `org` and provide it as
+`isolation_segment_space`. `isolation_segment_space` must be assigned the
+isolation segment `isolation_segment_name`.
 
 **NOTE:**
 If the default identity provider for your deployment is not UAA, it is
@@ -181,74 +170,60 @@ recommended that you set the `origin` configuration property to UAA, and ensure
 the user credentials that you provide are registered with UAA.
 
 ## Running Tests
-
 To execute the tests, run:
-
 ```bash
 ./bin/test
 ```
-
 Internally the `bin/test` script runs tests using [ginkgo](https://github.com/onsi/ginkgo).
 
-Arguments, such as `-focus=`, `-nodes=`, etc., that are passed to the script are sent to `ginkgo`
-
-For example, to execute tests in parallel across two processes one would run:
-
+Arguments, such as `--keep-going`, `--flake-attempts [int]`, etc., that are
+passed to the test script are passed through to `ginkgo`. For example, to
+execute tests in parallel one would run:
 ```bash
-./bin/test -nodes=2
+./bin/test -p
 ```
 
 ### Seeing command-line output
-
-To see verbose output from `cf`, use [ginkgo](https://github.com/onsi/ginkgo)'s `-v` flag.
-
+To see verbose output from `cf`, use [ginkgo](https://github.com/onsi/ginkgo)'s `-v` flag:
 ```bash
 ./bin/test -v
 ```
 
-### Capturing CF CLI output
-
-Set '`artifacts_directory`' in your `integration_config.json`.
-to store cf cli trace output.
-The output files will be saved inside the given
-directory. See: [artifacts directory](#artifacts-directory)
-
-
 ## Contributing to Smoke Tests
 
 ### Guidelines
-The goal of smoke tests
-is to provide a small, simple set of tests
-to verify basic deployment configuration.
-As such, we have some guidelines
-for contributing new tests to this suite.
+The goal of smoke tests is to provide a small, simple set of tests to verify
+basic deployment configuration. As such, we have some guidelines for
+contributing new tests to this suite.
 
 #### Creating API resources in the test
-One basic rule for good test design is not to mock the object under test.
-We can translate that idea to a suite like smoke tests in the following way:
-If smoke tests exist to validate deployment configuration,
-then smoke tests should not itself mutate deployment configuration.
+One basic rule for good test design is not to mock the object under test. We can
+translate that idea to a suite like smoke tests in the following way: If smoke
+tests exist to validate deployment configuration, then smoke tests should not
+itself mutate deployment configuration.
 
-There are, however, several resources
-that can be defined as either deployment configuration or as API resources.
-For example, shared app domains and isolation segments
-are both resources that can be created via the API,
-so it might be tempting to have a test create them in a `BeforeSuite`.
-However, shared app domains and isolation segments really represent deployment configurations.
+There are, however, several resources that can be defined as either deployment
+configuration or as API resources. For example, shared app domains and isolation
+segments are both resources that can be created via the API, so it might be
+tempting to have a test create them in a `BeforeSuite`. However, shared app
+domains and isolation segments really represent deployment configurations.
 Accordingly, smoke tests should not create those resources as part of the test;
-instead, it should validate (either implicitly or explicitly)
-that those resources have already been created, and configured correctly.
+instead, it should validate (either implicitly or explicitly) that those
+resources have already been created, and configured correctly.
 
-Other API resources, like orgs and spaces
-that exist simply to be able to push an app,
-can absolutely be created as part of a test.
+Other API resources, like orgs and spaces that exist simply to be able to push
+an app, can absolutely be created as part of a test.
 
 #### Admin vs. Regular User workflows
-Please refer to the [Regular vs admin user section](#admin-vs.-regular-user)
-to understand the difference between these two workflows.
+Please refer to the [Regular vs admin user section](#admin-vs.-regular-user) to
+understand the difference between these two workflows.
 
 ### Dependency Management
+`cf-smoke-tests` use modules to manage `go` dependencies. These dependencies,
+together with the version of `go` itself, are automatically bumped by the CI
+pipeline defined in the
+[cf-smoke-tests-release](https://github.com/cloudfoundry/cf-smoke-tests-release/tree/main/ci)
+repo.
 
-Smoke Tests use modules to manage `go` dependencies. These dependencies, together with the version of `go` itself, are automatically bumped by the CI pipeline defied in the [cf-smoke-tests-release](https://github.com/cloudfoundry/cf-smoke-tests-release/tree/main/ci) repo.
-
-All `go` packages required to run smoke tests are vendored into the `vendor/` directory.
+All `go` packages required to run smoke tests are vendored into the `vendor/`
+directory.
