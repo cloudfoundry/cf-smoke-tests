@@ -1,4 +1,4 @@
-# github.com/cloudfoundry/cf-test-helpers/v2 v2.7.0
+# github.com/cloudfoundry/cf-test-helpers/v2 v2.8.0
 ## explicit; go 1.18
 github.com/cloudfoundry/cf-test-helpers/v2/cf
 github.com/cloudfoundry/cf-test-helpers/v2/commandreporter
@@ -93,9 +93,6 @@ golang.org/x/text/transform
 ## explicit; go 1.18
 golang.org/x/tools/go/ast/inspector
 golang.org/x/tools/internal/typeparams
-# gopkg.in/yaml.v2 v2.4.0
-## explicit; go 1.15
-gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
