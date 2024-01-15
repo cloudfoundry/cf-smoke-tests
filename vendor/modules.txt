@@ -1,5 +1,5 @@
-# github.com/cloudfoundry/cf-test-helpers/v2 v2.8.0
-## explicit; go 1.18
+# github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
+## explicit; go 1.21
 github.com/cloudfoundry/cf-test-helpers/v2/cf
 github.com/cloudfoundry/cf-test-helpers/v2/commandreporter
 github.com/cloudfoundry/cf-test-helpers/v2/commandstarter
