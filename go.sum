@@ -1,5 +1,5 @@
-github.com/cloudfoundry/cf-test-helpers/v2 v2.8.0 h1:aEuDiAhQdwwY2tu3ivfm4KHQBG0Kzp2m+qCNjaWDB+0=
-github.com/cloudfoundry/cf-test-helpers/v2 v2.8.0/go.mod h1:wrmHE+cHE6J72feYGE98GmsyLkYEUbK9OOkD96XK7FA=
+github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0 h1:TxmjLDCIopHVo8mhp7WrwKvgnsescsDKV/R5ATr8jgI=
+github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0/go.mod h1:fESCQ1sbdTejVXy9l10zh15R+BhrslRbumYT6F+VtxI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
