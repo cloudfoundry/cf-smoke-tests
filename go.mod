@@ -1,6 +1,6 @@
 module github.com/cloudfoundry/cf-smoke-tests
 
-go 1.22
+go 1.21
 
 require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
