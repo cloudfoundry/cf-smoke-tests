@@ -1,8 +1,6 @@
 module github.com/cloudfoundry/cf-smoke-tests
 
-go 1.21
-
-toolchain go1.21.0
+go 1.21.0
 
 require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.9.0
