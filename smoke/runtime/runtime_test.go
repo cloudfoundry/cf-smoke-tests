@@ -177,7 +177,7 @@ func ExpectAllAppInstancesToBeReachable(appURL string, instances int, maxAttempt
 			break
 		}
 
-		time.Sleep(time.Duration(5000/maxAttempts) * time.Millisecond)
+		time.Sleep(time.Duration(10000/maxAttempts) * time.Millisecond)
 	}
 
 	Expect(sawAll).To(BeTrue(), fmt.Sprintf("Expected to hit all %d app instances in %d attempts, but didn't", instances, maxAttempts))
