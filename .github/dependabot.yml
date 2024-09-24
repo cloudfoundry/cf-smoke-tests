@@ -1,12 +1,18 @@
 version: 2
 updates:
+
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+
 - package-ecosystem: "gomod"
   directory: "/"
   schedule:
-    interval: "daily"
+    interval: "weekly"
 
 - package-ecosystem: "bundler"
   vendor: true
   directory: "/assets/curler"
   schedule:
-    interval: "daily"
+    interval: "weekly"
