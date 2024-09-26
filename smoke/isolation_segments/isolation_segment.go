@@ -93,7 +93,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				"-b", "binary_buildpack",
 				"-m", "30M",
 				"-k", "16M",
-				"-c", "./app"),
+				"-c", "./binary"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
 		})
 
@@ -137,7 +137,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 				"-m", "30M",
 				"-k", "16M",
 				"-f", manifestPath,
-				"-c", "./app"),
+				"-c", "./binary"),
 				testConfig.GetPushTimeout()).Should(Exit(0))
 		})
 
