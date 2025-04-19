@@ -204,7 +204,7 @@ func getBodySkipSSL(skip bool, url string) (string, error) {
 		return "", err
 	}
 
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -216,19 +216,15 @@ func getBodySkipSSL(skip bool, url string) (string, error) {
 func createManifestWithRoute(name string, domain string) string {
 	file, err := os.CreateTemp(os.TempDir(), "runtime-manifest-*.yml")
 	Expect(err).NotTo(HaveOccurred())
+	defer file.Close() //nolint:errcheck
 
-	filePath := file.Name()
-
-	_, err = file.Write([]byte(fmt.Sprintf("---\n"+
-		"applications:\n"+
-		"- name: %s\n"+
-		"  routes:\n"+
-		"  - route: %s.%s",
-		name, name, domain)))
+	_, err = fmt.Fprintf(file, `---
+applications:
+- name: %s
+  routes:
+  - route: %s.%s`,
+		name, name, domain)
 	Expect(err).NotTo(HaveOccurred())
 
-	err = file.Close()
-	Expect(err).NotTo(HaveOccurred())
-
-	return filePath
+	return file.Name()
 }
