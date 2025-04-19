@@ -10,10 +10,10 @@ import (
 	"github.com/cloudfoundry/cf-test-helpers/v2/generator"
 	"github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers"
 
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gbytes"
-	. "github.com/onsi/gomega/gexec"
+	. "github.com/onsi/ginkgo/v2"     //nolint:staticcheck
+	. "github.com/onsi/gomega"        //nolint:staticcheck
+	. "github.com/onsi/gomega/gbytes" //nolint:staticcheck
+	. "github.com/onsi/gomega/gexec"  //nolint:staticcheck
 )
 
 const (
@@ -99,7 +99,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 		It("is reachable from the shared router", func() {
 			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, appsDomain), appsDomain, testConfig.SkipSSLValidation)
-			defer resp.Body.Close()
+			defer resp.Body.Close() //nolint:errcheck
 
 			Expect(resp.StatusCode).To(Equal(200))
 			htmlData, err := io.ReadAll(resp.Body)
@@ -110,7 +110,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 		It("is not reachable from the isolation segment router", func() {
 			//send a request to app in the shared domain, but through the isolation segment router
 			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, appsDomain), isoSegDomain, testConfig.SkipSSLValidation)
-			defer resp.Body.Close()
+			defer resp.Body.Close() //nolint:errcheck
 
 			Expect(resp.StatusCode).To(Equal(404))
 		})
@@ -152,7 +152,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 		It("the app is reachable from the isolated router", func() {
 			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), isoSegDomain, testConfig.SkipSSLValidation)
-			defer resp.Body.Close()
+			defer resp.Body.Close() //nolint:errcheck
 
 			Expect(resp.StatusCode).To(Equal(200))
 			htmlData, err := io.ReadAll(resp.Body)
@@ -162,7 +162,7 @@ var _ = Describe("RoutingIsolationSegments", func() {
 
 		It("the app is not reachable from the shared router", func() {
 			resp := SendRequestWithSpoofedHeader(fmt.Sprintf("%s.%s", appName, isoSegDomain), appsDomain, testConfig.SkipSSLValidation)
-			defer resp.Body.Close()
+			defer resp.Body.Close() //nolint:errcheck
 
 			Expect(resp.StatusCode).To(Equal(404))
 		})
@@ -172,19 +172,15 @@ var _ = Describe("RoutingIsolationSegments", func() {
 func CreateManifestWithRoute(name string, domain string) string {
 	file, err := os.CreateTemp(os.TempDir(), "iso-segment-manifest-*.yml")
 	Expect(err).NotTo(HaveOccurred())
+	defer file.Close() //nolint:errcheck
 
-	filePath := file.Name()
-
-	_, err = file.Write([]byte(fmt.Sprintf("---\n"+
-		"applications:\n"+
-		"- name: %s\n"+
-		"  routes:\n"+
-		"  - route: %s.%s",
-		name, name, domain)))
+	_, err = fmt.Fprintf(file, `---
+applications:
+- name: %s
+  routes:
+  - route: %s.%s`,
+		name, name, domain)
 	Expect(err).NotTo(HaveOccurred())
 
-	err = file.Close()
-	Expect(err).NotTo(HaveOccurred())
-
-	return filePath
+	return file.Name()
 }

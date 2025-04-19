@@ -38,7 +38,8 @@ func TestSmokeTests(t *testing.T) {
 	_, rc := GinkgoConfiguration()
 
 	if testConfig.ArtifactsDirectory != "" {
-		os.Setenv("CF_TRACE", traceLogFilePath(testConfig))
+		err := os.Setenv("CF_TRACE", traceLogFilePath(testConfig))
+		Expect(err).NotTo(HaveOccurred())
 		rc.JUnitReport = jUnitReportFilePath(testConfig)
 	}
 

@@ -5,9 +5,9 @@ import (
 
 	"github.com/cloudfoundry/cf-test-helpers/v2/cf"
 
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gexec"
+	. "github.com/onsi/ginkgo/v2"    //nolint:staticcheck
+	. "github.com/onsi/gomega"       //nolint:staticcheck
+	. "github.com/onsi/gomega/gexec" //nolint:staticcheck
 )
 
 const (
