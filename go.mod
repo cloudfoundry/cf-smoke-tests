@@ -1,6 +1,6 @@
 module github.com/cloudfoundry/cf-smoke-tests
 
-go 1.24.0
+go 1.23.0
 
 require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.13.0
@@ -13,7 +13,7 @@ require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20250820193118-f64d9cf942d6 // indirect
+	github.com/google/pprof v0.0.0-20250403155104-27863c87afa6 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.43.0 // indirect
