@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/cloudfoundry/cf-test-helpers/v2 v2.13.0
 	github.com/onsi/ginkgo/v2 v2.33.0
-	github.com/onsi/gomega v1.43.0
+	github.com/onsi/gomega v1.43.1
 )
 
 require (
