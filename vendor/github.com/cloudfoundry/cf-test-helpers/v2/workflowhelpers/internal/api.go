@@ -23,7 +23,7 @@ func ApiRequest(cmdStarter internal.Starter, method, endpoint string, response i
 		args = append(args, "-d", dataArg)
 	}
 
-	reporter := internal.ObservedReporter(commandreporter.NewCommandReporter())
+	reporter := commandreporter.NewCommandReporter()
 	request, err := cmdStarter.Start(reporter, "cf", args...)
 	gomega.ExpectWithOffset(2, err).NotTo(gomega.HaveOccurred())
 

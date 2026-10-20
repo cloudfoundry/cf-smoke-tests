@@ -27,20 +27,7 @@ func NewCommandStarterWithStdin(stdin io.Reader) *CommandStarter {
 func (r *CommandStarter) Start(reporter internal.Reporter, executable string, args ...string) (*gexec.Session, error) {
 	cmd := exec.Command(executable, args...)
 	cmd.Stdin = r.stdin
-	startTime := time.Now()
-	reporter.Report(startTime, cmd)
+	reporter.Report(time.Now(), cmd)
 
-	session, err := gexec.Start(cmd, ginkgo.GinkgoWriter, ginkgo.GinkgoWriter)
-	if err != nil {
-		return session, err
-	}
-
-	if cr, ok := reporter.(internal.CompletionReporter); ok {
-		go func() {
-			<-session.Exited
-			cr.ReportCompletion(cmd, time.Since(startTime), session.ExitCode())
-		}()
-	}
-
-	return session, nil
+	return gexec.Start(cmd, ginkgo.GinkgoWriter, ginkgo.GinkgoWriter)
 }
