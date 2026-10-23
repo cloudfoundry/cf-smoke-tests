@@ -1,8 +1,8 @@
 # github.com/Masterminds/semver/v3 v3.5.0
 ## explicit; go 1.21
 github.com/Masterminds/semver/v3
-# github.com/cloudfoundry/cf-test-helpers/v2 v2.13.0
-## explicit; go 1.23.0
+# github.com/cloudfoundry/cf-test-helpers/v2 v2.15.0
+## explicit; go 1.26.8
 github.com/cloudfoundry/cf-test-helpers/v2/cf
 github.com/cloudfoundry/cf-test-helpers/v2/commandreporter
 github.com/cloudfoundry/cf-test-helpers/v2/commandstarter
@@ -11,6 +11,8 @@ github.com/cloudfoundry/cf-test-helpers/v2/internal
 github.com/cloudfoundry/cf-test-helpers/v2/silentcommandstarter
 github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers
 github.com/cloudfoundry/cf-test-helpers/v2/workflowhelpers/internal
+# github.com/gkampitakis/go-snaps v0.5.23
+## explicit; go 1.23
 # github.com/go-logr/logr v1.4.4
 ## explicit; go 1.18
 github.com/go-logr/logr
@@ -67,6 +69,16 @@ github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
+# github.com/rogpeppe/go-internal v1.16.0
+## explicit; go 1.25
+# github.com/stretchr/testify v1.12.1
+## explicit; go 1.17
+# github.com/tidwall/gjson v1.20.0
+## explicit; go 1.23
+# github.com/tidwall/match v1.2.0
+## explicit; go 1.15
+# github.com/tidwall/pretty v1.2.2
+## explicit; go 1.16
 # go.yaml.in/yaml/v3 v3.0.5
 ## explicit; go 1.16
 go.yaml.in/yaml/v3
@@ -123,6 +135,10 @@ golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
+# google.golang.org/protobuf v1.36.12
+## explicit; go 1.23
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit; go 1.11
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
